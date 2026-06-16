@@ -42,26 +42,26 @@
         .welcome-modal { position: fixed; inset: 0; background: rgba(255,255,255,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s ease; }
         [data-theme="dark"] .welcome-modal { background: rgba(7, 11, 25, 0.7); }
         .welcome-modal.hidden { opacity: 0; pointer-events: none; }
-        .welcome-content { background: var(--surface); padding: 40px 30px; border-radius: 30px; text-align: center; max-width: 90%; width: 380px; box-shadow: var(--shadow); border: 1px solid var(--border); animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .welcome-content { background: var(--surface); padding: 40px 30px; border-radius: 30px; text-align: center; max-width: 90%; width: 380px; box-shadow: var(--shadow); border: 1px solid var(--border); animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform, opacity; }
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        .heart-icon { font-size: 4.5rem; color: #000000; animation: heartbeat 1.5s infinite; filter: drop-shadow(0 0 10px rgba(0,0,0,0.3)); margin-bottom: 15px;}
+        .heart-icon { font-size: 4.5rem; color: #000000; animation: heartbeat 1.5s infinite; filter: drop-shadow(0 0 10px rgba(0,0,0,0.3)); margin-bottom: 15px; will-change: transform; }
         [data-theme="dark"] .heart-icon { filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
         @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
         .welcome-text { font-family: 'Caveat', cursive; font-size: 2rem; color: var(--text-main); margin-bottom: 30px; line-height: 1.2; }
-        .btn-enter { background: #111111; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: var(--shadow); width: 100%; transition: transform 0.2s; }
+        .btn-enter { background: #111111; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: var(--shadow); width: 100%; transition: transform 0.2s; will-change: transform; }
         .btn-enter:active { transform: scale(0.95); }
 
         /* --- SIDEBAR & OVERLAY --- */
-        .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; transition: var(--transition); }
+        .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; transition: var(--transition); will-change: transform; }
         .sidebar-header { padding: 20px; background: #111111; color: white; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .theme-toggle, .menu-toggle { background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s;}
+        .theme-toggle, .menu-toggle { background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s; will-change: transform; }
         .theme-toggle:active { transform: rotate(45deg); }
-        .btn-new { background: #111111; color: white; border: none; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.2s; }
+        .btn-new { background: #111111; color: white; border: none; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.2s; will-change: transform; }
         .btn-new:active { transform: scale(0.95); }
         .note-list { flex: 1; overflow-y: auto; padding: 0 15px 15px 15px; }
         
-        .note-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; background: var(--bg-body); transition: var(--transition); border: 1px solid transparent; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+        .note-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; background: var(--bg-body); transition: var(--transition); border: 1px solid transparent; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; will-change: transform; }
         .note-item.active { background: var(--surface); border-left: 4px solid #111111; border-color: var(--border); box-shadow: var(--shadow); }
         [data-theme="dark"] .note-item.active { border-left: 4px solid #ffffff; }
         
@@ -75,7 +75,7 @@
         .pinned-icon { color: #111111; font-size: 1.1rem; }
         [data-theme="dark"] .pinned-icon { color: #ffffff; }
 
-        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); will-change: opacity; }
         .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
 
         /* --- MAIN AREA & TOOLBAR --- */
@@ -85,21 +85,21 @@
         .toolbar::-webkit-scrollbar { display: none; }
         
         .tool-group { display: flex; align-items: center; gap: 2px; background: var(--surface); padding: 4px 6px; border-radius: 8px; border: 1px solid var(--border); }
-        .tool-btn { background: transparent; border: none; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); font-size: 1.1rem; transition: background 0.2s, transform 0.1s;}
+        .tool-btn { background: transparent; border: none; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); font-size: 1.1rem; transition: background 0.2s, transform 0.1s; will-change: transform; }
         .tool-btn:active { transform: scale(0.85); background: var(--border); }
-        .tool-select { border: none; background: transparent; color: var(--text-main); outline: none; padding: 2px; font-size: 0.85rem; font-weight: 500; cursor: pointer;}
+        .tool-select { border: none; background: transparent; color: var(--text-main); outline: none; padding: 2px; font-size: 0.85rem; font-weight: 500; cursor: pointer; }
         
-        .color-picker-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; overflow: hidden; border-radius: 5px; cursor: pointer; border: 1px solid var(--border); margin-left: 5px;}
-        .color-picker-wrapper input[type="color"] { position: absolute; top: -10px; left: -10px; width: 50px; height: 50px; cursor: pointer; padding: 0; border: none;}
+        .color-picker-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; overflow: hidden; border-radius: 5px; cursor: pointer; border: 1px solid var(--border); margin-left: 5px; }
+        .color-picker-wrapper input[type="color"] { position: absolute; top: -10px; left: -10px; width: 50px; height: 50px; cursor: pointer; padding: 0; border: none; }
 
         /* --- EDITOR --- */
-        .editor-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; justify-content: center; transition: background 0.5s; position: relative; scroll-behavior: smooth;}
+        .editor-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; justify-content: center; transition: background 0.5s; position: relative; scroll-behavior: smooth; }
         .editor-wrapper { 
             width: 100%; max-width: 800px; padding: 30px; border-radius: 20px; 
             box-shadow: var(--shadow); min-height: calc(100vh - 40px); height: fit-content;
-            transition: all 0.5s; background: var(--surface); position: relative;
+            transition: all 0.5s; background: var(--surface); position: relative; will-change: transform, opacity; 
         }
-        .title-input { width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; background: transparent; line-height: 1.2; transition: color 0.3s;}
+        .title-input { width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; background: transparent; line-height: 1.2; transition: color 0.3s; }
         
         .editor-area { 
             min-height: 50vh; outline: none; font-size: 1.05rem; line-height: 1.6; 
@@ -109,11 +109,11 @@
             word-break: break-word;
             hyphens: auto;
             -webkit-user-select: text; user-select: text;
+            -webkit-touch-callout: none; /* Previene menú contextual nativo en iOS */
         }
 
         .editor-area b, .editor-area strong, .editor-area i, .editor-area em, .editor-area u { font-family: inherit; }
-        .editor-area font, .editor-area span[style*="color"] { font-family: inherit !important; }
-
+        
         .editor-area img, .editor-area video { border-radius: 12px; transition: box-shadow 0.2s; cursor: pointer; max-width: 100%; height: auto; -webkit-user-drag: none; -khtml-user-drag: none; -moz-user-drag: none; -o-user-drag: none; }
         .editor-area img.selected-img, .editor-area video.selected-img { box-shadow: 0 0 0 4px #111111; }
 
@@ -124,25 +124,25 @@
             align-items: center; gap: 2px; transition: opacity 0.2s; 
             backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); 
             white-space: nowrap; overflow-x: auto; max-width: 90vw;
-            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none; will-change: transform, opacity;
         }
         .floating-text-menu::-webkit-scrollbar { display: none; }
         .floating-text-menu::after { 
-            content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); 
-            border-width: 5px 5px 0; border-style: solid; border-color: #111111 transparent transparent transparent; 
+            content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); 
+            border-width: 0 5px 5px; border-style: solid; border-color: transparent transparent #111111 transparent; 
         }
         .floating-insert-menu { 
             position: absolute; display: none; background: #111111; color: white; border-radius: 15px; 
             padding: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 1000; 
-            flex-direction: column; align-items: flex-start; gap: 8px; white-space: normal; max-width: 320px;
+            flex-direction: column; align-items: flex-start; gap: 8px; white-space: normal; max-width: 320px; will-change: transform, opacity;
         }
         .insert-row { display: flex; align-items: center; gap: 5px; }
         .emoji-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding-top: 5px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .emoji-btn { background: transparent; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 2px 5px; border-radius: 5px; transition: transform 0.1s; }
+        .emoji-btn { background: transparent; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 2px 5px; border-radius: 5px; transition: transform 0.1s; will-change: transform; }
         .emoji-btn:active { transform: scale(1.2); background: rgba(255,255,255,0.2); }
 
-        .ft-btn { background: transparent; border: none; color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; flex-shrink: 0;}
-        .ft-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.85);}
+        .ft-btn { background: transparent; border: none; color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; flex-shrink: 0; will-change: transform; }
+        .ft-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.85); }
         .ft-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.2); margin: 0 2px; flex-shrink: 0; }
         .ft-select { background: none; color: white; border: none; font-size: 0.75rem; cursor: pointer; margin: 0 1px; flex-shrink: 0; }
         .ft-select option { background: #111; }
@@ -183,25 +183,25 @@
             transition: opacity 0.2s; z-index: 1001; white-space: nowrap;
             box-shadow: 0 8px 25px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
             max-width: calc(100vw - 20px); overflow-x: auto; 
-            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none; will-change: transform, opacity;
         }
         .image-toolbar::-webkit-scrollbar { display: none; }
         .image-toolbar.show { opacity: 1; pointer-events: auto; }
-        .img-btn { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; transition: transform 0.1s; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
+        .img-btn { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; transition: transform 0.1s; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; will-change: transform; }
         .img-btn:active { transform: scale(0.85); background: rgba(255,255,255,0.15); }
         .img-slider { width: 55px; accent-color: #ffffff; flex-shrink: 0; }
         .img-slider-label { color: rgba(255,255,255,0.8); font-size: 0.65rem; margin: 0 -3px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
         .img-spacer { width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px; flex-shrink: 0; }
 
-        .theme-palette { display: none; position: absolute; top: 60px; right: 20px; background: var(--surface); padding: 10px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); z-index: 50; gap: 8px;}
+        .theme-palette { display: none; position: absolute; top: 60px; right: 20px; background: var(--surface); padding: 10px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); z-index: 50; gap: 8px; will-change: transform; }
         .theme-palette.show { display: flex; animation: insertAnim 0.3s forwards; }
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s;}
+        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; will-change: transform; }
         .color-dot:hover { transform: scale(1.1); }
 
         /* --- BOTTOM SHEET --- */
-        .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(3px); }
+        .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(3px); will-change: opacity; }
         .sheet-overlay.show { opacity: 1; pointer-events: auto; }
-        .bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--surface); border-radius: 25px 25px 0 0; z-index: 1000; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); padding: 20px 20px 40px 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
+        .bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--surface); border-radius: 25px 25px 0 0; z-index: 1000; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); padding: 20px 20px 40px 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); will-change: bottom; }
         .bottom-sheet.show { bottom: 0; }
         .sheet-handle { width: 40px; height: 5px; background: var(--border); border-radius: 5px; margin: 0 auto 20px auto; }
         .sheet-title { text-align: center; font-weight: 600; margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem; }
@@ -279,16 +279,16 @@
             
             <div class="tool-group">
                 <select class="tool-select" onchange="formatDoc('fontName', this.value)">
-                    <option value="Poppins">Normal</option>
-                    <option value="'Caveat', cursive">Marcador Fino</option>
-                    <option value="Georgia">Elegante</option>
-                    <option value="'Playfair Display', serif">Playfair</option>
-                    <option value="'Montserrat', sans-serif">Montserrat</option>
-                    <option value="'Roboto', sans-serif">Roboto</option>
-                    <option value="'Lora', serif">Lora</option>
-                    <option value="'Dancing Script', cursive">Dancing Script</option>
-                    <option value="'Pacifico', cursive">Pacifico</option>
-                    <option value="'Indie Flower', cursive">Indie Flower</option>
+                    <option value="Poppins" style="font-family: Poppins">Normal</option>
+                    <option value="Caveat, cursive" style="font-family: 'Caveat', cursive">Marcador Fino</option>
+                    <option value="Georgia" style="font-family: Georgia">Elegante</option>
+                    <option value="Playfair Display, serif" style="font-family: 'Playfair Display', serif">Playfair</option>
+                    <option value="Montserrat, sans-serif" style="font-family: 'Montserrat', sans-serif">Montserrat</option>
+                    <option value="Roboto, sans-serif" style="font-family: 'Roboto', sans-serif">Roboto</option>
+                    <option value="Lora, serif" style="font-family: 'Lora', serif">Lora</option>
+                    <option value="Dancing Script, cursive" style="font-family: 'Dancing Script', cursive">Dancing Script</option>
+                    <option value="Pacifico, cursive" style="font-family: 'Pacifico', cursive">Pacifico</option>
+                    <option value="Indie Flower, cursive" style="font-family: 'Indie Flower', cursive">Indie Flower</option>
                 </select>
                 <select class="tool-select" onchange="formatDoc('fontSize', this.value)">
                     <option value="3">Tamaño (M)</option>
@@ -340,34 +340,34 @@
                 <input type="text" class="title-input" id="noteTitle" placeholder="Título..." oninput="triggerSave()">
                 <div class="editor-area" id="noteEditor" contenteditable="true" placeholder="Escribe aquí, mi amor..." oninput="triggerSave()"></div>
                 
-                <!-- Barra de texto flotante (reducida y desplazable) -->
+                <!-- Barra de texto flotante (ahora debajo del texto) -->
                 <div class="floating-text-menu" id="floatingTextMenu">
-                    <button class="ft-btn" onclick="execFloating('copy')" title="Copiar"><i class='bx bx-copy'></i></button>
-                    <button class="ft-btn" onclick="execFloating('cut')" title="Cortar"><i class='bx bx-cut'></i></button>
+                    <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="execFloating('copy')" title="Copiar"><i class='bx bx-copy'></i></button>
+                    <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="execFloating('cut')" title="Cortar"><i class='bx bx-cut'></i></button>
                     <div class="ft-divider"></div>
-                    <select class="ft-select" onchange="execFloating('fontName', this.value)">
-                        <option value="Poppins">Fuente</option>
-                        <option value="'Caveat', cursive">Marcador</option>
-                        <option value="Georgia">Elegante</option>
-                        <option value="'Playfair Display', serif">Playfair</option>
-                        <option value="'Montserrat', sans-serif">Montserrat</option>
-                        <option value="'Roboto', sans-serif">Roboto</option>
-                        <option value="'Lora', serif">Lora</option>
-                        <option value="'Dancing Script', cursive">Dancing</option>
-                        <option value="'Pacifico', cursive">Pacifico</option>
-                        <option value="'Indie Flower', cursive">Indie</option>
+                    <select class="ft-select" onmousedown="restoreSelection()" onchange="execFloating('fontName', this.value)">
+                        <option value="Poppins" style="font-family: Poppins">Fuente</option>
+                        <option value="Caveat, cursive" style="font-family: 'Caveat', cursive">Marcador</option>
+                        <option value="Georgia" style="font-family: Georgia">Elegante</option>
+                        <option value="Playfair Display, serif" style="font-family: 'Playfair Display', serif">Playfair</option>
+                        <option value="Montserrat, sans-serif" style="font-family: 'Montserrat', sans-serif">Montserrat</option>
+                        <option value="Roboto, sans-serif" style="font-family: 'Roboto', sans-serif">Roboto</option>
+                        <option value="Lora, serif" style="font-family: 'Lora', serif">Lora</option>
+                        <option value="Dancing Script, cursive" style="font-family: 'Dancing Script', cursive">Dancing</option>
+                        <option value="Pacifico, cursive" style="font-family: 'Pacifico', cursive">Pacifico</option>
+                        <option value="Indie Flower, cursive" style="font-family: 'Indie Flower', cursive">Indie</option>
                     </select>
-                    <select class="ft-select" onchange="execFloating('fontSize', this.value)">
+                    <select class="ft-select" onmousedown="restoreSelection()" onchange="execFloating('fontSize', this.value)">
                         <option value="1">S</option><option value="3" selected>M</option>
                         <option value="5">L</option><option value="7">XL</option>
                     </select>
-                    <button class="ft-btn" onclick="execFloating('bold')" title="Negrita"><i class='bx bx-bold'></i></button>
-                    <button class="ft-btn" onclick="execFloating('italic')" title="Cursiva"><i class='bx bx-italic'></i></button>
+                    <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="execFloating('bold')" title="Negrita"><i class='bx bx-bold'></i></button>
+                    <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="execFloating('italic')" title="Cursiva"><i class='bx bx-italic'></i></button>
                     <div class="ft-color-wrapper" title="Color de texto">
-                        <input type="color" onchange="execFloating('foreColor', this.value)">
+                        <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="execFloating('foreColor', this.value)">
                     </div>
                     <div class="ft-color-wrapper" title="Resaltar texto">
-                        <input type="color" onchange="execFloating('hiliteColor', this.value)" value="#ffff00">
+                        <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="execFloating('hiliteColor', this.value)" value="#ffff00">
                     </div>
                 </div>
 
@@ -386,7 +386,7 @@
             </div>
         </div>
 
-        <!-- Barra multimedia flotante (con copiar, duplicar, eliminar) -->
+        <!-- Barra multimedia flotante -->
         <div class="image-toolbar" id="imageToolbar">
             <span class="img-slider-label">An</span>
             <input type="range" class="img-slider" id="imgSizeSlider" min="20" max="100" value="50" onchange="resizeMedia(this.value)">
@@ -417,6 +417,7 @@
         let currentNoteId = null;
         let saveTimeout;
         let selectedMedia = null; 
+        let savedRange = null;
         
         let pressTimer;
         let isLongPressing = false;
@@ -456,7 +457,7 @@
 
             const randomLetter = cartasAmor[Math.floor(Math.random() * cartasAmor.length)];
             const formattedLetter = `
-                <div style="font-family: 'Caveat', cursive; font-size: 1.65rem; line-height: 1.7; text-align: center; padding: 20px 10px;">
+                <div style="font-family: Caveat, cursive; font-size: 1.65rem; line-height: 1.7; text-align: center; padding: 20px 10px;">
                     ${randomLetter}
                     <br><br>
                     <span style="color: #000000; font-size: 2.5rem; animation: heartbeat 1.5s infinite; display: inline-block; filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.3));">🖤</span>
@@ -492,10 +493,12 @@
             editorEl.addEventListener('pointerup', handlePointerUp);
             editorEl.addEventListener('pointerleave', handlePointerLeave);
             editorEl.addEventListener('pointercancel', handlePointerLeave);
+            
+            // Desactivar completamente el menú contextual nativo en todo el editor
             editorEl.addEventListener('contextmenu', (e) => {
-                if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
-                    e.preventDefault();
-                }
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
             });
 
             editorContainer.addEventListener('scroll', () => {
@@ -504,6 +507,14 @@
             window.addEventListener('resize', () => {
                 if (selectedMedia) updateMediaToolbarPosition(selectedMedia);
             });
+        }
+
+        function restoreSelection() {
+            if (savedRange) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(savedRange);
+            }
         }
 
         function handlePointerDown(e) {
@@ -551,7 +562,6 @@
             }
         });
 
-        // Función crucial: coloca el cursor justo después del elemento recién insertado
         function placeCursorAfterElement(element) {
             if (!element || !editorEl.contains(element)) return;
             const range = document.createRange();
@@ -563,21 +573,17 @@
             editorEl.focus();
         }
 
-        // Función para insertar HTML y luego posicionar cursor
         function insertHtmlAtCursor(html) {
             const sel = window.getSelection();
             if (sel.rangeCount) {
                 const range = sel.getRangeAt(0);
                 range.deleteContents();
-                // Insertar un marcador temporal
                 const marker = document.createElement('span');
                 marker.id = '__cursor_marker__';
                 marker.style.display = 'none';
                 range.insertNode(marker);
-                // Insertar HTML antes del marcador
                 const fragment = range.createContextualFragment(html);
                 marker.parentNode.insertBefore(fragment, marker);
-                // Colocar cursor después del marcador y luego eliminarlo
                 const newRange = document.createRange();
                 newRange.setStartAfter(marker);
                 newRange.collapse(true);
@@ -590,7 +596,6 @@
                 editorEl.focus();
                 document.execCommand('insertHTML', false, html);
                 triggerSave();
-                // Si no hay selección, intentamos poner cursor al final
                 focusEditorAtEnd();
             }
         }
@@ -603,10 +608,9 @@
             const sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
-            editorEl.click(); // ayuda a asegurar el foco en móviles
+            editorEl.click();
         }
 
-        // Funciones multimedia
         function resizeMedia(val) { 
             if (selectedMedia) { 
                 selectedMedia.style.width = val + '%'; 
@@ -677,7 +681,6 @@
             }
             triggerSave();
             deselectMedia();
-            // Colocar cursor después del clon
             placeCursorAfterElement(clone);
         }
 
@@ -695,7 +698,18 @@
         }
 
         function closeWelcome() { document.getElementById('welcomeModal').classList.add('hidden'); }
-        function formatDoc(command, value = null) { document.execCommand(command, false, value); editorEl.focus(); triggerSave(); }
+        
+        function formatDoc(command, value = null) {
+            if (command === 'fontName') {
+                document.execCommand('styleWithCSS', true, null);
+                document.execCommand('fontName', false, value);
+            } else {
+                document.execCommand(command, false, value);
+            }
+            editorEl.focus();
+            triggerSave();
+        }
+        
         function handlePaste(e) {
             const items = (e.clipboardData || window.clipboardData).items;
             for (let i = 0; i < items.length; i++) {
@@ -755,26 +769,45 @@
         }
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection();
-            if (selectedMedia) { floatMenu.style.display = 'none'; return; }
+            if (selectedMedia) { floatMenu.style.display = 'none'; savedRange = null; return; }
             if (selection.rangeCount > 0 && !selection.isCollapsed && editorEl.contains(selection.anchorNode)) {
+                savedRange = selection.getRangeAt(0).cloneRange();
                 const range = selection.getRangeAt(0);
                 const rect = range.getBoundingClientRect();
                 const containerRect = editorContainer.getBoundingClientRect();
                 floatMenu.style.display = 'flex';
                 insertMenu.style.display = 'none';
-                let topPos = (rect.top - containerRect.top) + editorContainer.scrollTop - floatMenu.offsetHeight - 8;
-                if (topPos < 5) topPos = 5;
+                
+                let topPos = (rect.bottom - containerRect.top) + editorContainer.scrollTop + 8;
+                if (topPos + floatMenu.offsetHeight > editorContainer.scrollHeight - 20) {
+                    topPos = (rect.top - containerRect.top) + editorContainer.scrollTop - floatMenu.offsetHeight - 8;
+                }
                 floatMenu.style.top = topPos + 'px';
+
                 const centerX = (rect.left - containerRect.left) + (rect.width / 2);
                 clampMenu(floatMenu, centerX, containerRect.width);
-            } else { floatMenu.style.display = 'none'; }
+            } else {
+                floatMenu.style.display = 'none';
+                savedRange = null;
+            }
         });
+        
         function execFloating(command, value = null) {
-            if(command === 'copy' || command === 'cut') { document.execCommand(command); floatMenu.style.opacity = '0.5'; setTimeout(() => floatMenu.style.opacity = '1', 200); }
-            else { document.execCommand(command, false, value); }
+            restoreSelection();
+            if(command === 'copy' || command === 'cut') { 
+                document.execCommand(command); 
+                floatMenu.style.opacity = '0.5'; 
+                setTimeout(() => floatMenu.style.opacity = '1', 200); 
+            } else if (command === 'fontName') {
+                document.execCommand('styleWithCSS', true, null);
+                document.execCommand('fontName', false, value);
+            } else {
+                document.execCommand(command, false, value);
+            }
             triggerSave();
             editorEl.focus();
         }
+        
         function showInsertMenu(e) {
             floatMenu.style.display = 'none';
             const containerRect = editorContainer.getBoundingClientRect();
@@ -801,7 +834,16 @@
             if (!insertMenu.contains(e.target) && e.target !== editorEl) hideInsertMenu();
             if (!imgToolbar.contains(e.target) && !editorEl.contains(e.target)) deselectMedia();
         });
-        function insertMenuCommand(command, value) { editorEl.focus(); document.execCommand(command, false, value); triggerSave(); }
+        function insertMenuCommand(command, value) { 
+            if (command === 'fontName') {
+                document.execCommand('styleWithCSS', true, null);
+                document.execCommand('fontName', false, value);
+            } else {
+                document.execCommand(command, false, value);
+            }
+            editorEl.focus(); 
+            triggerSave(); 
+        }
         function openUrlModalFromInsert(type) { hideInsertMenu(); openUrlModal(type); }
         function insertMediaFromMenu(event) { insertMedia(event); hideInsertMenu(); }
         function insertMedia(event) {
