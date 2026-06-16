@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nova Pro | Para Ti 🖤</title>
+    
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Caveat:wght@500;700&family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;600&family=Roboto:wght@400;700&family=Lora:wght@400;700&family=Dancing+Script:wght@400;700&family=Pacifico&family=Indie+Flower&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --bg-body: #f4f7fe;
+            --surface: #ffffff;
+            --primary: #FF4B72; 
+            --text-main: #2b3674;
+            --text-muted: #a3aed1;
+            --border: #e2e8f0;
+            --sidebar-w: 300px;
+            --gradient: linear-gradient(135deg, #FF8CA1 0%, #FF4B72 100%);
+            --shadow: 0 10px 30px rgba(255, 75, 114, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #070b19; 
+            --surface: #0e152e;
+            --primary: #FF708F;
+            --text-main: #f0f2f8;
+            --text-muted: #7483a8;
+            --border: #1a2342;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        /* --- PANTALLA DE BIENVENIDA --- */
+        .welcome-modal { position: fixed; inset: 0; background: rgba(255,255,255,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s ease; }
+        [data-theme="dark"] .welcome-modal { background: rgba(7, 11, 25, 0.7); }
+        .welcome-modal.hidden { opacity: 0; pointer-events: none; }
+        .welcome-content { background: var(--surface); padding: 40px 30px; border-radius: 30px; text-align: center; max-width: 90%; width: 380px; box-shadow: var(--shadow); border: 1px solid var(--border); animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        .heart-icon { font-size: 4.5rem; color: #000000; animation: heartbeat 1.5s infinite; filter: drop-shadow(0 0 10px rgba(0,0,0,0.3)); margin-bottom: 15px;}
+        [data-theme="dark"] .heart-icon { filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .welcome-text { font-family: 'Caveat', cursive; font-size: 2rem; color: var(--text-main); margin-bottom: 30px; line-height: 1.2; }
+        .btn-enter { background: #111111; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: var(--shadow); width: 100%; transition: transform 0.2s; }
+        .btn-enter:active { transform: scale(0.95); }
+
+        /* --- SIDEBAR & OVERLAY --- */
+        .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; transition: var(--transition); }
+        .sidebar-header { padding: 20px; background: #111111; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .theme-toggle, .menu-toggle { background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s;}
+        .theme-toggle:active { transform: rotate(45deg); }
+        .btn-new { background: #111111; color: white; border: none; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.2s; }
+        .btn-new:active { transform: scale(0.95); }
+        .note-list { flex: 1; overflow-y: auto; padding: 0 15px 15px 15px; }
+        
+        .note-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; background: var(--bg-body); transition: var(--transition); border: 1px solid transparent; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+        .note-item.active { background: var(--surface); border-left: 4px solid #111111; border-color: var(--border); box-shadow: var(--shadow); }
+        [data-theme="dark"] .note-item.active { border-left: 4px solid #ffffff; }
+        
+        @keyframes insertAnim { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .note-item.creating { animation: insertAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        
+        @keyframes deleteAnim { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.9) translateX(-10px); opacity: 0.8; } 100% { transform: scale(0.5) translateX(100%); opacity: 0; } }
+        .note-item.deleting { animation: deleteAnim 0.4s ease-in forwards; pointer-events: none; }
+
+        .note-title-list { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); }
+        .pinned-icon { color: #111111; font-size: 1.1rem; }
+        [data-theme="dark"] .pinned-icon { color: #ffffff; }
+
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); }
+        .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
+
+        /* --- MAIN AREA & TOOLBAR --- */
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .toolbar { padding: 10px 15px; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; z-index: 10; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; transition: var(--transition); }
+        [data-theme="dark"] .toolbar { background: rgba(14, 21, 46, 0.85); }
+        .toolbar::-webkit-scrollbar { display: none; }
+        
+        .tool-group { display: flex; align-items: center; gap: 2px; background: var(--surface); padding: 4px 6px; border-radius: 8px; border: 1px solid var(--border); }
+        .tool-btn { background: transparent; border: none; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); font-size: 1.1rem; transition: background 0.2s, transform 0.1s;}
+        .tool-btn:active { transform: scale(0.85); background: var(--border); }
+        .tool-select { border: none; background: transparent; color: var(--text-main); outline: none; padding: 2px; font-size: 0.85rem; font-weight: 500; cursor: pointer;}
+        
+        .color-picker-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; overflow: hidden; border-radius: 5px; cursor: pointer; border: 1px solid var(--border); margin-left: 5px;}
+        .color-picker-wrapper input[type="color"] { position: absolute; top: -10px; left: -10px; width: 50px; height: 50px; cursor: pointer; padding: 0; border: none;}
+
+        /* --- EDITOR --- */
+        .editor-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; justify-content: center; transition: background 0.5s; position: relative; scroll-behavior: smooth;}
+        .editor-wrapper { 
+            width: 100%; max-width: 800px; padding: 30px; border-radius: 20px; 
+            box-shadow: var(--shadow); min-height: calc(100vh - 40px); height: fit-content;
+            transition: all 0.5s; background: var(--surface); position: relative;
+        }
+        .title-input { width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; background: transparent; line-height: 1.2; transition: color 0.3s;}
+        
+        .editor-area { 
+            min-height: 50vh; outline: none; font-size: 1.05rem; line-height: 1.6; 
+            color: var(--text-main); transition: color 0.3s; padding-bottom: 150px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
+            -webkit-user-select: text; user-select: text;
+        }
+
+        .editor-area b, .editor-area strong, .editor-area i, .editor-area em, .editor-area u { font-family: inherit; }
+        .editor-area font, .editor-area span[style*="color"] { font-family: inherit !important; }
+
+        .editor-area img, .editor-area video { border-radius: 12px; transition: box-shadow 0.2s; cursor: pointer; max-width: 100%; height: auto; -webkit-user-drag: none; -khtml-user-drag: none; -moz-user-drag: none; -o-user-drag: none; }
+        .editor-area img.selected-img, .editor-area video.selected-img { box-shadow: 0 0 0 4px #111111; }
+
+        /* --- MENÚS FLOTANTES (texto seleccionado e inserción rápida) --- */
+        .floating-text-menu, .floating-insert-menu { 
+            position: absolute; display: none; background: #111111; color: white; border-radius: 50px; 
+            padding: 5px 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000; 
+            align-items: center; gap: 5px; transition: opacity 0.2s; 
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); 
+            white-space: nowrap;
+        }
+        .floating-insert-menu { 
+            border-radius: 15px; gap: 8px; flex-wrap: wrap; max-width: 320px; 
+            padding: 10px; flex-direction: column; align-items: flex-start; white-space: normal;
+        }
+        .floating-text-menu::after, .floating-insert-menu::after { 
+            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); 
+            border-width: 6px 6px 0; border-style: solid; border-color: #111111 transparent transparent transparent; 
+        }
+        .insert-row { display: flex; align-items: center; gap: 5px; }
+        .emoji-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding-top: 5px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .emoji-btn { background: transparent; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 2px 5px; border-radius: 5px; transition: transform 0.1s; }
+        .emoji-btn:active { transform: scale(1.2); background: rgba(255,255,255,0.2); }
+
+        .ft-btn { background: transparent; border: none; color: white; width: 30px; height: 30px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s;}
+        .ft-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.85);}
+        .ft-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.2); margin: 0 4px; }
+        .ft-select { background: none; color: white; border: none; font-size: 0.9rem; cursor: pointer; margin: 0 5px; }
+        .ft-select option { background: #111; }
+
+        .ft-color-wrapper {
+            position: relative; width: 22px; height: 22px; overflow: hidden; border-radius: 50%;
+            cursor: pointer; border: 1px solid rgba(255,255,255,0.3);
+        }
+        .ft-color-wrapper input[type="color"] {
+            position: absolute; top: -6px; left: -6px; width: 34px; height: 34px;
+            border: none; padding: 0; cursor: pointer;
+        }
+
+        /* --- TEMAS DE NOTA --- */
+        .theme-sakura { background: linear-gradient(to bottom right, #ffe1e8, #ffb3c6) !important; color: #5c1a2d; }
+        .theme-sakura .title-input { color: #5c1a2d; }
+        .theme-papel { background: #fdf5e6 !important; color: #3d3122; background-image: repeating-linear-gradient(transparent, transparent 31px, #d8d0c1 31px, #d8d0c1 32px); }
+        .theme-papel .title-input { color: #3d3122; }
+        .theme-amor { background: radial-gradient(circle, #fcfcfc 0%, #e6e6e6 100%) !important; color: #111111; }
+        .theme-amor .title-input { color: #111111; }
+        .theme-noche { background: linear-gradient(135deg, #1a1a2e, #16213e) !important; color: #e1e1e6; }
+        .theme-noche .title-input { color: #ffffff; }
+
+        [data-theme="dark"] .theme-sakura { background: linear-gradient(to bottom right, #2c131a, #4a1c2a) !important; color: #ffccd5; border: 1px solid #5c2033; }
+        [data-theme="dark"] .theme-sakura .title-input { color: #ffb3c6; }
+        [data-theme="dark"] .theme-papel { background: #1a1714 !important; color: #d8d0c1; background-image: repeating-linear-gradient(transparent, transparent 31px, #362f27 31px, #362f27 32px); border: 1px solid #362f27; }
+        [data-theme="dark"] .theme-papel .title-input { color: #f5ebda; }
+        [data-theme="dark"] .theme-amor { background: radial-gradient(circle, #1a1a1a 0%, #0d0d0d 100%) !important; color: #e6e6e6; border: 1px solid #333333; }
+        [data-theme="dark"] .theme-amor .title-input { color: #ffffff; }
+        [data-theme="dark"] .theme-noche { background: linear-gradient(135deg, #0b0b14, #080b12) !important; color: #e1e1e6; border: 1px solid #1c1c33; }
+        [data-theme="dark"] .theme-noche .title-input { color: #ffffff; }
+
+        /* --- BARRA FLOTANTE MULTIMEDIA (mejorada) --- */
+        .image-toolbar { 
+            position: fixed; opacity: 0; pointer-events: none;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+            padding: 12px 15px; border-radius: 50px; display: flex; gap: 10px; align-items: center;
+            transition: opacity 0.2s; z-index: 1001; white-space: nowrap; flex-wrap: wrap;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15);
+        }
+        .image-toolbar.show { opacity: 1; pointer-events: auto; }
+        .img-btn { background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; transition: transform 0.1s; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;}
+        .img-btn:active { transform: scale(0.85); background: rgba(255,255,255,0.15); }
+        .img-slider { width: 70px; accent-color: #ffffff; }
+        .img-slider-label { color: rgba(255,255,255,0.8); font-size: 0.7rem; margin: 0 -5px; font-weight: 500; }
+
+        .theme-palette { display: none; position: absolute; top: 60px; right: 20px; background: var(--surface); padding: 10px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); z-index: 50; gap: 8px;}
+        .theme-palette.show { display: flex; animation: insertAnim 0.3s forwards; }
+        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s;}
+        .color-dot:hover { transform: scale(1.1); }
+
+        /* --- BOTTOM SHEET --- */
+        .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(3px); }
+        .sheet-overlay.show { opacity: 1; pointer-events: auto; }
+        .bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--surface); border-radius: 25px 25px 0 0; z-index: 1000; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); padding: 20px 20px 40px 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
+        .bottom-sheet.show { bottom: 0; }
+        .sheet-handle { width: 40px; height: 5px; background: var(--border); border-radius: 5px; margin: 0 auto 20px auto; }
+        .sheet-title { text-align: center; font-weight: 600; margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem; }
+        .sheet-option { display: flex; align-items: center; gap: 15px; padding: 16px; border-radius: 15px; cursor: pointer; font-size: 1.1rem; font-weight: 500; transition: background 0.2s, transform 0.1s; color: var(--text-main); }
+        .sheet-option:hover { background: var(--bg-body); }
+        .sheet-option:active { transform: scale(0.98); }
+        .sheet-option i { font-size: 1.4rem; color: #111111; }
+        [data-theme="dark"] .sheet-option i { color: #ffffff; }
+        .sheet-option.danger { color: #ff4757; }
+        .sheet-option.danger i { color: #ff4757 !important; }
+
+        .url-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 2000; }
+        .url-modal.show { display: flex; }
+        .url-modal-content { background: var(--surface); padding: 20px; border-radius: 16px; box-shadow: var(--shadow); width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; }
+        .url-modal-content input { padding: 10px; border: 1px solid var(--border); border-radius: 8px; outline: none; background: var(--bg-body); color: var(--text-main); }
+        .url-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .url-modal-actions button { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+        .btn-cancel { background: #ccc; } .btn-insert { background: #111; color: white; }
+
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -100%; height: 100%; width: 280px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
+            .sidebar.open { left: 0; }
+            .menu-toggle { display: block; color: var(--text-main); }
+            .editor-wrapper { padding: 20px 15px; border-radius: 12px; }
+            .title-input { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="welcomeModal" class="welcome-modal">
+        <div class="welcome-content">
+            <i class='bx bxs-heart heart-icon'></i>
+            <div class="welcome-text" style="font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 600;">Hola, mi amor. 🖤</div>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Tienes una nueva carta esperándote...</p>
+            <button class="btn-enter" onclick="closeWelcome()">Leer mi carta ✨</button>
+        </div>
+    </div>
+
+    <div id="urlModal" class="url-modal">
+        <div class="url-modal-content">
+            <span id="urlModalTitle" style="font-weight:600;">Pegar URL</span>
+            <input type="text" id="urlInput" placeholder="https://...">
+            <div class="url-modal-actions">
+                <button class="btn-cancel" onclick="closeUrlModal()">Cancelar</button>
+                <button class="btn-insert" onclick="confirmInsertUrl()">Insertar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sheet-overlay" id="sheetOverlay" onclick="closeContextMenu()"></div>
+    <div class="bottom-sheet" id="bottomSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title" id="sheetTitle">Opciones de la Nota</div>
+        <div class="sheet-option" onclick="actionPinNote()"><i class='bx bx-pin' id="sheetPinIcon"></i> <span id="sheetPinText">Fijar arriba</span></div>
+        <div class="sheet-option" onclick="actionDuplicateNote()"><i class='bx bx-copy'></i> Duplicar nota</div>
+        <div class="sheet-option danger" onclick="actionDeleteNote()"><i class='bx bx-trash'></i> Eliminar nota</div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand">Nova Notes 🖤</div>
+            <button class="theme-toggle" onclick="toggleGlobalTheme()"><i class='bx bx-moon' id="themeIcon"></i></button>
+            <button class="menu-toggle" onclick="toggleSidebar()" style="display: none; color: white;" id="closeSidebarBtn"><i class='bx bx-x'></i></button>
+        </div>
+        <button class="btn-new" onclick="createNewNote()"><i class='bx bx-plus'></i> Escribir algo nuevo</button>
+        <div class="note-list" id="noteList"></div>
+    </aside>
+
+    <main class="main-content">
+        <header class="toolbar">
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class='bx bx-menu'></i></button>
+            
+            <div class="tool-group">
+                <select class="tool-select" onchange="formatDoc('fontName', this.value)">
+                    <option value="Poppins">Normal</option>
+                    <option value="'Caveat', cursive">Marcador Fino</option>
+                    <option value="Georgia">Elegante</option>
+                    <option value="'Playfair Display', serif">Playfair</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Lora', serif">Lora</option>
+                    <option value="'Dancing Script', cursive">Dancing Script</option>
+                    <option value="'Pacifico', cursive">Pacifico</option>
+                    <option value="'Indie Flower', cursive">Indie Flower</option>
+                </select>
+                <select class="tool-select" onchange="formatDoc('fontSize', this.value)">
+                    <option value="3">Tamaño (M)</option>
+                    <option value="1">Súper Pequeño</option>
+                    <option value="2">Pequeño (S)</option>
+                    <option value="4">Grande (L)</option>
+                    <option value="5">Súper Grande</option>
+                    <option value="6">Gigante</option>
+                </select>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-btn" onclick="formatDoc('bold')" title="Negrita"><i class='bx bx-bold'></i></button>
+                <button class="tool-btn" onclick="formatDoc('italic')" title="Cursiva"><i class='bx bx-italic'></i></button>
+                <button class="tool-btn" onclick="formatDoc('underline')" title="Subrayado"><i class='bx bx-underline'></i></button>
+                <div class="color-picker-wrapper" title="Color del texto">
+                    <input type="color" onchange="formatDoc('foreColor', this.value)">
+                </div>
+                <div class="color-picker-wrapper" title="Color de fondo (resaltar)">
+                    <input type="color" onchange="formatDoc('hiliteColor', this.value)" value="#ffff00">
+                </div>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-btn" onclick="formatDoc('justifyLeft')" title="Alinear Izquierda"><i class='bx bx-align-left'></i></button>
+                <button class="tool-btn" onclick="formatDoc('justifyCenter')" title="Centrar"><i class='bx bx-align-middle'></i></button>
+                <button class="tool-btn" onclick="formatDoc('justifyRight')" title="Alinear Derecha"><i class='bx bx-align-right'></i></button>
+            </div>
+
+            <div class="tool-group" style="margin-left: auto;">
+                <input type="file" id="mediaInput" accept="image/*,video/*,image/gif" style="display: none;" onchange="insertMedia(event)">
+                <button class="tool-btn" onclick="document.getElementById('mediaInput').click()" title="Insertar imagen/video desde archivo"><i class='bx bx-image-add'></i></button>
+                <button class="tool-btn" onclick="openUrlModal('image')" title="Insertar GIF/Sticker desde URL"><i class='bx bx-happy-heart-eyes'></i></button>
+                <button class="tool-btn" onclick="openUrlModal('video')" title="Insertar video desde URL"><i class='bx bx-video-plus'></i></button>
+                <button class="tool-btn" onclick="toggleThemePalette()" title="Fondo de la nota"><i class='bx bx-palette'></i></button>
+            </div>
+        </header>
+
+        <div class="theme-palette" id="themePalette">
+            <div class="color-dot" style="background: var(--surface); border: 1px solid var(--border);" onclick="setNoteTheme('default')"></div>
+            <div class="color-dot" style="background: #ffb3c6;" onclick="setNoteTheme('theme-sakura')"></div>
+            <div class="color-dot" style="background: #e6dac3;" onclick="setNoteTheme('theme-papel')"></div>
+            <div class="color-dot" style="background: #d4d4d4;" onclick="setNoteTheme('theme-amor')"></div>
+            <div class="color-dot" style="background: #1a1a2e;" onclick="setNoteTheme('theme-noche')"></div>
+        </div>
+
+        <div class="editor-container" id="editorContainer">
+            <div class="editor-wrapper" id="editorWrapper">
+                <input type="text" class="title-input" id="noteTitle" placeholder="Título..." oninput="triggerSave()">
+                <div class="editor-area" id="noteEditor" contenteditable="true" placeholder="Escribe aquí, mi amor..." oninput="triggerSave()"></div>
+                
+                <div class="floating-text-menu" id="floatingTextMenu">
+                    <button class="ft-btn" onclick="execFloating('copy')" title="Copiar"><i class='bx bx-copy'></i></button>
+                    <button class="ft-btn" onclick="execFloating('cut')" title="Cortar"><i class='bx bx-cut'></i></button>
+                    <div class="ft-divider"></div>
+                    <select class="ft-select" onchange="execFloating('fontName', this.value)">
+                        <option value="Poppins">Fuente</option>
+                        <option value="'Caveat', cursive">Marcador Fino</option>
+                        <option value="Georgia">Elegante</option>
+                        <option value="'Playfair Display', serif">Playfair</option>
+                        <option value="'Montserrat', sans-serif">Montserrat</option>
+                        <option value="'Roboto', sans-serif">Roboto</option>
+                        <option value="'Lora', serif">Lora</option>
+                        <option value="'Dancing Script', cursive">Dancing Script</option>
+                        <option value="'Pacifico', cursive">Pacifico</option>
+                        <option value="'Indie Flower', cursive">Indie Flower</option>
+                    </select>
+                    <select class="ft-select" onchange="execFloating('fontSize', this.value)">
+                        <option value="1">S</option><option value="3" selected>M</option>
+                        <option value="5">L</option><option value="7">XL</option>
+                    </select>
+                    <button class="ft-btn" onclick="execFloating('bold')" title="Negrita"><i class='bx bx-bold'></i></button>
+                    <button class="ft-btn" onclick="execFloating('italic')" title="Cursiva"><i class='bx bx-italic'></i></button>
+                    <div class="ft-color-wrapper" title="Color de texto">
+                        <input type="color" onchange="execFloating('foreColor', this.value)">
+                    </div>
+                    <div class="ft-color-wrapper" title="Resaltar texto">
+                        <input type="color" onchange="execFloating('hiliteColor', this.value)" value="#ffff00">
+                    </div>
+                    <div class="ft-divider"></div>
+                    <input type="file" id="floatingMediaInput" accept="image/*,video/*,image/gif" style="display: none;" onchange="insertMedia(event)">
+                    <button class="ft-btn" onclick="document.getElementById('floatingMediaInput').click()" title="Insertar imagen/video"><i class='bx bx-plus-circle'></i></button>
+                    <button class="ft-btn" onclick="openUrlModal('image')" title="Sticker/GIF URL"><i class='bx bx-happy-heart-eyes'></i></button>
+                </div>
+
+                <div class="floating-insert-menu" id="insertMenu">
+                    <div class="insert-row">
+                        <div class="ft-color-wrapper" title="Color de texto">
+                            <input type="color" onchange="insertMenuCommand('foreColor', this.value)">
+                        </div>
+                        <input type="file" id="insertMenuFileInput" accept="image/*,video/*,image/gif" style="display: none;" onchange="insertMediaFromMenu(event)">
+                        <button class="ft-btn" onclick="document.getElementById('insertMenuFileInput').click()" title="Insertar imagen/video"><i class='bx bx-image-add'></i></button>
+                        <button class="ft-btn" onclick="openUrlModalFromInsert('image')" title="Sticker/GIF URL"><i class='bx bx-happy-heart-eyes'></i></button>
+                        <button class="ft-btn" onclick="openUrlModalFromInsert('video')" title="Video URL"><i class='bx bx-video-plus'></i></button>
+                    </div>
+                    <div class="emoji-row" id="emojiPanel"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra multimedia flotante -->
+        <div class="image-toolbar" id="imageToolbar">
+            <span class="img-slider-label">Ancho</span>
+            <input type="range" class="img-slider" id="imgSizeSlider" min="20" max="100" value="50" oninput="resizeMedia(this.value)">
+            <span class="img-slider-label">Margen H</span>
+            <input type="range" class="img-slider" id="imgMarginHSlider" min="0" max="40" value="15" oninput="changeMargin('horizontal', this.value)">
+            <span class="img-slider-label">Margen V</span>
+            <input type="range" class="img-slider" id="imgMarginVSlider" min="0" max="40" value="10" oninput="changeMargin('vertical', this.value)">
+            <button class="img-btn" onclick="alignMedia('left')" title="Alinear izquierda"><i class='bx bx-align-left'></i></button>
+            <button class="img-btn" onclick="alignMedia('center')" title="Centrar"><i class='bx bx-align-middle'></i></button>
+            <button class="img-btn" onclick="alignMedia('right')" title="Alinear derecha"><i class='bx bx-align-right'></i></button>
+        </div>
+    </main>
+
+    <script>
+        const cartasAmor = [
+            `Hola, Gabriela preciosa. Solo quería tomarme un momento para decirte lo increíblemente afortunado que me siento de tenerte en mi vida. A veces me quedo mirándote, incluso cuando no te das cuenta, y pienso en cómo llegaste a cambiar mi mundo por completo. Tienes esta forma mágica de hacer que hasta el día más gris se llene de colores. Admiro tu fuerza, tu inteligencia y esa sonrisa que me desarma cada vez que la veo. Eres mi mayor victoria. 🖤`,
+            `Mi amor, hoy me desperté pensando en ti, como todos los días. Pero hoy fue diferente: me di cuenta de que cada pequeño detalle tuyo se ha vuelto esencial para mí. La forma en que ríes, cómo me miras cuando crees que no te veo, esa manía adorable de morderte el labio cuando te concentras. Todo eso me hace sentir que el universo entero conspiró para que nos encontráramos. Eres la estrella que guía mis pasos y el refugio donde quiero descansar siempre. Te amo con cada fibra de mi ser. ✨`,
+            `Sé que a veces los días se vuelven grises y las preocupaciones pesan. Pero quiero que nunca olvides que aquí estoy yo, incondicional, para secar tus lágrimas y celebrar tus risas. No hay nada que no podamos superar juntos, porque nuestro amor es más fuerte que cualquier miedo. Eres mi equipo, mi compañera, mi mejor amiga y mi confidente. Cada obstáculo solo nos hace más fuertes y nos recuerda por qué elegimos caminar de la mano. Confía en nosotros, porque yo confío plenamente en ti. 🥰`,
+            `¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso, tu capacidad de amar sin medida incluso cuando el mundo ha sido difícil contigo. Tienes una luz interior que no se apaga, una bondad que transforma todo lo que tocas. Verte sonreír es mi misión diaria, y verte triunfar es mi orgullo secreto. Prometo seguir construyendo un futuro donde nunca te falte amor, respeto ni chocolates a las 2 de la mañana. Porque te mereces todo lo bonito que la vida puede ofrecer. 💕`
+        ];
+
+        let notes = JSON.parse(localStorage.getItem('nova_romance')) || [];
+        let currentNoteId = null;
+        let saveTimeout;
+        let selectedMedia = null; 
+        
+        let pressTimer;
+        let isLongPressing = false;
+        let contextNoteId = null;
+
+        let pendingMediaType = null;
+
+        const titleEl = document.getElementById('noteTitle');
+        const editorEl = document.getElementById('noteEditor');
+        const listEl = document.getElementById('noteList');
+        const wrapperEl = document.getElementById('editorWrapper');
+        const imgToolbar = document.getElementById('imageToolbar');
+        const sheet = document.getElementById('bottomSheet');
+        const overlaySheet = document.getElementById('sheetOverlay');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const floatMenu = document.getElementById('floatingTextMenu');
+        const insertMenu = document.getElementById('insertMenu');
+        const editorContainer = document.getElementById('editorContainer');
+        const urlModal = document.getElementById('urlModal');
+        const urlInput = document.getElementById('urlInput');
+        const urlModalTitle = document.getElementById('urlModalTitle');
+        const emojiPanel = document.getElementById('emojiPanel');
+
+        const imgSizeSlider = document.getElementById('imgSizeSlider');
+        const imgMarginHSlider = document.getElementById('imgMarginHSlider');
+        const imgMarginVSlider = document.getElementById('imgMarginVSlider');
+
+        const emojis = ['❤️', '😊', '🌟', '🎉', '🔥', '😢', '😂', '💕', '✨', '🥰', '😍', '💔', '👍', '🙏', '💪', '🤗', '🎂', '💋', '🌈', '🦋'];
+
+        // Manejo simplificado de puntero para multimedia
+        let pointerDownTime = 0;
+        let pointerDownTarget = null;
+        let isMediaLongPress = false;
+
+        function initApp() {
+            if(localStorage.getItem('nova_global_theme') === 'dark') toggleGlobalTheme(true);
+
+            const randomLetter = cartasAmor[Math.floor(Math.random() * cartasAmor.length)];
+            const formattedLetter = `
+                <div style="font-family: 'Caveat', cursive; font-size: 1.65rem; line-height: 1.7; text-align: center; padding: 20px 10px;">
+                    ${randomLetter}
+                    <br><br>
+                    <span style="color: #000000; font-size: 2.5rem; animation: heartbeat 1.5s infinite; display: inline-block; filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.3));">🖤</span>
+                </div>
+            `;
+
+            let magicNoteIndex = notes.findIndex(n => n.id === 'nota_magica_diaria');
+            if (magicNoteIndex === -1) {
+                notes.unshift({ id: 'nota_magica_diaria', title: '💌 Para ti, hoy...', content: formattedLetter, theme: 'theme-amor', pinned: true, timestamp: Date.now() + 9999999 });
+            } else {
+                notes[magicNoteIndex].content = formattedLetter;
+                notes[magicNoteIndex].timestamp = Date.now() + 9999999; 
+            }
+            saveData();
+            renderList();
+            openNote('nota_magica_diaria', false); 
+            checkMobileMenu();
+
+            editorEl.addEventListener('paste', handlePaste);
+
+            emojis.forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.className = 'emoji-btn';
+                btn.textContent = emoji;
+                btn.addEventListener('click', () => {
+                    insertEmojiAtCursor(emoji);
+                    hideInsertMenu();
+                });
+                emojiPanel.appendChild(btn);
+            });
+
+            // Eventos de puntero unificados
+            editorEl.addEventListener('pointerdown', handlePointerDown);
+            editorEl.addEventListener('pointerup', handlePointerUp);
+            editorEl.addEventListener('pointerleave', handlePointerLeave);
+            editorEl.addEventListener('pointercancel', handlePointerLeave);
+            // Prevenir menú contextual en imágenes
+            editorEl.addEventListener('contextmenu', (e) => {
+                if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
+                    e.preventDefault();
+                }
+            });
+
+            editorContainer.addEventListener('scroll', () => {
+                if (selectedMedia) updateMediaToolbarPosition(selectedMedia);
+            });
+            window.addEventListener('resize', () => {
+                if (selectedMedia) updateMediaToolbarPosition(selectedMedia);
+            });
+        }
+
+        function handlePointerDown(e) {
+            const target = e.target.closest('img, video');
+            if (!target || !editorEl.contains(target)) return;
+            pointerDownTime = Date.now();
+            pointerDownTarget = target;
+            isMediaLongPress = false;
+            // No prevenimos el comportamiento por defecto para permitir foco
+        }
+
+        function handlePointerUp(e) {
+            if (!pointerDownTarget) return;
+            const duration = Date.now() - pointerDownTime;
+            const target = pointerDownTarget;
+            pointerDownTarget = null;
+            pointerDownTime = 0;
+
+            if (duration > 400) {
+                // Long press
+                e.preventDefault();
+                isMediaLongPress = true;
+                selectMediaElement(target);
+                if (navigator.vibrate) navigator.vibrate(50);
+            } else {
+                // Toque corto
+                isMediaLongPress = false;
+                // Permitir que el evento click se procese naturalmente, pero forzamos foco al editor
+                editorEl.focus();
+            }
+        }
+
+        function handlePointerLeave(e) {
+            pointerDownTarget = null;
+            pointerDownTime = 0;
+        }
+
+        // Manejador de click en el editor para deseleccionar multimedia y recuperar escritura
+        editorEl.addEventListener('click', (e) => {
+            const target = e.target.closest('img, video');
+            if (target && editorEl.contains(target)) {
+                // Si fue un toque corto (no long press), mostramos la barra de edición
+                if (!isMediaLongPress) {
+                    selectMediaElement(target);
+                }
+                isMediaLongPress = false;
+                e.stopPropagation();
+            } else {
+                // Clic en texto o espacio vacío
+                deselectMedia();
+                editorEl.focus();
+            }
+        });
+
+        // ... resto del código sin cambios ...
+
+        function closeWelcome() { 
+            document.getElementById('welcomeModal').classList.add('hidden'); 
+        }
+        
+        function formatDoc(command, value = null) { 
+            document.execCommand(command, false, value); 
+            editorEl.focus(); 
+            triggerSave(); 
+        }
+
+        function handlePaste(e) {
+            const items = (e.clipboardData || window.clipboardData).items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    const blob = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        img.style.width = '80%';
+                        img.style.display = 'block';
+                        img.style.margin = '15px auto';
+                        const sel = window.getSelection();
+                        if (sel.rangeCount) {
+                            const range = sel.getRangeAt(0);
+                            range.deleteContents();
+                            range.insertNode(img);
+                            range.setStartAfter(img);
+                            range.collapse(true);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        } else {
+                            editorEl.appendChild(img);
+                        }
+                        triggerSave();
+                    };
+                    reader.readAsDataURL(blob);
+                    break;
+                }
+            }
+        }
+
+        function insertEmojiAtCursor(emoji) {
+            const sel = window.getSelection();
+            if (sel.rangeCount) {
+                const range = sel.getRangeAt(0);
+                range.deleteContents();
+                const textNode = document.createTextNode(emoji);
+                range.insertNode(textNode);
+                range.setStartAfter(textNode);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else {
+                editorEl.focus();
+                document.execCommand('insertText', false, emoji);
+            }
+            triggerSave();
+        }
+
+        function clampMenu(menu, desiredLeft, containerWidth) {
+            const menuWidth = menu.offsetWidth;
+            let left = desiredLeft - menuWidth / 2;
+            if (left < 0) left = 0;
+            if (left + menuWidth > containerWidth) left = containerWidth - menuWidth;
+            menu.style.left = left + 'px';
+            menu.style.transform = 'none';
+        }
+
+        document.addEventListener('selectionchange', () => {
+            const selection = window.getSelection();
+            if (selectedMedia) {
+                floatMenu.style.display = 'none';
+                return;
+            }
+            if (selection.rangeCount > 0 && !selection.isCollapsed && editorEl.contains(selection.anchorNode)) {
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                const containerRect = editorContainer.getBoundingClientRect();
+                
+                floatMenu.style.display = 'flex';
+                insertMenu.style.display = 'none';
+                
+                let topPos = (rect.top - containerRect.top) + editorContainer.scrollTop - floatMenu.offsetHeight - 15;
+                if (topPos < 10) topPos = 10;
+                floatMenu.style.top = topPos + 'px';
+
+                const centerX = (rect.left - containerRect.left) + (rect.width / 2);
+                clampMenu(floatMenu, centerX, containerRect.width);
+            } else {
+                floatMenu.style.display = 'none';
+            }
+        });
+
+        function execFloating(command, value = null) {
+            if(command === 'copy' || command === 'cut') {
+                document.execCommand(command);
+                floatMenu.style.opacity = '0.5';
+                setTimeout(() => floatMenu.style.opacity = '1', 200);
+            } else {
+                document.execCommand(command, false, value);
+            }
+            triggerSave();
+        }
+
+        function showInsertMenu(e) {
+            floatMenu.style.display = 'none';
+            const containerRect = editorContainer.getBoundingClientRect();
+            const x = e.clientX - containerRect.left + editorContainer.scrollLeft;
+            const y = e.clientY - containerRect.top + editorContainer.scrollTop;
+            
+            insertMenu.style.display = 'flex';
+            insertMenu.style.visibility = 'hidden';
+            requestAnimationFrame(() => {
+                const menuWidth = insertMenu.offsetWidth;
+                let left = x - menuWidth / 2;
+                if (left < 0) left = 0;
+                if (left + menuWidth > containerRect.width) left = containerRect.width - menuWidth;
+                insertMenu.style.left = left + 'px';
+                let topPos = y - 60;
+                if (topPos < 10) topPos = 10;
+                insertMenu.style.top = topPos + 'px';
+                insertMenu.style.visibility = 'visible';
+                insertMenu.style.transform = 'none';
+            });
+            
+            editorEl.focus();
+        }
+
+        function hideInsertMenu() {
+            insertMenu.style.display = 'none';
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!insertMenu.contains(e.target) && e.target !== editorEl) {
+                hideInsertMenu();
+            }
+            if (!imgToolbar.contains(e.target) && !editorEl.contains(e.target)) {
+                deselectMedia();
+            }
+        });
+
+        function insertMenuCommand(command, value) {
+            editorEl.focus();
+            document.execCommand(command, false, value);
+            triggerSave();
+        }
+
+        function openUrlModalFromInsert(type) {
+            hideInsertMenu();
+            openUrlModal(type);
+        }
+
+        function insertMediaFromMenu(event) {
+            insertMedia(event);
+            hideInsertMenu();
+        }
+
+        function insertMedia(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) { 
+                    let mediaHtml = '';
+                    if (file.type.startsWith('video/')) {
+                        mediaHtml = `<video src="${e.target.result}" controls style="width: 50%; display: block; margin: 15px auto;"></video>`;
+                    } else {
+                        mediaHtml = `<img src="${e.target.result}" style="width: 80%; display: block; margin: 15px auto; clear: both;">`;
+                    }
+                    formatDoc('insertHTML', mediaHtml);
+                };
+                reader.readAsDataURL(file);
+            }
+            event.target.value = ''; 
+        }
+
+        function openUrlModal(type) {
+            pendingMediaType = type;
+            urlInput.value = '';
+            urlModalTitle.textContent = type === 'image' ? 'Pega la URL del GIF/Sticker' : 'Pega la URL del video (YouTube, Vimeo o directo)';
+            urlModal.classList.add('show');
+            setTimeout(() => urlInput.focus(), 100);
+        }
+
+        function closeUrlModal() {
+            urlModal.classList.remove('show');
+            pendingMediaType = null;
+        }
+
+        function confirmInsertUrl() {
+            const url = urlInput.value.trim();
+            if (!url) { alert('Por favor pega una URL válida.'); return; }
+            closeUrlModal();
+            insertMediaFromUrl(pendingMediaType, url);
+        }
+
+        function insertMediaFromUrl(type, url) {
+            if (type === 'image') {
+                const imgHtml = `<img src="${url}" style="width: 80%; display: block; margin: 15px auto; clear: both;" onerror="this.style.display='none'">`;
+                formatDoc('insertHTML', imgHtml);
+            } else if (type === 'video') {
+                let embedHtml = '';
+                const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/);
+                const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+                if (ytMatch) {
+                    embedHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
+                        <iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+                    </div>`;
+                } else if (vimeoMatch) {
+                    embedHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
+                        <iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+                    </div>`;
+                } else {
+                    embedHtml = `<video src="${url}" controls style="width: 80%; display: block; margin: 15px auto;"></video>`;
+                }
+                formatDoc('insertHTML', embedHtml);
+            }
+            triggerSave();
+        }
+
+        function selectMediaElement(target) {
+            if (selectedMedia && selectedMedia !== target) {
+                selectedMedia.classList.remove('selected-img');
+            }
+            selectedMedia = target;
+            selectedMedia.classList.add('selected-img');
+            
+            const currentWidth = parseInt(selectedMedia.style.width) || (target.tagName === 'VIDEO' ? 50 : 80);
+            imgSizeSlider.value = currentWidth;
+            const currentMarginH = parseInt(selectedMedia.style.marginLeft) || 15;
+            imgMarginHSlider.value = currentMarginH;
+            const currentMarginV = parseInt(selectedMedia.style.marginTop) || 10;
+            imgMarginVSlider.value = currentMarginV;
+            
+            updateMediaToolbarPosition(target);
+            imgToolbar.classList.add('show');
+            floatMenu.style.display = 'none';
+            insertMenu.style.display = 'none';
+        }
+
+        function deselectMedia() {
+            if (selectedMedia) {
+                selectedMedia.classList.remove('selected-img');
+                selectedMedia = null;
+            }
+            imgToolbar.classList.remove('show');
+        }
+
+        function updateMediaToolbarPosition(mediaEl) {
+            const rect = mediaEl.getBoundingClientRect();
+            const toolbarW = imgToolbar.offsetWidth;
+            const toolbarH = imgToolbar.offsetHeight;
+            
+            let top = rect.bottom + 12;
+            let left = rect.left + rect.width / 2 - toolbarW / 2;
+            
+            if (top + toolbarH > window.innerHeight - 20) {
+                top = rect.top - toolbarH - 12;
+            }
+            if (left < 10) left = 10;
+            if (left + toolbarW > window.innerWidth - 10) left = window.innerWidth - toolbarW - 10;
+            
+            imgToolbar.style.top = top + 'px';
+            imgToolbar.style.left = left + 'px';
+        }
+
+        function resizeMedia(val) { 
+            if (selectedMedia) { 
+                selectedMedia.style.width = val + '%'; 
+                updateMediaToolbarPosition(selectedMedia);
+                triggerSave(); 
+            } 
+        }
+        function changeMargin(type, val) {
+            if (!selectedMedia) return;
+            if (type === 'horizontal') {
+                selectedMedia.style.marginLeft = val + 'px';
+                selectedMedia.style.marginRight = val + 'px';
+            } else {
+                selectedMedia.style.marginTop = val + 'px';
+                selectedMedia.style.marginBottom = val + 'px';
+            }
+            updateMediaToolbarPosition(selectedMedia);
+            triggerSave();
+        }
+        function alignMedia(position) {
+            if (!selectedMedia) return;
+            const vMargin = imgMarginVSlider.value;
+            const hMargin = imgMarginHSlider.value;
+            if (position === 'left') { 
+                selectedMedia.style.display = 'inline'; 
+                selectedMedia.style.float = 'left'; 
+                selectedMedia.style.margin = vMargin + 'px ' + hMargin + 'px'; 
+            } else if (position === 'right') { 
+                selectedMedia.style.display = 'inline'; 
+                selectedMedia.style.float = 'right'; 
+                selectedMedia.style.margin = vMargin + 'px ' + hMargin + 'px'; 
+            } else { 
+                selectedMedia.style.display = 'block'; 
+                selectedMedia.style.float = 'none'; 
+                selectedMedia.style.margin = vMargin + 'px auto'; 
+            }
+            updateMediaToolbarPosition(selectedMedia);
+            triggerSave();
+        }
+
+        function toggleThemePalette() { document.getElementById('themePalette').classList.toggle('show'); }
+        function setNoteTheme(themeClass) {
+            wrapperEl.className = 'editor-wrapper'; 
+            if (themeClass !== 'default') wrapperEl.classList.add(themeClass);
+            const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+            if (noteIndex !== -1) { notes[noteIndex].theme = themeClass; saveData(); }
+            document.getElementById('themePalette').classList.remove('show');
+        }
+
+        function renderList() {
+            listEl.innerHTML = '';
+            let sortedNotes = notes.sort((a, b) => {
+                if (a.pinned === b.pinned) return b.timestamp - a.timestamp;
+                return a.pinned ? -1 : 1;
+            });
+
+            sortedNotes.forEach(note => {
+                const div = document.createElement('div');
+                div.className = `note-item ${note.id === currentNoteId ? 'active' : ''}`;
+                div.id = `note-${note.id}`;
+                
+                const startPress = (e) => {
+                    isLongPressing = false;
+                    pressTimer = setTimeout(() => {
+                        isLongPressing = true;
+                        if (navigator.vibrate) navigator.vibrate(50);
+                        openContextMenu(note.id);
+                    }, 500); 
+                };
+                const cancelPress = () => { clearTimeout(pressTimer); };
+
+                div.addEventListener('touchstart', startPress, {passive: true});
+                div.addEventListener('touchend', cancelPress);
+                div.addEventListener('touchmove', cancelPress);
+                div.addEventListener('mousedown', startPress);
+                div.addEventListener('mouseup', cancelPress);
+                div.addEventListener('mouseleave', cancelPress);
+                
+                div.addEventListener('click', (e) => {
+                    cancelPress();
+                    if (isLongPressing) { e.preventDefault(); isLongPressing = false; return; }
+                    openNote(note.id);
+                });
+                div.addEventListener('contextmenu', (e) => { e.preventDefault(); openContextMenu(note.id); });
+
+                const plainText = note.content.replace(/<[^>]+>/g, '') || '';
+                const preview = plainText.substring(0, 35) + '...';
+                const pinHtml = note.pinned ? `<i class='bx bxs-pin pinned-icon'></i>` : ``;
+
+                div.innerHTML = `
+                    <div class="note-title-list">
+                        <span style="overflow: hidden; text-overflow: ellipsis;">${note.title || 'Nueva nota'}</span>
+                        ${pinHtml}
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">${preview}</div>
+                `;
+                listEl.appendChild(div);
+            });
+        }
+
+        function openContextMenu(id) {
+            contextNoteId = id;
+            const note = notes.find(n => n.id === id);
+            document.getElementById('sheetTitle').innerText = `Opciones: ${note.title || 'Nota sin título'}`;
+            
+            const pinIcon = document.getElementById('sheetPinIcon');
+            const pinText = document.getElementById('sheetPinText');
+            if (note.pinned) { pinIcon.className = 'bx bx-pin'; pinText.innerText = 'Desfijar nota'; } 
+            else { pinIcon.className = 'bx bxs-pin'; pinText.innerText = 'Fijar arriba'; }
+
+            sheet.classList.add('show');
+            overlaySheet.classList.add('show');
+        }
+
+        function closeContextMenu() {
+            sheet.classList.remove('show');
+            overlaySheet.classList.remove('show');
+            setTimeout(() => { contextNoteId = null; }, 300);
+        }
+
+        function actionPinNote() {
+            const noteIndex = notes.findIndex(n => n.id === contextNoteId);
+            if (noteIndex !== -1) { notes[noteIndex].pinned = !notes[noteIndex].pinned; saveData(); renderList(); }
+            closeContextMenu();
+        }
+
+        function actionDuplicateNote() {
+            const original = notes.find(n => n.id === contextNoteId);
+            if (original) {
+                const copy = JSON.parse(JSON.stringify(original)); 
+                copy.id = Date.now().toString();
+                copy.title = `${original.title} (Copia)`;
+                copy.timestamp = Date.now();
+                copy.pinned = false; 
+                notes.push(copy);
+                saveData(); renderList(); openNote(copy.id);
+                const newEl = document.getElementById(`note-${copy.id}`);
+                if(newEl) newEl.classList.add('creating');
+            }
+            closeContextMenu();
+        }
+
+        function actionDeleteNote() {
+            if (contextNoteId === 'nota_magica_diaria') {
+                alert("¡Esta es mi carta diaria para ti! No puedes borrarla, amor. 🖤");
+                closeContextMenu();
+                return;
+            }
+            if (confirm('¿Estás segura de eliminarla, amor?')) {
+                const idToDelete = contextNoteId; 
+                closeContextMenu();
+                const noteElement = document.getElementById(`note-${idToDelete}`);
+                if (noteElement) {
+                    noteElement.classList.add('deleting');
+                    setTimeout(() => { executeDeleteLogic(idToDelete); }, 400); 
+                } else {
+                    executeDeleteLogic(idToDelete);
+                }
+            } else {
+                closeContextMenu();
+            }
+        }
+
+        function executeDeleteLogic(idToDelete) {
+            notes = notes.filter(n => n.id !== idToDelete);
+            saveData();
+            if (currentNoteId === idToDelete) {
+                if (notes.length > 0) openNote(notes[0].id);
+                else { currentNoteId = null; titleEl.value = ''; editorEl.innerHTML = ''; wrapperEl.className = 'editor-wrapper'; }
+            }
+            renderList();
+        }
+
+        function openNote(id, autoCloseMenu = true) {
+            currentNoteId = id;
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                titleEl.value = note.title;
+                editorEl.innerHTML = note.content;
+                wrapperEl.className = 'editor-wrapper';
+                if(note.theme && note.theme !== 'default') wrapperEl.classList.add(note.theme);
+            }
+            deselectMedia();
+            renderList();
+            if (autoCloseMenu && window.innerWidth <= 768 && sidebar.classList.contains('open')) { toggleSidebar(); }
+        }
+
+        function createNewNote() {
+            const newNote = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, timestamp: Date.now() };
+            notes.push(newNote);
+            currentNoteId = newNote.id;
+            saveData();
+            openNote(newNote.id);
+            titleEl.focus();
+            setTimeout(() => {
+                const newEl = document.getElementById(`note-${newNote.id}`);
+                if(newEl) newEl.classList.add('creating');
+            }, 50);
+        }
+
+        function triggerSave() {
+            if (!currentNoteId) return;
+            if (currentNoteId === 'nota_magica_diaria') return;
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+                if (noteIndex !== -1) {
+                    notes[noteIndex].title = titleEl.value;
+                    notes[noteIndex].content = editorEl.innerHTML;
+                    notes[noteIndex].timestamp = Date.now();
+                    saveData();
+                    renderList();
+                }
+            }, 500);
+        }
+
+        function saveData() { localStorage.setItem('nova_romance', JSON.stringify(notes)); }
+
+        function toggleGlobalTheme(forceDark = false) {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            if (forceDark || body.getAttribute('data-theme') !== 'dark') {
+                body.setAttribute('data-theme', 'dark'); icon.className = 'bx bx-sun';
+                localStorage.setItem('nova_global_theme', 'dark');
+            } else {
+                body.removeAttribute('data-theme'); icon.className = 'bx bx-moon';
+                localStorage.setItem('nova_global_theme', 'light');
+            }
+        }
+
+        function toggleSidebar() { 
+            sidebar.classList.toggle('open'); 
+            if (sidebar.classList.contains('open')) { sidebarOverlay.classList.add('show'); } 
+            else { sidebarOverlay.classList.remove('show'); }
+            checkMobileMenu(); 
+        }
+
+        function checkMobileMenu() {
+            const closeBtn = document.getElementById('closeSidebarBtn');
+            if(window.innerWidth <= 768) {
+                closeBtn.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+                if(!sidebar.classList.contains('open')) sidebarOverlay.classList.remove('show');
+            } else {
+                closeBtn.style.display = 'none';
+                sidebarOverlay.classList.remove('show');
+            }
+        }
+
+        // Ya no necesitamos focusEditor porque el click en el contenedor no se usa; se maneja con eventos internos
+        window.addEventListener('resize', checkMobileMenu);
+        initApp();
+    </script>
+</body>
+</html>
