@@ -42,26 +42,26 @@
         .welcome-modal { position: fixed; inset: 0; background: rgba(255,255,255,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s ease; }
         [data-theme="dark"] .welcome-modal { background: rgba(7, 11, 25, 0.7); }
         .welcome-modal.hidden { opacity: 0; pointer-events: none; }
-        .welcome-content { background: var(--surface); padding: 40px 30px; border-radius: 30px; text-align: center; max-width: 90%; width: 380px; box-shadow: var(--shadow); border: 1px solid var(--border); animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); will-change: transform, opacity; }
+        .welcome-content { background: var(--surface); padding: 40px 30px; border-radius: 30px; text-align: center; max-width: 90%; width: 380px; box-shadow: var(--shadow); border: 1px solid var(--border); animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        .heart-icon { font-size: 4.5rem; color: #000000; animation: heartbeat 1.5s infinite; filter: drop-shadow(0 0 10px rgba(0,0,0,0.3)); margin-bottom: 15px; will-change: transform; }
+        .heart-icon { font-size: 4.5rem; color: #000000; animation: heartbeat 1.5s infinite; filter: drop-shadow(0 0 10px rgba(0,0,0,0.3)); margin-bottom: 15px; }
         [data-theme="dark"] .heart-icon { filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
         @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
         .welcome-text { font-family: 'Caveat', cursive; font-size: 2rem; color: var(--text-main); margin-bottom: 30px; line-height: 1.2; }
-        .btn-enter { background: #111111; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: var(--shadow); width: 100%; transition: transform 0.2s; will-change: transform; }
+        .btn-enter { background: #111111; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: var(--shadow); width: 100%; transition: transform 0.2s; }
         .btn-enter:active { transform: scale(0.95); }
 
         /* --- SIDEBAR & OVERLAY --- */
-        .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; transition: var(--transition); will-change: transform; }
+        .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; transition: var(--transition); }
         .sidebar-header { padding: 20px; background: #111111; color: white; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .theme-toggle, .menu-toggle { background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s; will-change: transform; }
+        .theme-toggle, .menu-toggle { background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s; }
         .theme-toggle:active { transform: rotate(45deg); }
-        .btn-new { background: #111111; color: white; border: none; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.2s; will-change: transform; }
+        .btn-new { background: #111111; color: white; border: none; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.2s; }
         .btn-new:active { transform: scale(0.95); }
         .note-list { flex: 1; overflow-y: auto; padding: 0 15px 15px 15px; }
         
-        .note-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; background: var(--bg-body); transition: var(--transition); border: 1px solid transparent; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; will-change: transform; }
+        .note-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; background: var(--bg-body); transition: var(--transition); border: 1px solid transparent; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .note-item.active { background: var(--surface); border-left: 4px solid #111111; border-color: var(--border); box-shadow: var(--shadow); }
         [data-theme="dark"] .note-item.active { border-left: 4px solid #ffffff; }
         
@@ -75,7 +75,7 @@
         .pinned-icon { color: #111111; font-size: 1.1rem; }
         [data-theme="dark"] .pinned-icon { color: #ffffff; }
 
-        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); will-change: opacity; }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); }
         .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
 
         /* --- MAIN AREA & TOOLBAR --- */
@@ -85,7 +85,7 @@
         .toolbar::-webkit-scrollbar { display: none; }
         
         .tool-group { display: flex; align-items: center; gap: 2px; background: var(--surface); padding: 4px 6px; border-radius: 8px; border: 1px solid var(--border); }
-        .tool-btn { background: transparent; border: none; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); font-size: 1.1rem; transition: background 0.2s, transform 0.1s; will-change: transform; }
+        .tool-btn { background: transparent; border: none; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); font-size: 1.1rem; transition: background 0.2s, transform 0.1s; }
         .tool-btn:active { transform: scale(0.85); background: var(--border); }
         .tool-select { border: none; background: transparent; color: var(--text-main); outline: none; padding: 2px; font-size: 0.85rem; font-weight: 500; cursor: pointer; }
         
@@ -97,7 +97,7 @@
         .editor-wrapper { 
             width: 100%; max-width: 800px; padding: 30px; border-radius: 20px; 
             box-shadow: var(--shadow); min-height: calc(100vh - 40px); height: fit-content;
-            transition: all 0.5s; background: var(--surface); position: relative; will-change: transform, opacity; 
+            transition: all 0.5s; background: var(--surface); position: relative;
         }
         .title-input { width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; background: transparent; line-height: 1.2; transition: color 0.3s; }
         
@@ -109,7 +109,7 @@
             word-break: break-word;
             hyphens: auto;
             -webkit-user-select: text; user-select: text;
-            -webkit-touch-callout: none; /* Previene menú contextual nativo en iOS */
+            -webkit-touch-callout: none;
         }
 
         .editor-area b, .editor-area strong, .editor-area i, .editor-area em, .editor-area u { font-family: inherit; }
@@ -124,7 +124,7 @@
             align-items: center; gap: 2px; transition: opacity 0.2s; 
             backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); 
             white-space: nowrap; overflow-x: auto; max-width: 90vw;
-            -webkit-overflow-scrolling: touch; scrollbar-width: none; will-change: transform, opacity;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
         }
         .floating-text-menu::-webkit-scrollbar { display: none; }
         .floating-text-menu::after { 
@@ -134,14 +134,14 @@
         .floating-insert-menu { 
             position: absolute; display: none; background: #111111; color: white; border-radius: 15px; 
             padding: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 1000; 
-            flex-direction: column; align-items: flex-start; gap: 8px; white-space: normal; max-width: 320px; will-change: transform, opacity;
+            flex-direction: column; align-items: flex-start; gap: 8px; white-space: normal; max-width: 320px;
         }
         .insert-row { display: flex; align-items: center; gap: 5px; }
         .emoji-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding-top: 5px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .emoji-btn { background: transparent; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 2px 5px; border-radius: 5px; transition: transform 0.1s; will-change: transform; }
+        .emoji-btn { background: transparent; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 2px 5px; border-radius: 5px; transition: transform 0.1s; }
         .emoji-btn:active { transform: scale(1.2); background: rgba(255,255,255,0.2); }
 
-        .ft-btn { background: transparent; border: none; color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; flex-shrink: 0; will-change: transform; }
+        .ft-btn { background: transparent; border: none; color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; flex-shrink: 0; }
         .ft-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.85); }
         .ft-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.2); margin: 0 2px; flex-shrink: 0; }
         .ft-select { background: none; color: white; border: none; font-size: 0.75rem; cursor: pointer; margin: 0 1px; flex-shrink: 0; }
@@ -183,25 +183,25 @@
             transition: opacity 0.2s; z-index: 1001; white-space: nowrap;
             box-shadow: 0 8px 25px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
             max-width: calc(100vw - 20px); overflow-x: auto; 
-            -webkit-overflow-scrolling: touch; scrollbar-width: none; will-change: transform, opacity;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
         }
         .image-toolbar::-webkit-scrollbar { display: none; }
         .image-toolbar.show { opacity: 1; pointer-events: auto; }
-        .img-btn { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; transition: transform 0.1s; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; will-change: transform; }
+        .img-btn { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; transition: transform 0.1s; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .img-btn:active { transform: scale(0.85); background: rgba(255,255,255,0.15); }
         .img-slider { width: 55px; accent-color: #ffffff; flex-shrink: 0; }
         .img-slider-label { color: rgba(255,255,255,0.8); font-size: 0.65rem; margin: 0 -3px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
         .img-spacer { width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px; flex-shrink: 0; }
 
-        .theme-palette { display: none; position: absolute; top: 60px; right: 20px; background: var(--surface); padding: 10px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); z-index: 50; gap: 8px; will-change: transform; }
+        .theme-palette { display: none; position: absolute; top: 60px; right: 20px; background: var(--surface); padding: 10px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); z-index: 50; gap: 8px; }
         .theme-palette.show { display: flex; animation: insertAnim 0.3s forwards; }
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; will-change: transform; }
+        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
         .color-dot:hover { transform: scale(1.1); }
 
         /* --- BOTTOM SHEET --- */
-        .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(3px); will-change: opacity; }
+        .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(3px); }
         .sheet-overlay.show { opacity: 1; pointer-events: auto; }
-        .bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--surface); border-radius: 25px 25px 0 0; z-index: 1000; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); padding: 20px 20px 40px 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); will-change: bottom; }
+        .bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--surface); border-radius: 25px 25px 0 0; z-index: 1000; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); padding: 20px 20px 40px 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
         .bottom-sheet.show { bottom: 0; }
         .sheet-handle { width: 40px; height: 5px; background: var(--border); border-radius: 5px; margin: 0 auto 20px auto; }
         .sheet-title { text-align: center; font-weight: 600; margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem; }
@@ -406,14 +406,29 @@
     </main>
 
     <script>
+        // Protegemos el acceso a localStorage
+        function safeGetStorage(key, defaultValue) {
+            try {
+                const value = localStorage.getItem(key);
+                return value !== null ? JSON.parse(value) : defaultValue;
+            } catch (e) {
+                return defaultValue;
+            }
+        }
+        function safeSetStorage(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (e) {}
+        }
+
         const cartasAmor = [
-            `Hola, Gabriela preciosa. Solo quería tomarme un momento para decirte lo increíblemente afortunado que me siento de tenerte en mi vida. A veces me quedo mirándote, incluso cuando no te das cuenta, y pienso en cómo llegaste a cambiar mi mundo por completo. Tienes esta forma mágica de hacer que hasta el día más gris se llene de colores. Admiro tu fuerza, tu inteligencia y esa sonrisa que me desarma cada vez que la veo. Eres mi mayor victoria. 🖤`,
-            `Mi amor, hoy me desperté pensando en ti, como todos los días. Pero hoy fue diferente: me di cuenta de que cada pequeño detalle tuyo se ha vuelto esencial para mí. La forma en que ríes, cómo me miras cuando crees que no te veo, esa manía adorable de morderte el labio cuando te concentras. Todo eso me hace sentir que el universo entero conspiró para que nos encontráramos. Eres la estrella que guía mis pasos y el refugio donde quiero descansar siempre. Te amo con cada fibra de mi ser. ✨`,
-            `Sé que a veces los días se vuelven grises y las preocupaciones pesan. Pero quiero que nunca olvides que aquí estoy yo, incondicional, para secar tus lágrimas y celebrar tus risas. No hay nada que no podamos superar juntos, porque nuestro amor es más fuerte que cualquier miedo. Eres mi equipo, mi compañera, mi mejor amiga y mi confidente. Cada obstáculo solo nos hace más fuertes y nos recuerda por qué elegimos caminar de la mano. Confía en nosotros, porque yo confío plenamente en ti. 🥰`,
-            `¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso, tu capacidad de amar sin medida incluso cuando el mundo ha sido difícil contigo. Tienes una luz interior que no se apaga, una bondad que transforma todo lo que tocas. Verte sonreír es mi misión diaria, y verte triunfar es mi orgullo secreto. Prometo seguir construyendo un futuro donde nunca te falte amor, respeto ni chocolates a las 2 de la mañana. Porque te mereces todo lo bonito que la vida puede ofrecer. 💕`
+            "Hola, Gabriela preciosa. Solo quería tomarme un momento para decirte lo increíblemente afortunado que me siento de tenerte en mi vida. A veces me quedo mirándote, incluso cuando no te das cuenta, y pienso en cómo llegaste a cambiar mi mundo por completo. Tienes esta forma mágica de hacer que hasta el día más gris se llene de colores. Admiro tu fuerza, tu inteligencia y esa sonrisa que me desarma cada vez que la veo. Eres mi mayor victoria. 🖤",
+            "Mi amor, hoy me desperté pensando en ti, como todos los días. Pero hoy fue diferente: me di cuenta de que cada pequeño detalle tuyo se ha vuelto esencial para mí. La forma en que ríes, cómo me miras cuando crees que no te veo, esa manía adorable de morderte el labio cuando te concentras. Todo eso me hace sentir que el universo entero conspiró para que nos encontráramos. Eres la estrella que guía mis pasos y el refugio donde quiero descansar siempre. Te amo con cada fibra de mi ser. ✨",
+            "Sé que a veces los días se vuelven grises y las preocupaciones pesan. Pero quiero que nunca olvides que aquí estoy yo, incondicional, para secar tus lágrimas y celebrar tus risas. No hay nada que no podamos superar juntos, porque nuestro amor es más fuerte que cualquier miedo. Eres mi equipo, mi compañera, mi mejor amiga y mi confidente. Cada obstáculo solo nos hace más fuertes y nos recuerda por qué elegimos caminar de la mano. Confía en nosotros, porque yo confío plenamente en ti. 🥰",
+            "¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso, tu capacidad de amar sin medida incluso cuando el mundo ha sido difícil contigo. Tienes una luz interior que no se apaga, una bondad que transforma todo lo que tocas. Verte sonreír es mi misión diaria, y verte triunfar es mi orgullo secreto. Prometo seguir construyendo un futuro donde nunca te falte amor, respeto ni chocolates a las 2 de la mañana. Porque te mereces todo lo bonito que la vida puede ofrecer. 💕"
         ];
 
-        let notes = JSON.parse(localStorage.getItem('nova_romance')) || [];
+        let notes = safeGetStorage('nova_romance', []);
         let currentNoteId = null;
         let saveTimeout;
         let selectedMedia = null; 
@@ -453,60 +468,59 @@
         let isMediaLongPress = false;
 
         function initApp() {
-            if(localStorage.getItem('nova_global_theme') === 'dark') toggleGlobalTheme(true);
+            try {
+                if (safeGetStorage('nova_global_theme', 'light') === 'dark') toggleGlobalTheme(true);
 
-            const randomLetter = cartasAmor[Math.floor(Math.random() * cartasAmor.length)];
-            const formattedLetter = `
-                <div style="font-family: Caveat, cursive; font-size: 1.65rem; line-height: 1.7; text-align: center; padding: 20px 10px;">
-                    ${randomLetter}
-                    <br><br>
-                    <span style="color: #000000; font-size: 2.5rem; animation: heartbeat 1.5s infinite; display: inline-block; filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.3));">🖤</span>
-                </div>
-            `;
+                const randomLetter = cartasAmor[Math.floor(Math.random() * cartasAmor.length)];
+                const formattedLetter = `<div style="font-family: Caveat, cursive; font-size: 1.65rem; line-height: 1.7; text-align: center; padding: 20px 10px;">${randomLetter}<br><br><span style="color: #000000; font-size: 2.5rem; animation: heartbeat 1.5s infinite; display: inline-block; filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.3));">🖤</span></div>`;
 
-            let magicNoteIndex = notes.findIndex(n => n.id === 'nota_magica_diaria');
-            if (magicNoteIndex === -1) {
-                notes.unshift({ id: 'nota_magica_diaria', title: '💌 Para ti, hoy...', content: formattedLetter, theme: 'theme-amor', pinned: true, timestamp: Date.now() + 9999999 });
-            } else {
-                notes[magicNoteIndex].content = formattedLetter;
-                notes[magicNoteIndex].timestamp = Date.now() + 9999999; 
-            }
-            saveData();
-            renderList();
-            openNote('nota_magica_diaria', false); 
-            checkMobileMenu();
+                let magicNoteIndex = notes.findIndex(n => n.id === 'nota_magica_diaria');
+                if (magicNoteIndex === -1) {
+                    notes.unshift({ id: 'nota_magica_diaria', title: '💌 Para ti, hoy...', content: formattedLetter, theme: 'theme-amor', pinned: true, timestamp: Date.now() + 9999999 });
+                } else {
+                    notes[magicNoteIndex].content = formattedLetter;
+                    notes[magicNoteIndex].timestamp = Date.now() + 9999999; 
+                }
+                saveData();
+                renderList();
+                openNote('nota_magica_diaria', false); 
+                checkMobileMenu();
 
-            editorEl.addEventListener('paste', handlePaste);
+                editorEl.addEventListener('paste', handlePaste);
 
-            emojis.forEach(emoji => {
-                const btn = document.createElement('button');
-                btn.className = 'emoji-btn';
-                btn.textContent = emoji;
-                btn.addEventListener('click', () => {
-                    insertEmojiAtCursor(emoji);
-                    hideInsertMenu();
+                emojis.forEach(emoji => {
+                    const btn = document.createElement('button');
+                    btn.className = 'emoji-btn';
+                    btn.textContent = emoji;
+                    btn.addEventListener('click', () => {
+                        insertEmojiAtCursor(emoji);
+                        hideInsertMenu();
+                    });
+                    emojiPanel.appendChild(btn);
                 });
-                emojiPanel.appendChild(btn);
-            });
 
-            editorEl.addEventListener('pointerdown', handlePointerDown);
-            editorEl.addEventListener('pointerup', handlePointerUp);
-            editorEl.addEventListener('pointerleave', handlePointerLeave);
-            editorEl.addEventListener('pointercancel', handlePointerLeave);
-            
-            // Desactivar completamente el menú contextual nativo en todo el editor
-            editorEl.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            });
+                editorEl.addEventListener('pointerdown', handlePointerDown);
+                editorEl.addEventListener('pointerup', handlePointerUp);
+                editorEl.addEventListener('pointerleave', handlePointerLeave);
+                editorEl.addEventListener('pointercancel', handlePointerLeave);
+                
+                editorEl.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                });
 
-            editorContainer.addEventListener('scroll', () => {
-                if (selectedMedia) updateMediaToolbarPosition(selectedMedia);
-            });
-            window.addEventListener('resize', () => {
-                if (selectedMedia) updateMediaToolbarPosition(selectedMedia);
-            });
+                editorContainer.addEventListener('scroll', () => {
+                    if (selectedMedia) updateMediaToolbarPosition(selectedMedia);
+                });
+                window.addEventListener('resize', () => {
+                    if (selectedMedia) updateMediaToolbarPosition(selectedMedia);
+                });
+            } catch (e) {
+                console.error('Error inicializando la app:', e);
+                // Si falla, al menos mostramos la interfaz vacía
+                document.getElementById('welcomeModal').classList.add('hidden');
+            }
         }
 
         function restoreSelection() {
@@ -885,13 +899,9 @@
                 const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/);
                 const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
                 if (ytMatch) {
-                    mediaHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
-                        <iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
-                    </div>`;
+                    mediaHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>`;
                 } else if (vimeoMatch) {
-                    mediaHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
-                        <iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
-                    </div>`;
+                    mediaHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;"><iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>`;
                 } else {
                     mediaHtml = `<video src="${url}" controls style="width: 80%; display: block; margin: 15px auto;"></video>`;
                 }
@@ -967,13 +977,7 @@
                 const plainText = note.content.replace(/<[^>]+>/g, '') || '';
                 const preview = plainText.substring(0, 35) + '...';
                 const pinHtml = note.pinned ? `<i class='bx bxs-pin pinned-icon'></i>` : ``;
-                div.innerHTML = `
-                    <div class="note-title-list">
-                        <span style="overflow: hidden; text-overflow: ellipsis;">${note.title || 'Nueva nota'}</span>
-                        ${pinHtml}
-                    </div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">${preview}</div>
-                `;
+                div.innerHTML = `<div class="note-title-list"><span style="overflow: hidden; text-overflow: ellipsis;">${note.title || 'Nueva nota'}</span>${pinHtml}</div><div style="font-size: 0.8rem; color: var(--text-muted);">${preview}</div>`;
                 listEl.appendChild(div);
             });
         }
@@ -1060,16 +1064,16 @@
                 }
             }, 500);
         }
-        function saveData() { localStorage.setItem('nova_romance', JSON.stringify(notes)); }
+        function saveData() { safeSetStorage('nova_romance', notes); }
         function toggleGlobalTheme(forceDark = false) {
             const body = document.body;
             const icon = document.getElementById('themeIcon');
             if (forceDark || body.getAttribute('data-theme') !== 'dark') {
                 body.setAttribute('data-theme', 'dark'); icon.className = 'bx bx-sun';
-                localStorage.setItem('nova_global_theme', 'dark');
+                safeSetStorage('nova_global_theme', 'dark');
             } else {
                 body.removeAttribute('data-theme'); icon.className = 'bx bx-moon';
-                localStorage.setItem('nova_global_theme', 'light');
+                safeSetStorage('nova_global_theme', 'light');
             }
         }
         function toggleSidebar() { 
