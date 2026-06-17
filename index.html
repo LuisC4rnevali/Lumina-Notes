@@ -714,7 +714,7 @@
     </main>
 
     <script>
-        // --- DECLARACIÓN DE VARIABLES GLOBALES FALTANTES ---
+        // --- DECLARACIÓN DE VARIABLES GLOBALES ---
         let pointerDownTime = 0;
         let pointerDownTarget = null;
         let isMediaLongPress = false;
@@ -723,6 +723,7 @@
         let isEmptyPress = false;
         let pressTimer;
         let isLongPressing = false;
+        let currentPageIndex = 0;
 
         // --- SEGURIDAD Y UTILIDADES ---
         function safeExec(fn) { try { fn(); } catch (e) { console.warn(e); } }
@@ -1035,21 +1036,136 @@
         }
 
         // --- MEDIA ---
-        function selectMediaElement(target) { /* igual que antes */ }
-        function deselectMedia() { /* igual */ }
-        function updateMediaToolbarPosition(mediaEl) { /* igual */ }
-        function resizeMedia(val) { /* igual */ }
-        function changeMargin(type, val) { /* igual */ }
-        function alignMedia(position) { /* igual */ }
-        function copyMedia() { /* igual */ }
-        function duplicateMedia() { /* igual */ }
-        function deleteMedia() { /* igual */ }
-        function insertMedia(event) { /* igual */ }
+        function selectMediaElement(target) {
+            if (selectedMedia && selectedMedia !== target) selectedMedia.classList.remove('selected-img');
+            selectedMedia = target;
+            selectedMedia.classList.add('selected-img');
+            const currentWidth = parseInt(selectedMedia.style.width) || (target.tagName === 'VIDEO' ? 50 : 80);
+            imgSizeSlider.value = currentWidth;
+            const currentMarginH = parseInt(selectedMedia.style.marginLeft) || 15;
+            imgMarginHSlider.value = currentMarginH;
+            const currentMarginV = parseInt(selectedMedia.style.marginTop) || 10;
+            imgMarginVSlider.value = currentMarginV;
+            updateMediaToolbarPosition(target);
+            imgToolbar.classList.add('show');
+            floatMenu.style.display = 'none';
+            emptyMenu.style.display = 'none';
+        }
+        function deselectMedia() {
+            if (selectedMedia) { selectedMedia.classList.remove('selected-img'); selectedMedia = null; }
+            imgToolbar.classList.remove('show');
+        }
+        function updateMediaToolbarPosition(mediaEl) {
+            const rect = mediaEl.getBoundingClientRect();
+            const toolbarW = imgToolbar.offsetWidth;
+            const toolbarH = imgToolbar.offsetHeight;
+            let top = rect.bottom + 12;
+            let left = rect.left + rect.width / 2 - toolbarW / 2;
+            if (top + toolbarH > window.innerHeight - 20) top = rect.top - toolbarH - 12;
+            if (left < 10) left = 10;
+            if (left + toolbarW > window.innerWidth - 10) left = window.innerWidth - toolbarW - 10;
+            imgToolbar.style.top = top + 'px';
+            imgToolbar.style.left = left + 'px';
+        }
+        function resizeMedia(val) {
+            if (selectedMedia) { selectedMedia.style.width = val + '%'; updateMediaToolbarPosition(selectedMedia); triggerSave(); }
+            deselectMedia();
+            focusEditorAtEnd();
+        }
+        function changeMargin(type, val) {
+            if (!selectedMedia) return;
+            if (type === 'horizontal') { selectedMedia.style.marginLeft = val + 'px'; selectedMedia.style.marginRight = val + 'px'; }
+            else { selectedMedia.style.marginTop = val + 'px'; selectedMedia.style.marginBottom = val + 'px'; }
+            updateMediaToolbarPosition(selectedMedia);
+            triggerSave();
+            deselectMedia();
+            focusEditorAtEnd();
+        }
+        function alignMedia(position) {
+            if (!selectedMedia) return;
+            const vMargin = imgMarginVSlider.value;
+            const hMargin = imgMarginHSlider.value;
+            if (position === 'left') { selectedMedia.style.display = 'inline'; selectedMedia.style.float = 'left'; selectedMedia.style.margin = vMargin + 'px ' + hMargin + 'px'; }
+            else if (position === 'right') { selectedMedia.style.display = 'inline'; selectedMedia.style.float = 'right'; selectedMedia.style.margin = vMargin + 'px ' + hMargin + 'px'; }
+            else { selectedMedia.style.display = 'block'; selectedMedia.style.float = 'none'; selectedMedia.style.margin = vMargin + 'px auto'; }
+            updateMediaToolbarPosition(selectedMedia);
+            triggerSave();
+            deselectMedia();
+            focusEditorAtEnd();
+        }
+        function copyMedia() {
+            if (!selectedMedia) return;
+            const clone = selectedMedia.cloneNode(true);
+            const range = document.createRange();
+            range.selectNode(clone);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            try { document.execCommand('copy'); } catch (e) {}
+            window.getSelection().removeAllRanges();
+            deselectMedia();
+            focusEditorAtEnd();
+        }
+        function duplicateMedia() {
+            if (!selectedMedia) return;
+            const clone = selectedMedia.cloneNode(true);
+            clone.classList.remove('selected-img');
+            if (selectedMedia.nextSibling) editorEl.insertBefore(clone, selectedMedia.nextSibling);
+            else editorEl.appendChild(clone);
+            triggerSave();
+            deselectMedia();
+            placeCursorAfterElement(clone);
+        }
+        function deleteMedia() {
+            if (!selectedMedia) return;
+            const prevSibling = selectedMedia.previousSibling;
+            selectedMedia.remove();
+            triggerSave();
+            deselectMedia();
+            if (prevSibling && prevSibling.nodeType === 1 && (prevSibling.tagName === 'IMG' || prevSibling.tagName === 'VIDEO')) placeCursorAfterElement(prevSibling);
+            else focusEditorAtEnd();
+        }
+        function insertMedia(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    let mediaHtml = '';
+                    if (file.type.startsWith('video/')) mediaHtml = `<video src="${e.target.result}" controls style="width: 50%; display: block; margin: 15px auto;"></video>`;
+                    else mediaHtml = `<img src="${e.target.result}" style="width: 80%; display: block; margin: 15px auto; clear: both;">`;
+                    insertHtmlAtCursor(mediaHtml);
+                };
+                reader.readAsDataURL(file);
+            }
+            event.target.value = '';
+        }
         function insertMediaFromMenu(event) { insertMedia(event); hideInsertMenu(); }
-        function openUrlModal(type) { /* igual */ }
-        function closeUrlModal() { urlModal.style.display = 'none'; }
-        function confirmInsertUrl() { /* igual */ }
-        function insertMediaFromUrl(type, url) { /* igual */ }
+        function openUrlModal(type) {
+            pendingMediaType = type;
+            urlInput.value = '';
+            urlModalTitle.textContent = type === 'image' ? 'Pega la URL del GIF/Sticker' : 'Pega la URL del video (YouTube, Vimeo o directo)';
+            urlModal.style.display = 'flex';
+            setTimeout(() => urlInput.focus(), 100);
+        }
+        function closeUrlModal() { urlModal.style.display = 'none'; pendingMediaType = null; }
+        function confirmInsertUrl() {
+            const url = urlInput.value.trim();
+            if (!url) { alert('Por favor pega una URL válida.'); return; }
+            closeUrlModal();
+            insertMediaFromUrl(pendingMediaType, url);
+        }
+        function insertMediaFromUrl(type, url) {
+            let mediaHtml = '';
+            if (type === 'image') {
+                mediaHtml = `<img src="${url}" style="width: 80%; display: block; margin: 15px auto; clear: both;" onerror="this.style.display='none'">`;
+            } else if (type === 'video') {
+                const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/);
+                const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+                if (ytMatch) mediaHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>`;
+                else if (vimeoMatch) mediaHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;"><iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>`;
+                else mediaHtml = `<video src="${url}" controls style="width: 80%; display: block; margin: 15px auto;"></video>`;
+            }
+            insertHtmlAtCursor(mediaHtml);
+        }
         function openUrlModalFromInsert(type) { hideInsertMenu(); openUrlModal(type); }
 
         // --- MENÚ DE SÍMBOLOS ---
@@ -1099,8 +1215,23 @@
             }, 500);
         }
         function handleEmptyPressEnd(e) { clearTimeout(emptyPressTimer); }
-        function showEmptyMenu(e) { /* igual que antes */ }
-        function insertEmptySymbol(symbol) { /* igual */ }
+        function showEmptyMenu(e) {
+            const containerRect = editorContainer.getBoundingClientRect();
+            const x = e.clientX - containerRect.left + editorContainer.scrollLeft;
+            const y = e.clientY - containerRect.top + editorContainer.scrollTop - 50;
+            emptyMenu.style.display = 'flex';
+            emptyMenu.style.left = (x - emptyMenu.offsetWidth / 2) + 'px';
+            emptyMenu.style.top = y + 'px';
+            setTimeout(() => {
+                if (emptyMenu.style.display === 'flex') {
+                    emptyMenu.style.display = 'none';
+                }
+            }, 5000);
+        }
+        function insertEmptySymbol(symbol) {
+            insertHtmlAtCursor(symbol);
+            emptyMenu.style.display = 'none';
+        }
 
         // --- SELECCIÓN DE TEXTO -> BARRA FLOTANTE ---
         document.addEventListener('selectionchange', () => {
@@ -1150,7 +1281,6 @@
                 </div>
             </div>`;
             insertHtmlAtCursor(html);
-            // Activar listeners para los nuevos checkboxes
             setTimeout(() => {
                 const container = document.querySelector(`[data-id="${id}"]`);
                 if (container) {
@@ -1192,34 +1322,488 @@
             setTimeout(() => { li.remove(); triggerSave(); }, 200);
         }
 
-        // --- RECUADROS Y EFECTOS (sin cambios) ---
-        // ... (mantener las funciones existentes) ...
+        // --- RECUADROS Y EFECTOS ---
+        function toggleRecuadro(type) {
+            restoreSelection();
+            const sel = window.getSelection();
+            if (!sel.rangeCount) return;
+            const range = sel.getRangeAt(0);
+            if (range.collapsed) return;
+            let node = range.commonAncestorContainer;
+            let found = false;
+            let targetClass = '';
+            let openChar = '', closeChar = '';
+            switch(type) {
+                case 'parentesis': targetClass = 'recuadro-parentesis'; openChar = '('; closeChar = ')'; break;
+                case 'corchetes': targetClass = 'recuadro-corchetes'; openChar = '['; closeChar = ']'; break;
+                case 'llaves': targetClass = 'recuadro-llaves'; openChar = '{'; closeChar = '}'; break;
+                case 'comillas': targetClass = 'recuadro-comillas'; openChar = '"'; closeChar = '"'; break;
+                case 'cuadrado': targetClass = 'recuadro-cuadrado'; openChar = '◻'; closeChar = '◻'; break;
+                default: return;
+            }
+            if (node.nodeType === 3) node = node.parentNode;
+            if (node.classList && node.classList.contains(targetClass)) {
+                // Desactivar: eliminar el recuadro y dejar el texto
+                const parent = node.parentNode;
+                const content = node.innerHTML;
+                const textNode = document.createTextNode(content);
+                parent.replaceChild(textNode, node);
+                const newRange = document.createRange();
+                newRange.selectNodeContents(textNode);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+                triggerSave();
+                return;
+            }
+            // Activar: envolver el texto seleccionado en el recuadro
+            const fragment = range.extractContents();
+            const span = document.createElement('span');
+            span.className = targetClass;
+            if (type === 'comillas') {
+                span.innerHTML = '"' + fragment.textContent + '"';
+            } else if (type === 'cuadrado') {
+                span.innerHTML = '◻' + fragment.textContent + '◻';
+            } else {
+                span.appendChild(fragment);
+            }
+            range.insertNode(span);
+            const newRange = document.createRange();
+            newRange.setStartAfter(span);
+            newRange.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(newRange);
+            triggerSave();
+            getActiveEditor().focus();
+        }
 
-        // --- MODO DIARIO (sin cambios en lógica, salvo la corrección para que formatDoc apunte correctamente) ---
-        function toggleDiaryMode(diaryNote) { /* igual pero con getActiveEditor */ }
-        function changePage(direction) { /* igual */ }
-        function addPage() { /* igual */ }
-        function saveDiaryPages() { /* igual */ }
-        function insertGrid() { /* igual */ }
+        function showEffectMenu() {
+            floatMenu.style.display = 'none';
+            const menu = document.createElement('div');
+            menu.style.position = 'fixed';
+            menu.style.top = '50%';
+            menu.style.left = '50%';
+            menu.style.transform = 'translate(-50%, -50%)';
+            menu.style.background = '#111';
+            menu.style.color = 'white';
+            menu.style.padding = '20px';
+            menu.style.borderRadius = '20px';
+            menu.style.zIndex = '9999';
+            menu.style.boxShadow = '0 20px 60px rgba(0,0,0,0.5)';
+            menu.style.display = 'flex';
+            menu.style.flexDirection = 'column';
+            menu.style.gap = '10px';
+            menu.style.minWidth = '280px';
+            menu.style.maxWidth = '90vw';
+            menu.innerHTML = `
+                <div style="font-weight:600; text-align:center; margin-bottom:10px;">✨ Efectos para el texto seleccionado</div>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-float')">🌊 Flotante</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-heart')">❤️ Latido</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-rainbow')">🌈 Arcoíris</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-typewriter')">⌨️ Máquina</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-shake')">🌪️ Temblor</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-spin')">🌀 Giro</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-fade-in')">✨ Aparición</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-bounce')">🤸 Rebote</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-pulse')">💓 Pulso</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-glow')">🌟 Brillo</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-wiggle')">🤪 Onda</button>
+                <button style="width:100%; padding:10px; background:#555; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:5px;" onclick="closeEffectMenu()">Cancelar</button>
+            `;
+            document.body.appendChild(menu);
+        }
+        function closeEffectMenu() {
+            const menus = document.querySelectorAll('div[style*="z-index: 9999"]');
+            menus.forEach(m => m.remove());
+        }
+        function toggleEffect(className) {
+            closeEffectMenu();
+            restoreSelection();
+            const sel = window.getSelection();
+            if (!sel.rangeCount) return;
+            const range = sel.getRangeAt(0);
+            let node = range.commonAncestorContainer;
+            if (node.nodeType === 3) node = node.parentNode;
+            if (node.classList && node.classList.contains(className)) {
+                // Desactivar
+                node.classList.remove(className);
+                if (node.classList.length === 0 && node.tagName === 'SPAN') {
+                    const parent = node.parentNode;
+                    const content = node.innerHTML;
+                    const textNode = document.createTextNode(content);
+                    parent.replaceChild(textNode, node);
+                }
+                const newRange = document.createRange();
+                newRange.selectNodeContents(node);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+                triggerSave();
+                getActiveEditor().focus();
+                return;
+            }
+            // Activar
+            let selectedText = range.toString().trim();
+            if (!selectedText) {
+                selectedText = prompt("No hay texto seleccionado. Escribe el texto que quieres animar:", "Tu texto aquí ✨");
+                if (selectedText === null || selectedText.trim() === '') return;
+                const html = `<span class="${className}">${selectedText}</span>`;
+                insertHtmlAtCursor(html);
+                return;
+            }
+            const fragment = range.extractContents();
+            const span = document.createElement('span');
+            span.className = className;
+            span.appendChild(fragment);
+            range.insertNode(span);
+            const newRange = document.createRange();
+            newRange.setStartAfter(span);
+            newRange.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(newRange);
+            triggerSave();
+            getActiveEditor().focus();
+        }
+
+        // --- MODO DIARIO ---
+        function toggleDiaryMode(diaryNote) {
+            const wrapper = document.getElementById('editorWrapper');
+            const title = document.getElementById('noteTitle');
+            const editor = document.getElementById('noteEditor');
+            if (diaryNote) {
+                wrapper.classList.add('diary-mode');
+                title.style.display = 'none';
+                editor.style.display = 'none';
+                let container = wrapper.querySelector('.diary-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.className = 'diary-container';
+                    container.innerHTML = `
+                        <div class="page-wrapper">
+                            <div class="page-slider" id="pageSlider">
+                                <div class="page" id="diaryPage0" contenteditable="true" spellcheck="false">
+                                    📓 Mi Diario<br><br>
+                                    <p>Hoy quiero recordar lo mucho que te amo, Gabi.</p>
+                                    <div style="margin-top:20px;">
+                                        <button onclick="insertGrid()" style="background:transparent; border:1px solid #b0a090; padding:4px 12px; border-radius:15px; cursor:pointer; font-family: 'Caveat', cursive;">📊 Insertar Cuadrícula</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="diary-nav">
+                                <button onclick="changePage(-1)">◀ Anterior</button>
+                                <button onclick="changePage(1)">Siguiente ▶</button>
+                            </div>
+                            <div class="diary-tools">
+                                <button onclick="insertGrid()">📊 Cuadrícula</button>
+                                <button onclick="addPage()">➕ Página</button>
+                            </div>
+                        </div>
+                    `;
+                    wrapper.appendChild(container);
+                    const pages = container.querySelectorAll('.page');
+                    pages.forEach(page => {
+                        page.addEventListener('input', triggerSave);
+                        page.addEventListener('blur', triggerSave);
+                        page.addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter') {
+                                document.execCommand('insertLineBreak');
+                                e.preventDefault();
+                            }
+                        });
+                    });
+                }
+                const note = notes.find(n => n.id === currentNoteId);
+                if (note) {
+                    try {
+                        const pagesData = JSON.parse(note.content || '[]');
+                        if (Array.isArray(pagesData) && pagesData.length > 0) {
+                            const slider = document.getElementById('pageSlider');
+                            if (slider) {
+                                slider.innerHTML = '';
+                                pagesData.forEach((text, idx) => {
+                                    const div = document.createElement('div');
+                                    div.className = 'page';
+                                    div.id = `diaryPage${idx}`;
+                                    div.contentEditable = true;
+                                    div.spellcheck = false;
+                                    div.innerHTML = text;
+                                    slider.appendChild(div);
+                                    div.addEventListener('keydown', function(e) {
+                                        if (e.key === 'Enter') {
+                                            document.execCommand('insertLineBreak');
+                                            e.preventDefault();
+                                        }
+                                    });
+                                });
+                                currentPageIndex = 0;
+                                slider.style.transform = 'translateX(0)';
+                            }
+                        }
+                    } catch (e) {
+                        const page0 = document.getElementById('diaryPage0');
+                        if (page0 && note.content && note.content !== '[]') {
+                            page0.innerHTML = note.content;
+                        }
+                    }
+                }
+                currentPageIndex = 0;
+            } else {
+                wrapper.classList.remove('diary-mode');
+                title.style.display = '';
+                editor.style.display = '';
+                const container = wrapper.querySelector('.diary-container');
+                if (container) container.remove();
+            }
+        }
+
+        function changePage(direction) {
+            const slider = document.getElementById('pageSlider');
+            if (!slider) return;
+            const totalPages = slider.children.length;
+            const newIndex = currentPageIndex + direction;
+            if (newIndex < 0 || newIndex >= totalPages) return;
+            currentPageIndex = newIndex;
+            slider.style.transform = `translateX(-${currentPageIndex * 100}%)`;
+        }
+        function addPage() {
+            const slider = document.getElementById('pageSlider');
+            if (!slider) return;
+            const newId = slider.children.length;
+            const div = document.createElement('div');
+            div.className = 'page';
+            div.id = `diaryPage${newId}`;
+            div.contentEditable = true;
+            div.spellcheck = false;
+            div.innerHTML = '<br>';
+            slider.appendChild(div);
+            div.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    document.execCommand('insertLineBreak');
+                    e.preventDefault();
+                }
+            });
+            saveDiaryPages();
+        }
+        function saveDiaryPages() {
+            const slider = document.getElementById('pageSlider');
+            if (!slider) return;
+            const pages = slider.querySelectorAll('.page');
+            const data = Array.from(pages).map(page => page.innerHTML);
+            const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+            if (noteIndex !== -1) {
+                notes[noteIndex].content = JSON.stringify(data);
+                saveData();
+            }
+        }
+        function insertGrid() {
+            const slider = document.getElementById('pageSlider');
+            if (!slider) return;
+            const currentPage = slider.children[currentPageIndex];
+            if (!currentPage) return;
+            const gridHtml = `
+                <table class="diary-grid">
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                </table>
+            `;
+            const sel = window.getSelection();
+            if (currentPage.contains(sel.anchorNode)) {
+                const range = sel.getRangeAt(0);
+                range.deleteContents();
+                const fragment = range.createContextualFragment(gridHtml);
+                range.insertNode(fragment);
+                range.setStartAfter(fragment);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else {
+                currentPage.insertAdjacentHTML('beforeend', gridHtml);
+                currentPage.scrollTop = currentPage.scrollHeight;
+            }
+            setTimeout(() => {
+                currentPage.querySelectorAll('.diary-grid td').forEach(td => {
+                    td.setAttribute('contenteditable', 'true');
+                    td.style.cursor = 'text';
+                });
+            }, 50);
+            saveDiaryPages();
+        }
 
         // --- PESTAÑAS Y RENDER ---
-        function switchTab(tab) { /* igual */ }
-        function renderList() { /* igual */ }
-        function openNote(id, autoCloseMenu = true) { /* igual */ }
-        function createNewNote() { /* igual */ }
-        function createNewDiaryNote() { /* igual */ }
-        function triggerSave() { /* igual */ }
-        function saveData() { /* igual */ }
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.sidebar-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.getElementById('notes-actions').style.display = tab === 'notes' ? 'block' : 'none';
+            document.getElementById('diaries-actions').style.display = tab === 'diaries' ? 'block' : 'none';
+            document.getElementById('noteList-notes').classList.toggle('active', tab === 'notes');
+            document.getElementById('noteList-diaries').classList.toggle('active', tab === 'diaries');
+        }
+        function renderList() {
+            listNotes.innerHTML = '';
+            listDiaries.innerHTML = '';
+            let sortedNotes = notes.sort((a, b) => {
+                if (a.pinned === b.pinned) return b.timestamp - a.timestamp;
+                return a.pinned ? -1 : 1;
+            });
+            sortedNotes.forEach(note => {
+                const div = document.createElement('div');
+                div.className = `note-item ${note.id === currentNoteId ? 'active' : ''}`;
+                div.id = `note-${note.id}`;
+                const startPress = (e) => {
+                    isLongPressing = false;
+                    pressTimer = setTimeout(() => { isLongPressing = true; if (navigator.vibrate) navigator.vibrate(50); openContextMenu(note.id); }, 500);
+                };
+                const cancelPress = () => { clearTimeout(pressTimer); };
+                div.addEventListener('touchstart', startPress, {passive: true});
+                div.addEventListener('touchend', cancelPress);
+                div.addEventListener('touchmove', cancelPress);
+                div.addEventListener('mousedown', startPress);
+                div.addEventListener('mouseup', cancelPress);
+                div.addEventListener('mouseleave', cancelPress);
+                div.addEventListener('click', (e) => {
+                    cancelPress();
+                    if (isLongPressing) { e.preventDefault(); isLongPressing = false; return; }
+                    openNote(note.id);
+                });
+                div.addEventListener('contextmenu', (e) => { e.preventDefault(); openContextMenu(note.id); });
+                const plainText = (note.content || '').replace(/<[^>]+>/g, '');
+                const preview = plainText.substring(0, 35) + (plainText.length > 35 ? '...' : '');
+                const pinHtml = note.pinned ? `<i class='bx bxs-pin pinned-icon'></i>` : ``;
+                div.innerHTML = `<div class="note-title-list"><span style="overflow: hidden; text-overflow: ellipsis;">${note.title || 'Nueva nota'}</span>${pinHtml}</div><div style="font-size: 0.8rem; color: var(--text-muted);">${preview}</div>`;
+                if (note.diaryMode) listDiaries.appendChild(div);
+                else listNotes.appendChild(div);
+            });
+        }
+        function openContextMenu(id) {
+            contextNoteId = id;
+            const note = notes.find(n => n.id === id);
+            document.getElementById('sheetTitle').innerText = `Opciones: ${note.title || 'Nota sin título'}`;
+            const pinIcon = document.getElementById('sheetPinIcon');
+            const pinText = document.getElementById('sheetPinText');
+            if (note.pinned) { pinIcon.className = 'bx bx-pin'; pinText.innerText = 'Desfijar nota'; }
+            else { pinIcon.className = 'bx bxs-pin'; pinText.innerText = 'Fijar arriba'; }
+            sheet.classList.add('show');
+            overlaySheet.classList.add('show');
+        }
+        function closeContextMenu() { sheet.classList.remove('show'); overlaySheet.classList.remove('show'); setTimeout(() => { contextNoteId = null; }, 300); }
+        function actionPinNote() { const idx = notes.findIndex(n => n.id === contextNoteId); if (idx !== -1) { notes[idx].pinned = !notes[idx].pinned; saveData(); renderList(); } closeContextMenu(); }
+        function actionDuplicateNote() {
+            const original = notes.find(n => n.id === contextNoteId);
+            if (original) {
+                const copy = JSON.parse(JSON.stringify(original));
+                copy.id = Date.now().toString();
+                copy.title = `${original.title} (Copia)`;
+                copy.timestamp = Date.now();
+                copy.pinned = false;
+                notes.push(copy);
+                saveData(); renderList(); openNote(copy.id);
+            }
+            closeContextMenu();
+        }
+        function actionDeleteNote() {
+            if (contextNoteId === 'nota_magica_diaria') { alert("¡Esta es mi carta diaria para ti! No puedes borrarla, amor. 🖤"); closeContextMenu(); return; }
+            if (confirm('¿Estás segura de eliminarla, amor?')) {
+                const idToDelete = contextNoteId;
+                closeContextMenu();
+                notes = notes.filter(n => n.id !== idToDelete);
+                saveData();
+                if (currentNoteId === idToDelete) {
+                    if (notes.length > 0) openNote(notes[0].id);
+                    else { currentNoteId = null; titleEl.value = ''; editorEl.innerHTML = ''; wrapperEl.className = 'editor-wrapper'; }
+                }
+                renderList();
+            } else { closeContextMenu(); }
+        }
+        function openNote(id, autoCloseMenu = true) {
+            currentNoteId = id;
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                titleEl.value = note.title || '';
+                if (note.diaryMode) {
+                    toggleDiaryMode(true);
+                } else {
+                    toggleDiaryMode(false);
+                    editorEl.innerHTML = note.content || '';
+                }
+                wrapperEl.className = 'editor-wrapper';
+                if (note.theme && note.theme !== 'default') wrapperEl.classList.add(note.theme);
+            }
+            deselectMedia();
+            renderList();
+            if (autoCloseMenu && window.innerWidth <= 768 && sidebar.classList.contains('open')) toggleSidebar();
+        }
+        function createNewNote() {
+            const newNote = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, diaryMode: false, timestamp: Date.now() };
+            notes.push(newNote);
+            currentNoteId = newNote.id;
+            saveData();
+            openNote(newNote.id);
+            titleEl.focus();
+        }
+        function createNewDiaryNote() {
+            const newNote = { id: Date.now().toString(), title: '📓 Mi Diario', content: '[]', theme: 'default', pinned: false, diaryMode: true, timestamp: Date.now() };
+            notes.push(newNote);
+            currentNoteId = newNote.id;
+            saveData();
+            openNote(newNote.id);
+        }
+        function triggerSave() {
+            if (!currentNoteId || currentNoteId === 'nota_magica_diaria') return;
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+                if (noteIndex !== -1) {
+                    const note = notes[noteIndex];
+                    note.title = titleEl.value;
+                    if (note.diaryMode) {
+                        saveDiaryPages();
+                    } else {
+                        note.content = editorEl.innerHTML;
+                    }
+                    note.timestamp = Date.now();
+                    saveData();
+                    renderList();
+                }
+            }, 500);
+        }
+        function saveData() { safeSetStorage('nova_romance', notes); }
+
+        function placeCursorAfterElement(element) {
+            if (!element || !editorEl.contains(element)) return;
+            const range = document.createRange();
+            range.setStartAfter(element);
+            range.collapse(true);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            getActiveEditor().focus();
+        }
+
+        function insertEmojiAtCursor(emoji) {
+            const sel = window.getSelection();
+            if (sel.rangeCount) {
+                const range = sel.getRangeAt(0);
+                range.deleteContents();
+                const textNode = document.createTextNode(emoji);
+                range.insertNode(textNode);
+                range.setStartAfter(textNode);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else { getActiveEditor().focus(); document.execCommand('insertText', false, emoji); }
+            triggerSave();
+            getActiveEditor().focus();
+        }
 
         // --- DROPDOWNS DE LA TOOLBAR ---
         function toggleDropdown(id) {
             const dropdown = document.getElementById(id);
             if (!dropdown) return;
             const isOpen = dropdown.classList.contains('show');
-            // Cerrar todos los dropdowns
             document.querySelectorAll('.toolbar-dropdown').forEach(d => d.classList.remove('show'));
             if (!isOpen) dropdown.classList.add('show');
-            // Cerrar al hacer clic fuera
             if (!isOpen) {
                 setTimeout(() => {
                     const handler = (e) => {
@@ -1232,6 +1816,41 @@
                 }, 10);
             }
         }
+
+        function toggleThemePalette() { document.getElementById('themePalette').classList.toggle('show'); }
+        function setNoteTheme(themeClass) {
+            wrapperEl.className = 'editor-wrapper';
+            if (themeClass !== 'default') wrapperEl.classList.add(themeClass);
+            const idx = notes.findIndex(n => n.id === currentNoteId);
+            if (idx !== -1) { notes[idx].theme = themeClass; saveData(); }
+            document.getElementById('themePalette').classList.remove('show');
+        }
+
+        function toggleGlobalTheme(forceDark = false) {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            if (forceDark || body.getAttribute('data-theme') !== 'dark') {
+                body.setAttribute('data-theme', 'dark'); icon.className = 'bx bx-sun';
+                safeSetStorage('nova_global_theme', 'dark');
+            } else {
+                body.removeAttribute('data-theme'); icon.className = 'bx bx-moon';
+                safeSetStorage('nova_global_theme', 'light');
+            }
+        }
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('show', sidebar.classList.contains('open'));
+            checkMobileMenu();
+        }
+        function checkMobileMenu() {
+            const closeBtn = document.getElementById('closeSidebarBtn');
+            if (window.innerWidth <= 768) {
+                closeBtn.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+                if (!sidebar.classList.contains('open')) sidebarOverlay.classList.remove('show');
+            } else { closeBtn.style.display = 'none'; sidebarOverlay.classList.remove('show'); }
+        }
+        window.addEventListener('resize', checkMobileMenu);
 
         // --- INICIALIZACIÓN ---
         initApp();
