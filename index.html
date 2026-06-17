@@ -9,402 +9,374 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
     <style>
+        /* --- CONFIGURACIÓN GENERAL --- */
         :root {
             --bg-body: #f4f7fe;
             --surface: #ffffff;
-            --primary: #FF4B72; 
             --text-main: #2b3674;
             --text-muted: #a3aed1;
             --border: #e2e8f0;
             --sidebar-w: 300px;
-            --shadow: 0 10px 30px rgba(255, 75, 114, 0.15);
-            --transition: all 0.3s ease;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         [data-theme="dark"] {
-            --bg-body: #070b19; 
+            --bg-body: #070b19;
             --surface: #0e152e;
-            --primary: #FF708F;
             --text-main: #f0f2f8;
             --text-muted: #7483a8;
             --border: #1a2342;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
+        body { background: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; transition: var(--transition); }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
-        .welcome-modal { position: fixed; inset: 0; background: rgba(255,255,255,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s ease; }
-        [data-theme="dark"] .welcome-modal { background: rgba(7, 11, 25, 0.7); }
+        /* --- WELCOME MODAL --- */
+        .welcome-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s ease; }
         .welcome-modal.hidden { opacity: 0; pointer-events: none; }
-        .welcome-content { background: var(--surface); padding: 40px 30px; border-radius: 30px; text-align: center; max-width: 90%; width: 380px; box-shadow: var(--shadow); border: 1px solid var(--border); animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        .heart-icon { font-size: 4.5rem; color: #000000; animation: heartbeat 1.5s infinite; filter: drop-shadow(0 0 10px rgba(0,0,0,0.3)); margin-bottom: 15px; }
-        [data-theme="dark"] .heart-icon { filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+        .welcome-content { background: var(--surface); padding: 40px 30px; border-radius: 30px; text-align: center; max-width: 90%; width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: popIn 0.6s ease; border: 1px solid var(--border); }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        .heart-icon { font-size: 4.5rem; color: #ff4b72; animation: heartbeat 1.5s infinite; margin-bottom: 15px; }
         @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-        .welcome-text { font-family: 'Caveat', cursive; font-size: 2rem; color: var(--text-main); margin-bottom: 30px; line-height: 1.2; }
-        .btn-enter { background: #111111; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: var(--shadow); width: 100%; transition: transform 0.2s; }
+        .btn-enter { background: #111; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer; width: 100%; transition: transform 0.2s; }
         .btn-enter:active { transform: scale(0.95); }
 
-        .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; transition: var(--transition); }
-        .sidebar-header { padding: 20px; background: #111111; color: white; display: flex; justify-content: space-between; align-items: center; }
+        /* --- SIDEBAR --- */
+        .sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; transition: transform 0.3s ease; }
+        .sidebar-header { padding: 20px; background: #111; color: white; display: flex; justify-content: space-between; align-items: center; }
         .brand { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .theme-toggle, .menu-toggle { background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s; }
         .theme-toggle:active { transform: rotate(45deg); }
 
         .sidebar-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--bg-body); }
-        .sidebar-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: background 0.2s, color 0.2s; border-bottom: 2px solid transparent; color: var(--text-muted); }
-        .sidebar-tab.active { border-bottom-color: #111111; color: var(--text-main); background: var(--surface); }
-        [data-theme="dark"] .sidebar-tab.active { border-bottom-color: #ffffff; }
+        .sidebar-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: var(--transition); border-bottom: 2px solid transparent; color: var(--text-muted); }
+        .sidebar-tab.active { border-bottom-color: #111; color: var(--text-main); background: var(--surface); }
 
-        .btn-new { background: #111111; color: white; border: none; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.2s; }
+        .btn-new { background: #111; color: white; border: none; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .btn-new:active { transform: scale(0.95); }
-        .btn-diary { background: #ffffff; color: #111111; border: 2px solid #111111; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 0 auto 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: transform 0.2s; }
-        .btn-diary:active { transform: scale(0.95); }
-        [data-theme="dark"] .btn-diary { background: #0e152e; color: #f0f2f8; border-color: #ffffff; }
 
         .note-list { flex: 1; overflow-y: auto; padding: 0 15px 15px 15px; display: none; }
         .note-list.active { display: block; }
-        
-        .note-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; background: var(--bg-body); transition: var(--transition); border: 1px solid transparent; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-        .note-item.active { background: var(--surface); border-left: 4px solid #111111; border-color: var(--border); box-shadow: var(--shadow); }
-        [data-theme="dark"] .note-item.active { border-left: 4px solid #ffffff; }
-        
-        @keyframes insertAnim { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .note-item.creating { animation: insertAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        
-        @keyframes deleteAnim { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.9) translateX(-10px); opacity: 0.8; } 100% { transform: scale(0.5) translateX(100%); opacity: 0; } }
-        .note-item.deleting { animation: deleteAnim 0.4s ease-in forwards; pointer-events: none; }
-
+        .note-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; background: var(--bg-body); transition: var(--transition); border: 1px solid transparent; position: relative; }
+        .note-item.active { background: var(--surface); border-left: 4px solid #111; border-color: var(--border); box-shadow: var(--shadow); }
         .note-title-list { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); }
-        .pinned-icon { color: #111111; font-size: 1.1rem; }
-        [data-theme="dark"] .pinned-icon { color: #ffffff; }
+        .pinned-icon { color: #111; font-size: 1.1rem; }
 
-        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px); }
         .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
 
+        /* --- MAIN CONTENT --- */
         .main-content { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
-        .toolbar { padding: 10px 15px; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; z-index: 10; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; transition: var(--transition); }
+
+        .toolbar { padding: 10px 15px; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; z-index: 10; overflow-x: auto; white-space: nowrap; transition: var(--transition); }
         [data-theme="dark"] .toolbar { background: rgba(14, 21, 46, 0.85); }
         .toolbar::-webkit-scrollbar { display: none; }
-        
         .tool-group { display: flex; align-items: center; gap: 2px; background: var(--surface); padding: 4px 6px; border-radius: 8px; border: 1px solid var(--border); }
         .tool-btn { background: transparent; border: none; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); font-size: 1.1rem; transition: background 0.2s, transform 0.1s; }
         .tool-btn:active { transform: scale(0.85); background: var(--border); }
         .tool-select { border: none; background: transparent; color: var(--text-main); outline: none; padding: 2px; font-size: 0.85rem; font-weight: 500; cursor: pointer; }
-        
-        .color-picker-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; overflow: hidden; border-radius: 5px; cursor: pointer; border: 1px solid var(--border); margin-left: 5px; }
+        .color-picker-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; overflow: hidden; border-radius: 5px; cursor: pointer; border: 1px solid var(--border); }
         .color-picker-wrapper input[type="color"] { position: absolute; top: -10px; left: -10px; width: 50px; height: 50px; cursor: pointer; padding: 0; border: none; }
 
-        .editor-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; justify-content: center; transition: background 0.5s; position: relative; scroll-behavior: smooth; }
-        .editor-wrapper { 
-            width: 100%; max-width: 800px; padding: 30px; border-radius: 20px; 
-            box-shadow: var(--shadow); min-height: calc(100vh - 40px); height: fit-content;
-            transition: all 0.5s; background: var(--surface); position: relative;
+        /* --- EDITOR Y DIARIO --- */
+        .editor-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; justify-content: center; transition: background 0.5s; position: relative; }
+        .editor-wrapper { width: 100%; max-width: 800px; padding: 30px; border-radius: 20px; box-shadow: var(--shadow); min-height: calc(100vh - 40px); background: var(--surface); transition: var(--transition); position: relative; }
+        .title-input { width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; background: transparent; line-height: 1.2; transition: color 0.3s; padding: 5px 10px; border-radius: 8px; }
+        .editor-area { min-height: 50vh; outline: none; font-size: 1rem; line-height: 1.6; color: var(--text-main); transition: color 0.3s; padding-bottom: 150px; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; hyphens: auto; }
+        .editor-area img, .editor-area video { border-radius: 12px; cursor: pointer; max-width: 100%; height: auto; }
+        .editor-area img.selected-img, .editor-area video.selected-img { box-shadow: 0 0 0 4px #111; }
+
+        /* --- MODO DIARIO (CUADERNO) --- */
+        .diary-mode .editor-wrapper {
+            all: initial; /* Reinicia estilos del wrapper */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100% !important;
         }
-        .title-input { 
-            width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; 
-            color: var(--text-main); margin-bottom: 20px; background: transparent; 
-            line-height: 1.2; transition: color 0.3s, background-color 0.3s;
-            padding: 5px 10px;
-            border-radius: 8px;
+        .diary-mode .title-input { display: none !important; }
+        .diary-mode .editor-area { display: none !important; }
+
+        .diary-notebook {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 3/4;
+            background-color: #fdf5e6;
+            background-image: repeating-linear-gradient(transparent, transparent 31px, #d8d0c1 31px, #d8d0c1 32px);
+            border: 1px solid #d8d0c1;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            font-family: 'Caveat', cursive;
+            font-size: 1.2rem;
+            line-height: 2.1rem;
+            color: #3d3122;
+            transition: var(--transition);
         }
-        
-        .editor-area { 
-            min-height: 50vh; outline: none; font-size: 1rem; line-height: 1.6; 
-            color: var(--text-main); transition: color 0.3s; padding-bottom: 150px;
+        .diary-notebook .page-container {
+            display: flex;
+            flex-wrap: nowrap;
+            height: 100%;
+            width: 100%;
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            will-change: transform;
+        }
+        .diary-notebook .page {
+            flex: 0 0 100%;
+            height: 100%;
+            padding: 40px 50px;
+            overflow-y: auto;
+            outline: none;
             word-wrap: break-word;
             overflow-wrap: break-word;
             word-break: break-word;
             hyphens: auto;
-            -webkit-user-select: text; user-select: text;
-            -webkit-touch-callout: none;
-        }
-
-        .editor-area img, .editor-area video { border-radius: 12px; transition: box-shadow 0.2s; cursor: pointer; max-width: 100%; height: auto; -webkit-user-drag: none; -khtml-user-drag: none; -moz-user-drag: none; -o-user-drag: none; }
-        .editor-area img.selected-img, .editor-area video.selected-img { box-shadow: 0 0 0 4px #111111; }
-
-        .floating-text-menu { 
-            position: absolute; display: none; background: #111111; color: white; border-radius: 30px; 
-            padding: 3px 6px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 1000; 
-            align-items: center; gap: 2px; transition: opacity 0.2s; 
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); 
-            white-space: nowrap; overflow-x: auto; max-width: 90vw;
-            -webkit-overflow-scrolling: touch; scrollbar-width: none;
-        }
-        .floating-text-menu::-webkit-scrollbar { display: none; }
-        .floating-text-menu::after { 
-            content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); 
-            border-width: 0 5px 5px; border-style: solid; border-color: transparent transparent #111111 transparent; 
-        }
-        
-        .floating-insert-menu { 
-            position: absolute; display: none; background: #111111; color: white; border-radius: 15px; 
-            padding: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 1000; 
-            flex-direction: column; align-items: flex-start; gap: 8px; white-space: normal; max-width: 320px;
-        }
-        .insert-row { display: flex; align-items: center; gap: 5px; }
-        .emoji-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding-top: 5px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .emoji-btn { background: transparent; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 2px 5px; border-radius: 5px; transition: transform 0.1s; }
-        .emoji-btn:active { transform: scale(1.2); background: rgba(255,255,255,0.2); }
-
-        .ft-btn { background: transparent; border: none; color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; flex-shrink: 0; }
-        .ft-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.85); }
-        .ft-btn-wide { width: 32px; height: 32px; font-size: 1rem; }
-        .ft-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.2); margin: 0 2px; flex-shrink: 0; }
-        .ft-select { background: none; color: white; border: none; font-size: 0.75rem; cursor: pointer; margin: 0 1px; flex-shrink: 0; }
-        .ft-select option { background: #111; }
-
-        .ft-color-wrapper {
-            position: relative; width: 18px; height: 18px; overflow: hidden; border-radius: 50%;
-            cursor: pointer; border: 1px solid rgba(255,255,255,0.3); flex-shrink: 0;
-        }
-        .ft-color-wrapper input[type="color"] {
-            position: absolute; top: -6px; left: -6px; width: 30px; height: 30px;
-            border: none; padding: 0; cursor: pointer;
-        }
-
-        /* --- TEMAS EXISTENTES --- */
-        .theme-sakura { background: linear-gradient(to bottom right, #ffe1e8, #ffb3c6) !important; color: #5c1a2d; }
-        .theme-papel { background: #fdf5e6 !important; color: #3d3122; background-image: repeating-linear-gradient(transparent, transparent 31px, #d8d0c1 31px, #d8d0c1 32px); }
-        .theme-amor { background: radial-gradient(circle, #fcfcfc 0%, #e6e6e6 100%) !important; color: #111111; }
-        .theme-noche { background: linear-gradient(135deg, #1a1a2e, #16213e) !important; color: #e1e1e6; }
-
-        /* --- NUEVOS TEMAS CON IMÁGENES Y FONDO SEMITRANSPARENTE --- */
-        .theme-fuego { 
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/themes/fuego.jpg'); 
-            background-size: cover; 
-            background-position: center; 
-            background-repeat: no-repeat; 
-            color: #ffffff !important;
-        }
-        .theme-tortugas { 
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/themes/tortugas.jpg'); 
-            background-size: cover; 
-            background-position: center; 
-            background-repeat: no-repeat; 
-            color: #ffffff !important;
-        }
-        .theme-neon { 
-            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/themes/perfil.jpg'); 
-            background-size: cover; 
-            background-position: center; 
-            background-repeat: no-repeat; 
-            color: #ffffff !important;
-        }
-
-        /* Forzar color blanco para el título y editor en los nuevos temas */
-        .theme-fuego .title-input,
-        .theme-fuego .editor-area,
-        .theme-tortugas .title-input,
-        .theme-tortugas .editor-area,
-        .theme-neon .title-input,
-        .theme-neon .editor-area {
-            color: #ffffff !important;
-        }
-
-        [data-theme="dark"] .theme-sakura { background: linear-gradient(to bottom right, #2c131a, #4a1c2a) !important; color: #ffccd5; border: 1px solid #5c2033; }
-        [data-theme="dark"] .theme-papel { background: #1a1714 !important; color: #d8d0c1; background-image: repeating-linear-gradient(transparent, transparent 31px, #362f27 31px, #362f27 32px); border: 1px solid #362f27; }
-        [data-theme="dark"] .theme-amor { background: radial-gradient(circle, #1a1a1a 0%, #0d0d0d 100%) !important; color: #e6e6e6; border: 1px solid #333333; }
-        [data-theme="dark"] .theme-noche { background: linear-gradient(135deg, #0b0b14, #080b12) !important; color: #e1e1e6; border: 1px solid #1c1c33; }
-
-        /* --- NUEVOS TEMAS CON ANIMACIONES MINIMALISTAS --- */
-        .theme-snow {
-            background: linear-gradient(135deg, #1a1a2e, #2a2a4e) !important;
-            position: relative;
-            color: #e0e0e0 !important;
-        }
-        .theme-snow::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: radial-gradient(white 1px, transparent 1px);
-            background-size: 30px 30px;
-            opacity: 0.2;
-            pointer-events: none;
-            animation: snow 8s linear infinite;
-        }
-        @keyframes snow {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 100px; }
-        }
-
-        .theme-bubbles {
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364) !important;
-            color: #d0e0e0 !important;
-        }
-        .theme-bubbles::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 2px, transparent 2px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            animation: bubbles 6s ease-in-out infinite;
-        }
-        @keyframes bubbles {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0); }
-        }
-
-        .theme-waves {
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #2c3e50) !important;
-            color: #d8d8e0 !important;
-        }
-        .theme-waves::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 80px);
-            pointer-events: none;
-            animation: waves 10s linear infinite;
-        }
-        @keyframes waves {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-80px); }
-        }
-
-        .theme-sparkle {
-            background: #1a1a2e !important;
-            color: #e0e0f0 !important;
-        }
-        .theme-sparkle::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.4) 0, transparent 20%),
-                        radial-gradient(circle at 70% 60%, rgba(255,255,255,0.2) 0, transparent 30%),
-                        radial-gradient(circle at 50% 90%, rgba(255,255,255,0.3) 0, transparent 25%);
-            pointer-events: none;
-            animation: sparkle 4s ease-in-out infinite;
-        }
-        @keyframes sparkle {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        .theme-aurora {
-            background: linear-gradient(135deg, #0d0d1a, #1a1a3e, #0d1a2e) !important;
-            background-size: 400% 400%;
-            animation: aurora 8s ease-in-out infinite;
-            color: #d0d0e8 !important;
-        }
-        @keyframes aurora {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .image-toolbar { 
-            position: fixed; opacity: 0; pointer-events: none;
-            background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
-            padding: 8px 10px; border-radius: 30px; display: flex; gap: 6px; align-items: center;
-            transition: opacity 0.2s; z-index: 1001; white-space: nowrap;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
-            max-width: calc(100vw - 20px); overflow-x: auto; 
-            -webkit-overflow-scrolling: touch; scrollbar-width: none;
-        }
-        .image-toolbar::-webkit-scrollbar { display: none; }
-        .image-toolbar.show { opacity: 1; pointer-events: auto; }
-        .img-btn { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; transition: transform 0.1s; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .img-btn:active { transform: scale(0.85); background: rgba(255,255,255,0.15); }
-        .img-slider { width: 55px; accent-color: #ffffff; flex-shrink: 0; }
-        .img-slider-label { color: rgba(255,255,255,0.8); font-size: 0.65rem; margin: 0 -3px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
-        .img-spacer { width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px; flex-shrink: 0; }
-
-        .theme-palette { display: none; position: absolute; top: 60px; right: 20px; background: var(--surface); padding: 10px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); z-index: 50; gap: 8px; }
-        .theme-palette.show { display: flex; animation: insertAnim 0.3s forwards; }
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
-        .color-dot:hover { transform: scale(1.1); }
-
-        .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(3px); }
-        .sheet-overlay.show { opacity: 1; pointer-events: auto; }
-        .bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--surface); border-radius: 25px 25px 0 0; z-index: 1000; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); padding: 20px 20px 40px 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
-        .bottom-sheet.show { bottom: 0; }
-        .sheet-handle { width: 40px; height: 5px; background: var(--border); border-radius: 5px; margin: 0 auto 20px auto; }
-        .sheet-title { text-align: center; font-weight: 600; margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem; }
-        .sheet-option { display: flex; align-items: center; gap: 15px; padding: 16px; border-radius: 15px; cursor: pointer; font-size: 1.1rem; font-weight: 500; transition: background 0.2s, transform 0.1s; color: var(--text-main); }
-        .sheet-option:hover { background: var(--bg-body); }
-        .sheet-option:active { transform: scale(0.98); }
-        .sheet-option i { font-size: 1.4rem; color: #111111; }
-        [data-theme="dark"] .sheet-option i { color: #ffffff; }
-        .sheet-option.danger { color: #ff4757; }
-        .sheet-option.danger i { color: #ff4757 !important; }
-
-        .url-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 2000; }
-        .url-modal.show { display: flex; }
-        .url-modal-content { background: var(--surface); padding: 20px; border-radius: 16px; box-shadow: var(--shadow); width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 10px; }
-        .url-modal-content input { padding: 10px; border: 1px solid var(--border); border-radius: 8px; outline: none; background: var(--bg-body); color: var(--text-main); }
-        .url-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-        .url-modal-actions button { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
-        .btn-cancel { background: #ccc; } .btn-insert { background: #111; color: white; }
-
-        /* --- MODO DIARIO MEJORADO --- */
-        .diary-mode {
-            background-image: repeating-linear-gradient(transparent, transparent 31px, #d8d0c1 31px, #d8d0c1 32px) !important;
-            background-color: #fdf5e6 !important;
-            box-shadow: none !important;
-            border: 1px solid #d8d0c1 !important;
-            font-family: 'Caveat', cursive !important;
-        }
-        .diary-mode .title-input {
-            font-family: 'Caveat', cursive !important;
-            font-weight: 700;
-            font-size: 2.2rem;
-        }
-        .diary-mode .editor-area {
-            font-family: 'Caveat', cursive !important;
+            font-family: 'Caveat', cursive;
             font-size: 1.2rem;
             line-height: 2.1rem;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            word-break: break-word;
+            color: #3d3122;
+            background: transparent;
         }
+        .diary-notebook .page:focus { outline: none; }
+        .diary-nav {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        .diary-nav button {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #d8d0c1;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #3d3122;
+        }
+        .diary-nav button:hover { background: #fff; transform: translateY(-2px); }
+        .diary-tools {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+            flex-wrap: wrap;
+        }
+        .diary-tools button {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #d8d0c1;
+            padding: 4px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.75rem;
+            color: #3d3122;
+        }
+        .diary-tools button:hover { background: #fff; }
 
-        /* Cuadrícula estilo Excel dentro del diario */
         .diary-grid {
             border-collapse: collapse;
             width: 100%;
             margin: 15px 0;
             font-family: 'Caveat', cursive;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            line-height: 1.8rem;
         }
         .diary-grid td, .diary-grid th {
             border: 1px solid #b0a090;
-            padding: 8px;
-            min-width: 40px;
-            height: 32px;
+            padding: 6px;
+            min-width: 30px;
+            height: 28px;
             text-align: center;
-            background: rgba(253, 245, 230, 0.5);
+            background: rgba(253, 245, 230, 0.3);
+            word-wrap: break-word;
         }
-        .diary-grid th {
-            background: rgba(200, 190, 180, 0.3);
-            font-weight: 700;
+        .diary-grid th { background: rgba(200, 190, 180, 0.2); font-weight: 700; }
+
+        /* --- BARRA FLOTANTE (ARRIBA) --- */
+        .floating-text-menu {
+            position: absolute; display: none; background: #111; color: white; border-radius: 30px;
+            padding: 4px 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); z-index: 1000;
+            align-items: center; gap: 3px; transition: opacity 0.2s ease, transform 0.2s ease;
+            backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1);
+            white-space: nowrap; overflow-x: auto; max-width: 90vw;
+            transform-origin: top center;
+            scrollbar-width: none;
+        }
+        .floating-text-menu::-webkit-scrollbar { display: none; }
+        .floating-text-menu::after {
+            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+            border-width: 6px 6px 0; border-style: solid; border-color: #111 transparent transparent transparent;
         }
 
-        .diary-tools {
+        .ft-btn { background: transparent; border: none; color: white; width: 24px; height: 24px; border-radius: 50%; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; flex-shrink: 0; }
+        .ft-btn:active { transform: scale(0.85); background: rgba(255,255,255,0.2); }
+        .ft-btn-wide { width: 32px; height: 32px; font-size: 1rem; }
+        .ft-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.2); margin: 0 2px; flex-shrink: 0; }
+        .ft-select { background: none; color: white; border: none; font-size: 0.7rem; cursor: pointer; margin: 0 1px; flex-shrink: 0; }
+        .ft-select option { background: #111; }
+        .ft-color-wrapper { position: relative; width: 18px; height: 18px; overflow: hidden; border-radius: 50%; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); flex-shrink: 0; }
+        .ft-color-wrapper input[type="color"] { position: absolute; top: -6px; left: -6px; width: 30px; height: 30px; border: none; padding: 0; cursor: pointer; }
+
+        /* --- IMÁGENES Y MEDIA --- */
+        .image-toolbar {
+            position: fixed; opacity: 0; pointer-events: none;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
+            padding: 8px 12px; border-radius: 30px; display: flex; gap: 6px; align-items: center;
+            transition: opacity 0.2s; z-index: 1001; white-space: nowrap;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15);
+            max-width: calc(100vw - 20px); overflow-x: auto;
+        }
+        .image-toolbar.show { opacity: 1; pointer-events: auto; }
+        .img-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; transition: transform 0.1s; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .img-btn:active { transform: scale(0.85); background: rgba(255,255,255,0.15); }
+        .img-slider { width: 50px; accent-color: #fff; flex-shrink: 0; }
+        .img-slider-label { color: rgba(255,255,255,0.8); font-size: 0.6rem; font-weight: 500; flex-shrink: 0; }
+
+        /* --- TEMAS --- */
+        .theme-sakura { background: linear-gradient(to bottom right, #ffe1e8, #ffb3c6) !important; color: #5c1a2d; }
+        .theme-papel { background: #fdf5e6 !important; color: #3d3122; background-image: repeating-linear-gradient(transparent, transparent 31px, #d8d0c1 31px, #d8d0c1 32px); }
+        .theme-amor { background: radial-gradient(circle, #fcfcfc 0%, #e6e6e6 100%) !important; color: #111; }
+        .theme-noche { background: linear-gradient(135deg, #1a1a2e, #16213e) !important; color: #e1e1e6; }
+        .theme-fuego { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/themes/fuego.jpg'); background-size: cover; background-position: center; color: #fff !important; }
+        .theme-tortugas { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/themes/tortugas.jpg'); background-size: cover; background-position: center; color: #fff !important; }
+        .theme-neon { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/themes/perfil.jpg'); background-size: cover; background-position: center; color: #fff !important; }
+        .theme-snow { background: linear-gradient(135deg, #1a1a2e, #2a2a4e) !important; position: relative; color: #e0e0e0 !important; }
+        .theme-snow::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(white 1px, transparent 1px); background-size: 30px 30px; opacity: 0.2; pointer-events: none; animation: snow 8s linear infinite; }
+        @keyframes snow { 0% { background-position: 0 0; } 100% { background-position: 0 100px; } }
+        .theme-bubbles { background: linear-gradient(135deg, #0f2027, #2c5364) !important; color: #d0e0e0 !important; }
+        .theme-bubbles::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 2px, transparent 2px); background-size: 40px 40px; pointer-events: none; animation: bubbles 6s ease-in-out infinite; }
+        @keyframes bubbles { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .theme-waves { background: linear-gradient(135deg, #1a1a2e, #2c3e50) !important; color: #d8d8e0 !important; }
+        .theme-waves::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 80px); pointer-events: none; animation: waves 10s linear infinite; }
+        @keyframes waves { 0% { transform: translateX(0); } 100% { transform: translateX(-80px); } }
+        .theme-sparkle { background: #1a1a2e !important; color: #e0e0f0 !important; }
+        .theme-sparkle::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.4) 0, transparent 20%), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.2) 0, transparent 30%), radial-gradient(circle at 50% 90%, rgba(255,255,255,0.3) 0, transparent 25%); pointer-events: none; animation: sparkle 4s ease-in-out infinite; }
+        @keyframes sparkle { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        .theme-aurora { background: linear-gradient(135deg, #0d0d1a, #1a1a3e, #0d1a2e) !important; background-size: 400% 400%; animation: aurora 8s ease-in-out infinite; color: #d0d0e8 !important; }
+        @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .theme-palette { display: none; position: absolute; top: 60px; right: 20px; background: var(--surface); padding: 10px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); z-index: 50; gap: 6px; flex-wrap: wrap; }
+        .theme-palette.show { display: flex; animation: insertAnim 0.3s forwards; }
+        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
+        .color-dot:hover { transform: scale(1.1); }
+
+        /* --- ANIMACIONES DE TEXTO (PRESERVANDO FUENTES) --- */
+        .anim-float { display: inline-block; animation: floatText 3s ease-in-out infinite; }
+        @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .anim-heart { display: inline-block; animation: heartbeat 1.5s ease-in-out infinite; color: #ff4757; }
+        .anim-rainbow { background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1, #ff9ff3); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: rainbowMove 4s ease infinite; font-weight: bold; }
+        @keyframes rainbowMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .anim-typewriter { overflow: hidden; white-space: nowrap; border-right: 2px solid var(--text-main); animation: typewriter 2s steps(30) 1s both, blink 0.8s step-end infinite; display: inline-block; }
+        @keyframes typewriter { from { width: 0; } to { width: 100%; } }
+        @keyframes blink { 0%, 100% { border-color: transparent; } 50% { border-color: var(--text-main); } }
+        .anim-shake { display: inline-block; animation: shake 0.5s ease-in-out infinite; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .anim-spin { display: inline-block; animation: spin 2s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .anim-fade-in { display: inline-block; animation: fadeIn 2s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .anim-bounce { display: inline-block; animation: bounce 1s ease infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .anim-pulse { display: inline-block; animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+        /* --- RECUADRO PARA PARÉNTESIS --- */
+        .parenthesis-box {
+            display: inline-block;
+            border: 1px solid #aaa;
+            border-radius: 12px;
+            padding: 2px 8px;
+            background: rgba(0,0,0,0.03);
+            transition: var(--transition);
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        /* --- CHECKLIST ESTILO WORD --- */
+        .task-list-container { margin: 15px 0; }
+        .task-list { list-style: none; padding: 0; margin: 0; }
+        .task-list li {
             display: flex;
+            align-items: center;
             gap: 8px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            transition: var(--transition);
+            font-size: 1rem;
         }
-        .diary-tools button {
-            background: transparent;
-            border: 1px solid #b0a090;
-            padding: 4px 12px;
-            border-radius: 15px;
+        .task-list li input[type="checkbox"] {
+            appearance: none; -webkit-appearance: none;
+            width: 18px; height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 0.85rem;
+            position: relative;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            background: var(--surface);
+        }
+        .task-list li input[type="checkbox"]:checked {
+            background: #111;
+            border-color: #111;
+        }
+        .task-list li input[type="checkbox"]:checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .task-list li .task-text {
+            flex: 1; padding: 2px 5px; border-radius: 4px; outline: none;
+            cursor: text; word-break: break-word;
+        }
+        .task-list li .task-text:focus { background: rgba(0,0,0,0.03); }
+        .task-list li.done .task-text {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+        .task-list li .delete-task {
+            background: transparent; border: none;
+            color: #ff4757; cursor: pointer;
+            font-size: 0.8rem; padding: 2px 4px;
+            border-radius: 4px;
             transition: background 0.2s;
-            font-family: 'Caveat', cursive;
+            flex-shrink: 0;
         }
-        .diary-tools button:hover {
-            background: rgba(0,0,0,0.05);
-        }
+        .task-list li .delete-task:hover { background: rgba(255,71,87,0.1); }
+
+        /* --- OTROS --- */
+        .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(3px); }
+        .sheet-overlay.show { opacity: 1; pointer-events: auto; }
+        .bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--surface); border-radius: 25px 25px 0 0; z-index: 1000; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); padding: 20px 20px 40px 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
+        .bottom-sheet.show { bottom: 0; }
+        .sheet-handle { width: 40px; height: 5px; background: var(--border); border-radius: 5px; margin: 0 auto 20px auto; }
+        .sheet-option { display: flex; align-items: center; gap: 15px; padding: 16px; border-radius: 15px; cursor: pointer; font-size: 1rem; font-weight: 500; transition: background 0.2s, transform 0.1s; color: var(--text-main); }
+        .sheet-option:hover { background: var(--bg-body); }
+        .sheet-option:active { transform: scale(0.98); }
+        .sheet-option i { font-size: 1.4rem; color: #111; }
+        .sheet-option.danger { color: #ff4757; }
+        .sheet-option.danger i { color: #ff4757 !important; }
+        .sheet-title { text-align: center; font-weight: 600; margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem; }
 
         @media (max-width: 768px) {
             .sidebar { position: fixed; left: -100%; height: 100%; width: 280px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
@@ -412,7 +384,8 @@
             .menu-toggle { display: block; color: var(--text-main); }
             .editor-wrapper { padding: 20px 15px; border-radius: 12px; }
             .title-input { font-size: 1.6rem; }
-            .diary-grid td, .diary-grid th { padding: 4px; min-width: 25px; height: 25px; }
+            .diary-notebook { aspect-ratio: auto; max-width: 100%; height: 100%; }
+            .diary-notebook .page { padding: 20px 25px; }
         }
     </style>
 </head>
@@ -424,17 +397,6 @@
             <div class="welcome-text" style="font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 600;">Hola, mi amor. 🖤</div>
             <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Tienes una nueva carta esperándote...</p>
             <button class="btn-enter" onclick="closeWelcome()">Leer mi carta ✨</button>
-        </div>
-    </div>
-
-    <div id="urlModal" class="url-modal">
-        <div class="url-modal-content">
-            <span id="urlModalTitle" style="font-weight:600;">Pegar URL</span>
-            <input type="text" id="urlInput" placeholder="https://...">
-            <div class="url-modal-actions">
-                <button class="btn-cancel" onclick="closeUrlModal()">Cancelar</button>
-                <button class="btn-insert" onclick="confirmInsertUrl()">Insertar</button>
-            </div>
         </div>
     </div>
 
@@ -456,23 +418,19 @@
             <button class="menu-toggle" onclick="toggleSidebar()" style="display: none; color: white;" id="closeSidebarBtn"><i class='bx bx-x'></i></button>
         </div>
         
-        <!-- Pestañas para separar Notas y Diarios -->
         <div class="sidebar-tabs">
             <div class="sidebar-tab active" onclick="switchTab('notes')" id="tab-notes">📝 Notas</div>
             <div class="sidebar-tab" onclick="switchTab('diaries')" id="tab-diaries">📓 Diarios</div>
         </div>
 
-        <!-- Botones según la pestaña -->
         <div id="notes-actions">
             <button class="btn-new" onclick="createNewNote()"><i class='bx bx-plus'></i> Nueva Nota</button>
         </div>
         <div id="diaries-actions" style="display:none;">
-            <button class="btn-diary" onclick="createNewDiaryNote()"><i class='bx bx-book'></i> 📓 Nuevo Diario</button>
+            <button class="btn-new" onclick="createNewDiaryNote()"><i class='bx bx-book'></i> 📓 Nuevo Diario</button>
         </div>
 
-        <!-- Lista de Notas -->
         <div class="note-list active" id="noteList-notes"></div>
-        <!-- Lista de Diarios -->
         <div class="note-list" id="noteList-diaries"></div>
     </aside>
 
@@ -482,16 +440,16 @@
             
             <div class="tool-group">
                 <select class="tool-select" onchange="formatDoc('fontName', this.value)">
-                    <option value="Poppins" style="font-family: Poppins">Normal</option>
-                    <option value="Caveat, cursive" style="font-family: 'Caveat', cursive">Marcador Fino</option>
-                    <option value="Georgia" style="font-family: Georgia">Elegante</option>
-                    <option value="Playfair Display, serif" style="font-family: 'Playfair Display', serif">Playfair</option>
-                    <option value="Montserrat, sans-serif" style="font-family: 'Montserrat', sans-serif">Montserrat</option>
-                    <option value="Roboto, sans-serif" style="font-family: 'Roboto', sans-serif">Roboto</option>
-                    <option value="Lora, serif" style="font-family: 'Lora', serif">Lora</option>
-                    <option value="Dancing Script, cursive" style="font-family: 'Dancing Script', cursive">Dancing Script</option>
-                    <option value="Pacifico, cursive" style="font-family: 'Pacifico', cursive">Pacifico</option>
-                    <option value="Indie Flower, cursive" style="font-family: 'Indie Flower', cursive">Indie Flower</option>
+                    <option value="Poppins">Normal</option>
+                    <option value="Caveat, cursive">Marcador Fino</option>
+                    <option value="Georgia">Elegante</option>
+                    <option value="Playfair Display, serif">Playfair</option>
+                    <option value="Montserrat, sans-serif">Montserrat</option>
+                    <option value="Roboto, sans-serif">Roboto</option>
+                    <option value="Lora, serif">Lora</option>
+                    <option value="Dancing Script, cursive">Dancing Script</option>
+                    <option value="Pacifico, cursive">Pacifico</option>
+                    <option value="Indie Flower, cursive">Indie Flower</option>
                 </select>
                 <select class="tool-select" onchange="formatDoc('fontSize', this.value)">
                     <option value="3">Tamaño (M)</option>
@@ -521,9 +479,9 @@
             <div class="tool-group" style="margin-left: auto;">
                 <input type="file" id="mediaInput" accept="image/*,video/*,image/gif" style="display: none;" onchange="insertMedia(event)">
                 <button class="tool-btn" onclick="document.getElementById('mediaInput').click()" title="Insertar imagen/video"><i class='bx bx-image-add'></i></button>
-                <button class="tool-btn" onclick="openUrlModal('image')" title="Insertar GIF/Sticker desde URL"><i class='bx bx-happy-heart-eyes'></i></button>
-                <button class="tool-btn" onclick="openUrlModal('video')" title="Insertar video desde URL"><i class='bx bx-video-plus'></i></button>
-                <button class="tool-btn" onclick="toggleThemePalette()" title="Fondo de la nota"><i class='bx bx-palette'></i></button>
+                <button class="tool-btn" onclick="openUrlModal('image')" title="GIF/Sticker URL"><i class='bx bx-happy-heart-eyes'></i></button>
+                <button class="tool-btn" onclick="openUrlModal('video')" title="Video URL"><i class='bx bx-video-plus'></i></button>
+                <button class="tool-btn" onclick="toggleThemePalette()" title="Fondo"><i class='bx bx-palette'></i></button>
             </div>
         </header>
 
@@ -533,13 +491,9 @@
             <div class="color-dot" style="background: #e6dac3;" onclick="setNoteTheme('theme-papel')"></div>
             <div class="color-dot" style="background: #d4d4d4;" onclick="setNoteTheme('theme-amor')"></div>
             <div class="color-dot" style="background: #1a1a2e;" onclick="setNoteTheme('theme-noche')"></div>
-            
-            <!-- TEMAS DE IMÁGENES -->
             <div class="color-dot" style="background-image: url('assets/themes/fuego.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-fuego')" title="Fuego 🔥"></div>
             <div class="color-dot" style="background-image: url('assets/themes/tortugas.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-tortugas')" title="Tortugas 🐢"></div>
             <div class="color-dot" style="background-image: url('assets/themes/perfil.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-neon')" title="Perfil Neón 🖤"></div>
-            
-            <!-- NUEVOS TEMAS CON ANIMACIONES -->
             <div class="color-dot" style="background: linear-gradient(135deg, #1a1a2e, #2a2a4e); border: 1px solid var(--border);" onclick="setNoteTheme('theme-snow')" title="Nieve ❄️"></div>
             <div class="color-dot" style="background: linear-gradient(135deg, #0f2027, #2c5364); border: 1px solid var(--border);" onclick="setNoteTheme('theme-bubbles')" title="Burbujas 🫧"></div>
             <div class="color-dot" style="background: linear-gradient(135deg, #1a1a2e, #2c3e50); border: 1px solid var(--border);" onclick="setNoteTheme('theme-waves')" title="Olas 🌊"></div>
@@ -552,21 +506,22 @@
                 <input type="text" class="title-input" id="noteTitle" placeholder="Título..." oninput="triggerSave()">
                 <div class="editor-area" id="noteEditor" contenteditable="true" placeholder="Escribe aquí, mi amor..." oninput="triggerSave()"></div>
                 
+                <!-- BARRA FLOTANTE (ARRIBA) -->
                 <div class="floating-text-menu" id="floatingTextMenu">
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('copy'))" title="Copiar"><i class='bx bx-copy'></i></button>
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('cut'))" title="Cortar"><i class='bx bx-cut'></i></button>
                     <div class="ft-divider"></div>
                     <select class="ft-select" onmousedown="restoreSelection()" onchange="safeExec(() => execFloating('fontName', this.value))">
-                        <option value="Poppins" style="font-family: Poppins">Fuente</option>
-                        <option value="Caveat, cursive" style="font-family: 'Caveat', cursive">Marcador</option>
-                        <option value="Georgia" style="font-family: Georgia">Elegante</option>
-                        <option value="Playfair Display, serif" style="font-family: 'Playfair Display', serif">Playfair</option>
-                        <option value="Montserrat, sans-serif" style="font-family: 'Montserrat', sans-serif">Montserrat</option>
-                        <option value="Roboto, sans-serif" style="font-family: 'Roboto', sans-serif">Roboto</option>
-                        <option value="Lora, serif" style="font-family: 'Lora', serif">Lora</option>
-                        <option value="Dancing Script, cursive" style="font-family: 'Dancing Script', cursive">Dancing</option>
-                        <option value="Pacifico, cursive" style="font-family: 'Pacifico', cursive">Pacifico</option>
-                        <option value="Indie Flower, cursive" style="font-family: 'Indie Flower', cursive">Indie</option>
+                        <option value="Poppins">Fuente</option>
+                        <option value="Caveat, cursive">Marcador</option>
+                        <option value="Georgia">Elegante</option>
+                        <option value="Playfair Display, serif">Playfair</option>
+                        <option value="Montserrat, sans-serif">Montserrat</option>
+                        <option value="Roboto, sans-serif">Roboto</option>
+                        <option value="Lora, serif">Lora</option>
+                        <option value="Dancing Script, cursive">Dancing</option>
+                        <option value="Pacifico, cursive">Pacifico</option>
+                        <option value="Indie Flower, cursive">Indie</option>
                     </select>
                     <select class="ft-select" onmousedown="restoreSelection()" onchange="safeExec(() => execFloating('fontSize', this.value))">
                         <option value="1">S</option><option value="3" selected>M</option>
@@ -574,25 +529,25 @@
                     </select>
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('bold'))" title="Negrita"><i class='bx bx-bold'></i></button>
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('italic'))" title="Cursiva"><i class='bx bx-italic'></i></button>
-                    <!-- Resaltado solo aquí -->
-                    <div class="ft-color-wrapper" title="Color de fondo (resaltar)">
+                    <div class="ft-color-wrapper" title="Resaltar (haz clic para quitar)">
                         <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="safeExec(() => execFloating('hiliteColor', this.value))" value="#ffff00">
                     </div>
+                    <!-- Botón para quitar resaltado -->
+                    <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="removeHighlight()" title="Quitar resaltado"><i class='bx bx-eraser'></i></button>
                     <div class="ft-color-wrapper" title="Color de texto">
                         <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="safeExec(() => execFloating('foreColor', this.value))">
                     </div>
-                    <!-- NUEVAS HERRAMIENTAS EN BARRA FLOTANTE -->
                     <div class="ft-divider"></div>
-                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="insertTaskList()" title="Lista de tareas"><i class='bx bx-task'></i></button>
-                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="showEffectMenu()" title="Efectos de texto ✨"><i class='bx bx-wand'></i><span style="font-size:0.6rem; margin-left:2px;">✨</span></button>
-                    <!-- Modo Diario NO está aquí, solo en la barra lateral -->
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="insertChecklist()" title="Lista de tareas"><i class='bx bx-task'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="showEffectMenu()" title="Efectos de texto ✨"><i class='bx bx-wand'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="wrapParenthesis()" title="Recuadro para paréntesis"><i class='bx bx-border-all'></i></button>
+                    <!-- Botón para insertar cuadrícula (solo diario) -->
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="insertGrid()" title="Insertar cuadrícula (Diario)"><i class='bx bx-grid-alt'></i></button>
                 </div>
 
                 <div class="floating-insert-menu" id="insertMenu">
                     <div class="insert-row">
-                        <div class="ft-color-wrapper" title="Color de texto">
-                            <input type="color" onchange="safeExec(() => insertMenuCommand('foreColor', this.value))">
-                        </div>
+                        <div class="ft-color-wrapper"><input type="color" onchange="insertMenuCommand('foreColor', this.value)"></div>
                         <input type="file" id="insertMenuFileInput" accept="image/*,video/*,image/gif" style="display: none;" onchange="insertMediaFromMenu(event)">
                         <button class="ft-btn" onclick="document.getElementById('insertMenuFileInput').click()" title="Insertar imagen/video"><i class='bx bx-image-add'></i></button>
                         <button class="ft-btn" onclick="openUrlModalFromInsert('image')" title="Sticker/GIF URL"><i class='bx bx-happy-heart-eyes'></i></button>
@@ -622,22 +577,17 @@
     </main>
 
     <script>
-        // --- CAPA DE SEGURIDAD PARA NATIVINE ---
-        function safeExec(fn) {
-            try { fn(); } catch (e) { console.warn('Operación segura falló:', e); }
-        }
-        function safeGetStorage(key, defaultValue) {
-            try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : defaultValue; } catch (e) { return defaultValue; }
-        }
-        function safeSetStorage(key, value) {
-            try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
-        }
+        // --- SEGURIDAD Y UTILIDADES ---
+        function safeExec(fn) { try { fn(); } catch (e) { console.warn(e); } }
+        function safeGetStorage(key, def) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : def; } catch (e) { return def; } }
+        function safeSetStorage(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
 
+        // --- DATOS ---
         const cartasAmor = [
-            "Hola, Gabriela preciosa. Solo quería tomarme un momento para decirte lo increíblemente afortunado que me siento de tenerte en mi vida. A veces me quedo mirándote, incluso cuando no te das cuenta, y pienso en cómo llegaste a cambiar mi mundo por completo. Tienes esta forma mágica de hacer que hasta el día más gris se llene de colores. Admiro tu fuerza, tu inteligencia y esa sonrisa que me desarma cada vez que la veo. Eres mi mayor victoria. 🖤",
-            "Mi amor, hoy me desperté pensando en ti, como todos los días. Pero hoy fue diferente: me di cuenta de que cada pequeño detalle tuyo se ha vuelto esencial para mí. La forma en que ríes, cómo me miras cuando crees que no te veo, esa manía adorable de morderte el labio cuando te concentras. Todo eso me hace sentir que el universo entero conspiró para que nos encontráramos. Eres la estrella que guía mis pasos y el refugio donde quiero descansar siempre. Te amo con cada fibra de mi ser. ✨",
-            "Sé que a veces los días se vuelven grises y las preocupaciones pesan. Pero quiero que nunca olvides que aquí estoy yo, incondicional, para secar tus lágrimas y celebrar tus risas. No hay nada que no podamos superar juntos, porque nuestro amor es más fuerte que cualquier miedo. Eres mi equipo, mi compañera, mi mejor amiga y mi confidente. Cada obstáculo solo nos hace más fuertes y nos recuerda por qué elegimos caminar de la mano. Confía en nosotros, porque yo confío plenamente en ti. 🥰",
-            "¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso, tu capacidad de amar sin medida incluso cuando el mundo ha sido difícil contigo. Tienes una luz interior que no se apaga, una bondad que transforma todo lo que tocas. Verte sonreír es mi misión diaria, y verte triunfar es mi orgullo secreto. Prometo seguir construyendo un futuro donde nunca te falte amor, respeto ni chocolates a las 2 de la mañana. Porque te mereces todo lo bonito que la vida puede ofrecer. 💕",
+            "Hola, Gabriela preciosa. Solo quería tomarme un momento para decirte lo increíblemente afortunado que me siento de tenerte en mi vida. 🖤",
+            "Mi amor, cada pequeño detalle tuyo se ha vuelto esencial para mí. Eres la estrella que guía mis pasos. ✨",
+            "Sé que a veces los días se vuelven grises, pero aquí estoy yo, incondicional, para secar tus lágrimas. 🥰",
+            "¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso, tu capacidad de amar sin medida. 💕",
             "Gabi, cada vez que te veo sonreír, el mundo se detiene y solo existes tú.",
             "Si pudiera pedir un deseo cada noche, sería despertar a tu lado cada mañana, Gabi.",
             "Gabi, eres la musa de mis sueños y la estrella que guía mi camino.",
@@ -658,15 +608,15 @@
         let notes = safeGetStorage('nova_romance', []);
         let currentNoteId = null;
         let saveTimeout;
-        let selectedMedia = null; 
+        let selectedMedia = null;
         let savedRange = null;
-        
         let pressTimer;
         let isLongPressing = false;
         let contextNoteId = null;
         let pendingMediaType = null;
         let currentTab = 'notes';
 
+        // Referencias DOM
         const titleEl = document.getElementById('noteTitle');
         const editorEl = document.getElementById('noteEditor');
         const listNotes = document.getElementById('noteList-notes');
@@ -680,83 +630,58 @@
         const floatMenu = document.getElementById('floatingTextMenu');
         const insertMenu = document.getElementById('insertMenu');
         const editorContainer = document.getElementById('editorContainer');
-        const urlModal = document.getElementById('urlModal');
-        const urlInput = document.getElementById('urlInput');
-        const urlModalTitle = document.getElementById('urlModalTitle');
         const emojiPanel = document.getElementById('emojiPanel');
-
         const imgSizeSlider = document.getElementById('imgSizeSlider');
         const imgMarginHSlider = document.getElementById('imgMarginHSlider');
         const imgMarginVSlider = document.getElementById('imgMarginVSlider');
+        const urlModal = document.getElementById('urlModal');
+        const urlInput = document.getElementById('urlInput');
+        const urlModalTitle = document.getElementById('urlModalTitle');
 
         const emojis = ['❤️', '😊', '🌟', '🎉', '🔥', '😢', '😂', '💕', '✨', '🥰', '😍', '💔', '👍', '🙏', '💪', '🤗', '🎂', '💋', '🌈', '🦋'];
 
-        let pointerDownTime = 0;
-        let pointerDownTarget = null;
-        let isMediaLongPress = false;
-
+        // --- INICIO ---
         function initApp() {
             try {
                 if (safeGetStorage('nova_global_theme', 'light') === 'dark') toggleGlobalTheme(true);
-
+                // Carta mágica diaria
                 const randomLetter = cartasAmor[Math.floor(Math.random() * cartasAmor.length)];
-                const formattedLetter = `<div style="font-family: Caveat, cursive; font-size: 1.65rem; line-height: 1.7; text-align: center; padding: 20px 10px;">${randomLetter}<br><br><span style="color: #000000; font-size: 2.5rem; animation: heartbeat 1.5s infinite; display: inline-block; filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.3));">🖤</span></div>`;
-
+                const formattedLetter = `<div style="font-family: Caveat, cursive; font-size: 1.65rem; line-height: 1.7; text-align: center; padding: 20px 10px;">${randomLetter}<br><br><span style="color: #000; font-size: 2.5rem; animation: heartbeat 1.5s infinite; display: inline-block;">🖤</span></div>`;
                 let magicNoteIndex = notes.findIndex(n => n.id === 'nota_magica_diaria');
                 if (magicNoteIndex === -1) {
                     notes.unshift({ id: 'nota_magica_diaria', title: '💌 Para ti, hoy...', content: formattedLetter, theme: 'theme-amor', pinned: true, diaryMode: false, timestamp: Date.now() + 9999999 });
                 } else {
                     notes[magicNoteIndex].content = formattedLetter;
-                    notes[magicNoteIndex].timestamp = Date.now() + 9999999; 
+                    notes[magicNoteIndex].timestamp = Date.now() + 9999999;
                 }
                 saveData();
                 renderList();
-                openNote('nota_magica_diaria', false); 
+                openNote('nota_magica_diaria', false);
                 checkMobileMenu();
 
                 editorEl.addEventListener('paste', handlePaste);
-
                 emojis.forEach(emoji => {
                     const btn = document.createElement('button');
                     btn.className = 'emoji-btn';
                     btn.textContent = emoji;
-                    btn.addEventListener('click', () => {
-                        insertEmojiAtCursor(emoji);
-                        hideInsertMenu();
-                    });
+                    btn.addEventListener('click', () => { insertEmojiAtCursor(emoji); hideInsertMenu(); });
                     emojiPanel.appendChild(btn);
                 });
 
+                // Eventos para selección de medios
                 editorEl.addEventListener('pointerdown', handlePointerDown);
                 editorEl.addEventListener('pointerup', handlePointerUp);
                 editorEl.addEventListener('pointerleave', handlePointerLeave);
-                editorEl.addEventListener('pointercancel', handlePointerLeave);
-                
-                editorEl.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                });
-
-                editorContainer.addEventListener('scroll', () => {
-                    if (selectedMedia) updateMediaToolbarPosition(selectedMedia);
-                });
-                window.addEventListener('resize', () => {
-                    if (selectedMedia) updateMediaToolbarPosition(selectedMedia);
-                });
-            } catch (e) {
-                console.error('Error inicializando:', e);
-                document.getElementById('welcomeModal').classList.add('hidden');
-            }
+                editorEl.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
+                editorContainer.addEventListener('scroll', () => { if (selectedMedia) updateMediaToolbarPosition(selectedMedia); });
+                window.addEventListener('resize', () => { if (selectedMedia) updateMediaToolbarPosition(selectedMedia); });
+            } catch (e) { console.error(e); document.getElementById('welcomeModal').classList.add('hidden'); }
         }
 
-        function restoreSelection() {
-            if (savedRange) {
-                const sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(savedRange);
-            }
-        }
+        function closeWelcome() { document.getElementById('welcomeModal').classList.add('hidden'); }
+
+        // --- FUNCIONES DE SELECCIÓN Y RANGO ---
+        function restoreSelection() { if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); } }
 
         function handlePointerDown(e) {
             const target = e.target.closest('img, video');
@@ -765,14 +690,12 @@
             pointerDownTarget = target;
             isMediaLongPress = false;
         }
-
         function handlePointerUp(e) {
             if (!pointerDownTarget) return;
             const duration = Date.now() - pointerDownTime;
             const target = pointerDownTarget;
             pointerDownTarget = null;
             pointerDownTime = 0;
-
             if (duration > 400) {
                 e.preventDefault();
                 isMediaLongPress = true;
@@ -783,11 +706,7 @@
                 editorEl.focus();
             }
         }
-
-        function handlePointerLeave(e) {
-            pointerDownTarget = null;
-            pointerDownTime = 0;
-        }
+        function handlePointerLeave(e) { pointerDownTarget = null; pointerDownTime = 0; }
 
         editorEl.addEventListener('click', (e) => {
             const target = e.target.closest('img, video');
@@ -800,17 +719,6 @@
                 editorEl.focus();
             }
         });
-
-        function placeCursorAfterElement(element) {
-            if (!element || !editorEl.contains(element)) return;
-            const range = document.createRange();
-            range.setStartAfter(element);
-            range.collapse(true);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-            editorEl.focus();
-        }
 
         function insertHtmlAtCursor(html) {
             const sel = window.getSelection();
@@ -850,131 +758,94 @@
             editorEl.click();
         }
 
-        function resizeMedia(val) { 
-            if (selectedMedia) { 
-                selectedMedia.style.width = val + '%'; 
-                updateMediaToolbarPosition(selectedMedia);
-                triggerSave(); 
-            }
-            deselectMedia();
-            focusEditorAtEnd();
-        }
-        function changeMargin(type, val) {
-            if (!selectedMedia) return;
-            if (type === 'horizontal') {
-                selectedMedia.style.marginLeft = val + 'px';
-                selectedMedia.style.marginRight = val + 'px';
-            } else {
-                selectedMedia.style.marginTop = val + 'px';
-                selectedMedia.style.marginBottom = val + 'px';
-            }
-            updateMediaToolbarPosition(selectedMedia);
-            triggerSave();
-            deselectMedia();
-            focusEditorAtEnd();
-        }
-        function alignMedia(position) {
-            if (!selectedMedia) return;
-            const vMargin = imgMarginVSlider.value;
-            const hMargin = imgMarginHSlider.value;
-            if (position === 'left') { 
-                selectedMedia.style.display = 'inline'; 
-                selectedMedia.style.float = 'left'; 
-                selectedMedia.style.margin = vMargin + 'px ' + hMargin + 'px'; 
-            } else if (position === 'right') { 
-                selectedMedia.style.display = 'inline'; 
-                selectedMedia.style.float = 'right'; 
-                selectedMedia.style.margin = vMargin + 'px ' + hMargin + 'px'; 
-            } else { 
-                selectedMedia.style.display = 'block'; 
-                selectedMedia.style.float = 'none'; 
-                selectedMedia.style.margin = vMargin + 'px auto'; 
-            }
-            updateMediaToolbarPosition(selectedMedia);
-            triggerSave();
-            deselectMedia();
-            focusEditorAtEnd();
-        }
-
-        function copyMedia() {
-            if (!selectedMedia) return;
-            const clone = selectedMedia.cloneNode(true);
+        function placeCursorAfterElement(element) {
+            if (!element || !editorEl.contains(element)) return;
             const range = document.createRange();
-            range.selectNode(clone);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-            try { document.execCommand('copy'); } catch (e) {}
-            window.getSelection().removeAllRanges();
-            deselectMedia();
-            focusEditorAtEnd();
+            range.setStartAfter(element);
+            range.collapse(true);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            editorEl.focus();
         }
 
-        function duplicateMedia() {
-            if (!selectedMedia) return;
-            const clone = selectedMedia.cloneNode(true);
-            clone.classList.remove('selected-img');
-            if (selectedMedia.nextSibling) {
-                editorEl.insertBefore(clone, selectedMedia.nextSibling);
-            } else {
-                editorEl.appendChild(clone);
-            }
+        function insertEmojiAtCursor(emoji) {
+            const sel = window.getSelection();
+            if (sel.rangeCount) {
+                const range = sel.getRangeAt(0);
+                range.deleteContents();
+                const textNode = document.createTextNode(emoji);
+                range.insertNode(textNode);
+                range.setStartAfter(textNode);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else { editorEl.focus(); document.execCommand('insertText', false, emoji); }
             triggerSave();
-            deselectMedia();
-            placeCursorAfterElement(clone);
+            editorEl.focus();
         }
 
-        function deleteMedia() {
-            if (!selectedMedia) return;
-            const prevSibling = selectedMedia.previousSibling;
-            selectedMedia.remove();
-            triggerSave();
-            deselectMedia();
-            if (prevSibling && prevSibling.nodeType === 1 && (prevSibling.tagName === 'IMG' || prevSibling.tagName === 'VIDEO')) {
-                placeCursorAfterElement(prevSibling);
-            } else {
-                focusEditorAtEnd();
-            }
-        }
-
-        function closeWelcome() { document.getElementById('welcomeModal').classList.add('hidden'); }
-        
+        // --- FORMATO DE DOCUMENTO ---
         function formatDoc(command, value = null) {
             try {
                 const active = document.activeElement;
-                
-                // Si el foco está en el TÍTULO (input)
                 if (active === titleEl) {
-                    if (command === 'foreColor') {
-                        titleEl.style.color = value;
-                    } else if (command === 'hiliteColor') {
-                        titleEl.style.backgroundColor = value;
-                    } else if (command === 'fontName') {
-                        titleEl.style.fontFamily = value;
-                    } else if (command === 'fontSize') {
-                        let size = parseInt(value);
-                        // Tamaños en rem para el título
+                    if (command === 'foreColor') titleEl.style.color = value;
+                    else if (command === 'hiliteColor') titleEl.style.backgroundColor = value;
+                    else if (command === 'fontName') titleEl.style.fontFamily = value;
+                    else if (command === 'fontSize') {
                         const sizes = {1: '1.2rem', 2: '1.5rem', 3: '2rem', 4: '2.4rem', 5: '3rem', 6: '3.8rem'};
-                        titleEl.style.fontSize = sizes[size] || '2rem';
+                        titleEl.style.fontSize = sizes[parseInt(value)] || '2rem';
                     }
-                    // Otros comandos (negrita, cursiva, etc.) no aplican al título
                     return;
                 }
-                
-                // Si no es el título, aplicar al EDITOR (contenteditable)
-                editorEl.focus(); // Asegurar el foco para que funcione
-                document.execCommand('styleWithCSS', true, null); // Usa CSS nativo
-                
-                if (command === 'fontName') {
+                editorEl.focus();
+                document.execCommand('styleWithCSS', true, null);
+                if (command === 'fontName') document.execCommand('fontName', false, value);
+                else document.execCommand(command, false, value);
+                triggerSave();
+            } catch (e) { console.warn(e); }
+        }
+
+        function execFloating(command, value = null) {
+            restoreSelection();
+            try {
+                if (command === 'copy' || command === 'cut') {
+                    document.execCommand(command);
+                    floatMenu.style.opacity = '0.5';
+                    setTimeout(() => floatMenu.style.opacity = '1', 200);
+                } else if (command === 'fontName') {
+                    document.execCommand('styleWithCSS', true, null);
                     document.execCommand('fontName', false, value);
                 } else {
                     document.execCommand(command, false, value);
                 }
                 triggerSave();
-            } catch (e) {
-                console.warn('Error formatDoc:', e);
-            }
+                editorEl.focus();
+            } catch (e) {}
         }
-        
+
+        // --- RESALTADO ---
+        function removeHighlight() {
+            restoreSelection();
+            try {
+                // Ejecutar hiliteColor con un color nulo (transparente)
+                document.execCommand('hiliteColor', false, 'transparent');
+                // Alternativa: eliminar estilo de fondo directamente
+                const sel = window.getSelection();
+                if (sel.rangeCount) {
+                    const range = sel.getRangeAt(0);
+                    const span = range.commonAncestorContainer.closest ? range.commonAncestorContainer.closest('span') : null;
+                    if (span && span.style.backgroundColor) {
+                        span.style.backgroundColor = 'transparent';
+                    }
+                }
+                triggerSave();
+                editorEl.focus();
+            } catch (e) {}
+        }
+
+        // --- PASTE ---
         function handlePaste(e) {
             const items = (e.clipboardData || window.clipboardData).items;
             for (let i = 0; i < items.length; i++) {
@@ -997,7 +868,7 @@
                             range.collapse(true);
                             sel.removeAllRanges();
                             sel.addRange(range);
-                        } else { 
+                        } else {
                             editorEl.appendChild(img);
                             focusEditorAtEnd();
                         }
@@ -1009,165 +880,8 @@
                 }
             }
         }
-        function insertEmojiAtCursor(emoji) {
-            const sel = window.getSelection();
-            if (sel.rangeCount) {
-                const range = sel.getRangeAt(0);
-                range.deleteContents();
-                const textNode = document.createTextNode(emoji);
-                range.insertNode(textNode);
-                range.setStartAfter(textNode);
-                range.collapse(true);
-                sel.removeAllRanges();
-                sel.addRange(range);
-            } else { editorEl.focus(); document.execCommand('insertText', false, emoji); }
-            triggerSave();
-            editorEl.focus();
-        }
-        function clampMenu(menu, desiredLeft, containerWidth) {
-            const menuWidth = menu.offsetWidth;
-            let left = desiredLeft - menuWidth / 2;
-            if (left < 0) left = 0;
-            if (left + menuWidth > containerWidth) left = containerWidth - menuWidth;
-            menu.style.left = left + 'px';
-            menu.style.transform = 'none';
-        }
 
-        // Barra flotante también en el título
-        document.addEventListener('selectionchange', () => {
-            const selection = window.getSelection();
-            if (selectedMedia) { floatMenu.style.display = 'none'; savedRange = null; return; }
-            
-            const isInTitle = titleEl.contains(selection.anchorNode);
-            const isInEditor = editorEl.contains(selection.anchorNode);
-            
-            if (selection.rangeCount > 0 && !selection.isCollapsed && (isInEditor || isInTitle)) {
-                savedRange = selection.getRangeAt(0).cloneRange();
-                const range = selection.getRangeAt(0);
-                const rect = range.getBoundingClientRect();
-                const containerRect = editorContainer.getBoundingClientRect();
-                floatMenu.style.display = 'flex';
-                insertMenu.style.display = 'none';
-                
-                let topPos = (rect.bottom - containerRect.top) + editorContainer.scrollTop + 8;
-                if (topPos + floatMenu.offsetHeight > editorContainer.scrollHeight - 20) {
-                    topPos = (rect.top - containerRect.top) + editorContainer.scrollTop - floatMenu.offsetHeight - 8;
-                }
-                floatMenu.style.top = topPos + 'px';
-                const centerX = (rect.left - containerRect.left) + (rect.width / 2);
-                clampMenu(floatMenu, centerX, containerRect.width);
-            } else {
-                floatMenu.style.display = 'none';
-                savedRange = null;
-            }
-        });
-        
-        function execFloating(command, value = null) {
-            restoreSelection();
-            try {
-                if(command === 'copy' || command === 'cut') { 
-                    document.execCommand(command); 
-                    floatMenu.style.opacity = '0.5'; 
-                    setTimeout(() => floatMenu.style.opacity = '1', 200); 
-                } else if (command === 'fontName') {
-                    document.execCommand('styleWithCSS', true, null);
-                    document.execCommand('fontName', false, value);
-                } else {
-                    document.execCommand(command, false, value);
-                }
-                triggerSave();
-                editorEl.focus();
-            } catch (e) {}
-        }
-        
-        function showInsertMenu(e) {
-            floatMenu.style.display = 'none';
-            const containerRect = editorContainer.getBoundingClientRect();
-            const x = e.clientX - containerRect.left + editorContainer.scrollLeft;
-            const y = e.clientY - containerRect.top + editorContainer.scrollTop;
-            insertMenu.style.display = 'flex';
-            insertMenu.style.visibility = 'hidden';
-            requestAnimationFrame(() => {
-                const menuWidth = insertMenu.offsetWidth;
-                let left = x - menuWidth / 2;
-                if (left < 0) left = 0;
-                if (left + menuWidth > containerRect.width) left = containerRect.width - menuWidth;
-                insertMenu.style.left = left + 'px';
-                let topPos = y - 60;
-                if (topPos < 10) topPos = 10;
-                insertMenu.style.top = topPos + 'px';
-                insertMenu.style.visibility = 'visible';
-                insertMenu.style.transform = 'none';
-            });
-            editorEl.focus();
-        }
-        function hideInsertMenu() { insertMenu.style.display = 'none'; }
-        document.addEventListener('click', function(e) {
-            if (!insertMenu.contains(e.target) && e.target !== editorEl) hideInsertMenu();
-            if (!imgToolbar.contains(e.target) && !editorEl.contains(e.target)) deselectMedia();
-        });
-        function insertMenuCommand(command, value) { 
-            try {
-                if (command === 'fontName') {
-                    document.execCommand('styleWithCSS', true, null);
-                    document.execCommand('fontName', false, value);
-                } else {
-                    document.execCommand(command, false, value);
-                }
-                editorEl.focus(); 
-                triggerSave(); 
-            } catch (e) {}
-        }
-        function openUrlModalFromInsert(type) { hideInsertMenu(); openUrlModal(type); }
-        function insertMediaFromMenu(event) { insertMedia(event); hideInsertMenu(); }
-        function insertMedia(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) { 
-                    let mediaHtml = '';
-                    if (file.type.startsWith('video/')) {
-                        mediaHtml = `<video src="${e.target.result}" controls style="width: 50%; display: block; margin: 15px auto;"></video>`;
-                    } else {
-                        mediaHtml = `<img src="${e.target.result}" style="width: 80%; display: block; margin: 15px auto; clear: both;">`;
-                    }
-                    insertHtmlAtCursor(mediaHtml);
-                };
-                reader.readAsDataURL(file);
-            }
-            event.target.value = ''; 
-        }
-        function openUrlModal(type) {
-            pendingMediaType = type;
-            urlInput.value = '';
-            urlModalTitle.textContent = type === 'image' ? 'Pega la URL del GIF/Sticker' : 'Pega la URL del video (YouTube, Vimeo o directo)';
-            urlModal.classList.add('show');
-            setTimeout(() => urlInput.focus(), 100);
-        }
-        function closeUrlModal() { urlModal.classList.remove('show'); pendingMediaType = null; }
-        function confirmInsertUrl() {
-            const url = urlInput.value.trim();
-            if (!url) { alert('Por favor pega una URL válida.'); return; }
-            closeUrlModal();
-            insertMediaFromUrl(pendingMediaType, url);
-        }
-        function insertMediaFromUrl(type, url) {
-            let mediaHtml = '';
-            if (type === 'image') {
-                mediaHtml = `<img src="${url}" style="width: 80%; display: block; margin: 15px auto; clear: both;" onerror="this.style.display='none'">`;
-            } else if (type === 'video') {
-                const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/);
-                const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
-                if (ytMatch) {
-                    mediaHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>`;
-                } else if (vimeoMatch) {
-                    mediaHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;"><iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>`;
-                } else {
-                    mediaHtml = `<video src="${url}" controls style="width: 80%; display: block; margin: 15px auto;"></video>`;
-                }
-            }
-            insertHtmlAtCursor(mediaHtml);
-        }
+        // --- MEDIA ---
         function selectMediaElement(target) {
             if (selectedMedia && selectedMedia !== target) selectedMedia.classList.remove('selected-img');
             selectedMedia = target;
@@ -1181,12 +895,13 @@
             updateMediaToolbarPosition(target);
             imgToolbar.classList.add('show');
             floatMenu.style.display = 'none';
-            insertMenu.style.display = 'none';
         }
+
         function deselectMedia() {
             if (selectedMedia) { selectedMedia.classList.remove('selected-img'); selectedMedia = null; }
             imgToolbar.classList.remove('show');
         }
+
         function updateMediaToolbarPosition(mediaEl) {
             const rect = mediaEl.getBoundingClientRect();
             const toolbarW = imgToolbar.offsetWidth;
@@ -1199,262 +914,131 @@
             imgToolbar.style.top = top + 'px';
             imgToolbar.style.left = left + 'px';
         }
-        function toggleThemePalette() { document.getElementById('themePalette').classList.toggle('show'); }
-        function setNoteTheme(themeClass) {
-            wrapperEl.className = 'editor-wrapper'; 
-            if (themeClass !== 'default') wrapperEl.classList.add(themeClass);
-            const noteIndex = notes.findIndex(n => n.id === currentNoteId);
-            if (noteIndex !== -1) { notes[noteIndex].theme = themeClass; saveData(); }
-            document.getElementById('themePalette').classList.remove('show');
-        }
 
-        function renderList() {
-            listNotes.innerHTML = '';
-            listDiaries.innerHTML = '';
-            
-            let sortedNotes = notes.sort((a, b) => {
-                if (a.pinned === b.pinned) return b.timestamp - a.timestamp;
-                return a.pinned ? -1 : 1;
-            });
-            
-            sortedNotes.forEach(note => {
-                const div = document.createElement('div');
-                div.className = `note-item ${note.id === currentNoteId ? 'active' : ''}`;
-                div.id = `note-${note.id}`;
-                const startPress = (e) => {
-                    isLongPressing = false;
-                    pressTimer = setTimeout(() => { isLongPressing = true; if (navigator.vibrate) navigator.vibrate(50); openContextMenu(note.id); }, 500);
-                };
-                const cancelPress = () => { clearTimeout(pressTimer); };
-                div.addEventListener('touchstart', startPress, {passive: true});
-                div.addEventListener('touchend', cancelPress);
-                div.addEventListener('touchmove', cancelPress);
-                div.addEventListener('mousedown', startPress);
-                div.addEventListener('mouseup', cancelPress);
-                div.addEventListener('mouseleave', cancelPress);
-                div.addEventListener('click', (e) => {
-                    cancelPress();
-                    if (isLongPressing) { e.preventDefault(); isLongPressing = false; return; }
-                    openNote(note.id);
-                });
-                div.addEventListener('contextmenu', (e) => { e.preventDefault(); openContextMenu(note.id); });
-                const plainText = note.content.replace(/<[^>]+>/g, '') || '';
-                const preview = plainText.substring(0, 35) + '...';
-                const pinHtml = note.pinned ? `<i class='bx bxs-pin pinned-icon'></i>` : ``;
-                div.innerHTML = `<div class="note-title-list"><span style="overflow: hidden; text-overflow: ellipsis;">${note.title || 'Nueva nota'}</span>${pinHtml}</div><div style="font-size: 0.8rem; color: var(--text-muted);">${preview}</div>`;
-                
-                if (note.diaryMode) {
-                    listDiaries.appendChild(div);
-                } else {
-                    listNotes.appendChild(div);
-                }
-            });
-        }
-
-        function openContextMenu(id) {
-            contextNoteId = id;
-            const note = notes.find(n => n.id === id);
-            document.getElementById('sheetTitle').innerText = `Opciones: ${note.title || 'Nota sin título'}`;
-            const pinIcon = document.getElementById('sheetPinIcon');
-            const pinText = document.getElementById('sheetPinText');
-            if (note.pinned) { pinIcon.className = 'bx bx-pin'; pinText.innerText = 'Desfijar nota'; } 
-            else { pinIcon.className = 'bx bxs-pin'; pinText.innerText = 'Fijar arriba'; }
-            sheet.classList.add('show');
-            overlaySheet.classList.add('show');
-        }
-        function closeContextMenu() { sheet.classList.remove('show'); overlaySheet.classList.remove('show'); setTimeout(() => { contextNoteId = null; }, 300); }
-        function actionPinNote() { const noteIndex = notes.findIndex(n => n.id === contextNoteId); if (noteIndex !== -1) { notes[noteIndex].pinned = !notes[noteIndex].pinned; saveData(); renderList(); } closeContextMenu(); }
-        function actionDuplicateNote() {
-            const original = notes.find(n => n.id === contextNoteId);
-            if (original) {
-                const copy = JSON.parse(JSON.stringify(original)); 
-                copy.id = Date.now().toString();
-                copy.title = `${original.title} (Copia)`;
-                copy.timestamp = Date.now();
-                copy.pinned = false; 
-                notes.push(copy);
-                saveData(); renderList(); openNote(copy.id);
-                const newEl = document.getElementById(`note-${copy.id}`);
-                if(newEl) newEl.classList.add('creating');
-            }
-            closeContextMenu();
-        }
-        function actionDeleteNote() {
-            if (contextNoteId === 'nota_magica_diaria') { alert("¡Esta es mi carta diaria para ti! No puedes borrarla, amor. 🖤"); closeContextMenu(); return; }
-            if (confirm('¿Estás segura de eliminarla, amor?')) {
-                const idToDelete = contextNoteId; 
-                closeContextMenu();
-                const noteElement = document.getElementById(`note-${idToDelete}`);
-                if (noteElement) { noteElement.classList.add('deleting'); setTimeout(() => { executeDeleteLogic(idToDelete); }, 400); }
-                else { executeDeleteLogic(idToDelete); }
-            } else { closeContextMenu(); }
-        }
-        function executeDeleteLogic(idToDelete) {
-            notes = notes.filter(n => n.id !== idToDelete);
-            saveData();
-            if (currentNoteId === idToDelete) {
-                if (notes.length > 0) openNote(notes[0].id);
-                else { currentNoteId = null; titleEl.value = ''; editorEl.innerHTML = ''; wrapperEl.className = 'editor-wrapper'; }
-            }
-            renderList();
-        }
-        function openNote(id, autoCloseMenu = true) {
-            currentNoteId = id;
-            const note = notes.find(n => n.id === id);
-            if (note) {
-                titleEl.value = note.title;
-                editorEl.innerHTML = note.content;
-                wrapperEl.className = 'editor-wrapper';
-                if(note.theme && note.theme !== 'default') wrapperEl.classList.add(note.theme);
-                if(note.diaryMode) wrapperEl.classList.add('diary-mode');
-            }
+        function resizeMedia(val) { if (selectedMedia) { selectedMedia.style.width = val + '%'; updateMediaToolbarPosition(selectedMedia); triggerSave(); } deselectMedia(); focusEditorAtEnd(); }
+        function changeMargin(type, val) {
+            if (!selectedMedia) return;
+            if (type === 'horizontal') { selectedMedia.style.marginLeft = val + 'px'; selectedMedia.style.marginRight = val + 'px'; }
+            else { selectedMedia.style.marginTop = val + 'px'; selectedMedia.style.marginBottom = val + 'px'; }
+            updateMediaToolbarPosition(selectedMedia);
+            triggerSave();
             deselectMedia();
-            renderList();
-            if (autoCloseMenu && window.innerWidth <= 768 && sidebar.classList.contains('open')) { toggleSidebar(); }
+            focusEditorAtEnd();
         }
-        function createNewNote() {
-            const newNote = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, diaryMode: false, timestamp: Date.now() };
-            notes.push(newNote);
-            currentNoteId = newNote.id;
-            saveData();
-            openNote(newNote.id);
-            titleEl.focus();
-            setTimeout(() => { const newEl = document.getElementById(`note-${newNote.id}`); if(newEl) newEl.classList.add('creating'); }, 50);
+        function alignMedia(position) {
+            if (!selectedMedia) return;
+            const vMargin = imgMarginVSlider.value;
+            const hMargin = imgMarginHSlider.value;
+            if (position === 'left') { selectedMedia.style.display = 'inline'; selectedMedia.style.float = 'left'; selectedMedia.style.margin = vMargin + 'px ' + hMargin + 'px'; }
+            else if (position === 'right') { selectedMedia.style.display = 'inline'; selectedMedia.style.float = 'right'; selectedMedia.style.margin = vMargin + 'px ' + hMargin + 'px'; }
+            else { selectedMedia.style.display = 'block'; selectedMedia.style.float = 'none'; selectedMedia.style.margin = vMargin + 'px auto'; }
+            updateMediaToolbarPosition(selectedMedia);
+            triggerSave();
+            deselectMedia();
+            focusEditorAtEnd();
         }
-        function createNewDiaryNote() {
-            // Contenido inicial con cuadrícula y texto de diario
-            const diaryContent = `
-                <div style="font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 2.1rem; text-align: center; padding-bottom: 20px;">
-                    📓 Mi Diario<br>
-                    <span style="font-size:0.9rem; opacity:0.6;">Fecha: ${new Date().toLocaleDateString()}</span>
-                </div>
-                <div style="font-family: 'Caveat', cursive; margin-bottom: 20px;">
-                    <p style="margin-bottom:15px;">Hoy quiero recordar lo mucho que te amo, Gabi. Cada momento a tu lado es un tesoro.</p>
-                    <div class="diary-tools">
-                        <button onclick="insertGrid(this)">📊 Insertar Cuadrícula (5x5)</button>
-                        <button onclick="insertGridLarge(this)">📊 Insertar Cuadrícula Grande</button>
-                    </div>
-                </div>
-                <div style="font-family: 'Caveat', cursive; margin-top:20px; border-top:1px dashed #b0a090; padding-top:20px;">
-                    <p style="opacity:0.7; font-size:1rem;">✨ Usa el botón "Insertar Cuadrícula" para agregar una tabla estilo Excel para tus cálculos.</p>
-                </div>
-            `;
-            const newNote = { id: Date.now().toString(), title: '📓 Mi Diario', content: diaryContent, theme: 'default', pinned: false, diaryMode: true, timestamp: Date.now() };
-            notes.push(newNote);
-            currentNoteId = newNote.id;
-            saveData();
-            openNote(newNote.id);
-            titleEl.focus();
-            setTimeout(() => { const newEl = document.getElementById(`note-${newNote.id}`); if(newEl) newEl.classList.add('creating'); }, 50);
+        function copyMedia() { if (selectedMedia) { const clone = selectedMedia.cloneNode(true); const range = document.createRange(); range.selectNode(clone); window.getSelection().removeAllRanges(); window.getSelection().addRange(range); try { document.execCommand('copy'); } catch (e) {} window.getSelection().removeAllRanges(); deselectMedia(); focusEditorAtEnd(); } }
+        function duplicateMedia() {
+            if (!selectedMedia) return;
+            const clone = selectedMedia.cloneNode(true);
+            clone.classList.remove('selected-img');
+            if (selectedMedia.nextSibling) editorEl.insertBefore(clone, selectedMedia.nextSibling);
+            else editorEl.appendChild(clone);
+            triggerSave();
+            deselectMedia();
+            placeCursorAfterElement(clone);
         }
-        function triggerSave() {
-            if (!currentNoteId || currentNoteId === 'nota_magica_diaria') return;
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => {
-                const noteIndex = notes.findIndex(n => n.id === currentNoteId);
-                if (noteIndex !== -1) {
-                    notes[noteIndex].title = titleEl.value;
-                    notes[noteIndex].content = editorEl.innerHTML;
-                    notes[noteIndex].timestamp = Date.now();
-                    saveData();
-                    renderList();
-                }
-            }, 500);
+        function deleteMedia() {
+            if (!selectedMedia) return;
+            const prevSibling = selectedMedia.previousSibling;
+            selectedMedia.remove();
+            triggerSave();
+            deselectMedia();
+            if (prevSibling && prevSibling.nodeType === 1 && (prevSibling.tagName === 'IMG' || prevSibling.tagName === 'VIDEO')) placeCursorAfterElement(prevSibling);
+            else focusEditorAtEnd();
         }
-        function saveData() { safeSetStorage('nova_romance', notes); }
-        function toggleGlobalTheme(forceDark = false) {
-            const body = document.body;
-            const icon = document.getElementById('themeIcon');
-            if (forceDark || body.getAttribute('data-theme') !== 'dark') {
-                body.setAttribute('data-theme', 'dark'); icon.className = 'bx bx-sun';
-                safeSetStorage('nova_global_theme', 'dark');
+        function insertMedia(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    let mediaHtml = '';
+                    if (file.type.startsWith('video/')) mediaHtml = `<video src="${e.target.result}" controls style="width: 50%; display: block; margin: 15px auto;"></video>`;
+                    else mediaHtml = `<img src="${e.target.result}" style="width: 80%; display: block; margin: 15px auto; clear: both;">`;
+                    insertHtmlAtCursor(mediaHtml);
+                };
+                reader.readAsDataURL(file);
+            }
+            event.target.value = '';
+        }
+        function insertMediaFromMenu(event) { insertMedia(event); hideInsertMenu(); }
+        function openUrlModal(type) {
+            pendingMediaType = type;
+            urlInput.value = '';
+            urlModalTitle.textContent = type === 'image' ? 'Pega la URL del GIF/Sticker' : 'Pega la URL del video (YouTube, Vimeo o directo)';
+            urlModal.style.display = 'flex';
+            setTimeout(() => urlInput.focus(), 100);
+        }
+        function closeUrlModal() { urlModal.style.display = 'none'; pendingMediaType = null; }
+        function confirmInsertUrl() {
+            const url = urlInput.value.trim();
+            if (!url) { alert('Por favor pega una URL válida.'); return; }
+            closeUrlModal();
+            insertMediaFromUrl(pendingMediaType, url);
+        }
+        function insertMediaFromUrl(type, url) {
+            let mediaHtml = '';
+            if (type === 'image') {
+                mediaHtml = `<img src="${url}" style="width: 80%; display: block; margin: 15px auto; clear: both;" onerror="this.style.display='none'">`;
+            } else if (type === 'video') {
+                const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/);
+                const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+                if (ytMatch) mediaHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>`;
+                else if (vimeoMatch) mediaHtml = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;"><iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>`;
+                else mediaHtml = `<video src="${url}" controls style="width: 80%; display: block; margin: 15px auto;"></video>`;
+            }
+            insertHtmlAtCursor(mediaHtml);
+        }
+        function openUrlModalFromInsert(type) { hideInsertMenu(); openUrlModal(type); }
+
+        // --- SELECCIÓN DE TEXTO -> BARRA FLOTANTE ---
+        document.addEventListener('selectionchange', () => {
+            const selection = window.getSelection();
+            if (selectedMedia) { floatMenu.style.display = 'none'; savedRange = null; return; }
+
+            // Detectar si la selección está en el título o en el editor
+            const isInTitle = titleEl.contains(selection.anchorNode);
+            const isInEditor = editorEl.contains(selection.anchorNode);
+
+            if (selection.rangeCount > 0 && !selection.isCollapsed && (isInEditor || isInTitle)) {
+                savedRange = selection.getRangeAt(0).cloneRange();
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                const containerRect = editorContainer.getBoundingClientRect();
+
+                floatMenu.style.display = 'flex';
+                insertMenu.style.display = 'none';
+
+                // Barra arriba del texto seleccionado
+                let topPos = (rect.top - containerRect.top) + editorContainer.scrollTop - floatMenu.offsetHeight - 10;
+                if (topPos < 0) topPos = (rect.bottom - containerRect.top) + editorContainer.scrollTop + 10;
+
+                floatMenu.style.top = topPos + 'px';
+                const centerX = (rect.left - containerRect.left) + (rect.width / 2);
+                const menuWidth = floatMenu.offsetWidth;
+                let left = centerX - menuWidth / 2;
+                if (left < 0) left = 0;
+                if (left + menuWidth > containerRect.width) left = containerRect.width - menuWidth;
+                floatMenu.style.left = left + 'px';
+                floatMenu.style.transform = 'none';
             } else {
-                body.removeAttribute('data-theme'); icon.className = 'bx bx-moon';
-                safeSetStorage('nova_global_theme', 'light');
+                floatMenu.style.display = 'none';
+                savedRange = null;
             }
-        }
-        function toggleSidebar() { 
-            sidebar.classList.toggle('open'); 
-            if (sidebar.classList.contains('open')) { sidebarOverlay.classList.add('show'); } 
-            else { sidebarOverlay.classList.remove('show'); }
-            checkMobileMenu(); 
-        }
-        function checkMobileMenu() {
-            const closeBtn = document.getElementById('closeSidebarBtn');
-            if(window.innerWidth <= 768) {
-                closeBtn.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
-                if(!sidebar.classList.contains('open')) sidebarOverlay.classList.remove('show');
-            } else { closeBtn.style.display = 'none'; sidebarOverlay.classList.remove('show'); }
-        }
-        window.addEventListener('resize', checkMobileMenu);
-        initApp();
+        });
 
-        // --- FUNCIONES PARA PESTAÑAS DE LA BARRA LATERAL ---
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.sidebar-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            
-            document.getElementById('notes-actions').style.display = tab === 'notes' ? 'block' : 'none';
-            document.getElementById('diaries-actions').style.display = tab === 'diaries' ? 'block' : 'none';
-            
-            document.getElementById('noteList-notes').classList.toggle('active', tab === 'notes');
-            document.getElementById('noteList-diaries').classList.toggle('active', tab === 'diaries');
-        }
-
-        // --- FUNCIONES DE DIARIO (INSERTAR CUADRÍCULA) ---
-        function insertGrid(btn) {
-            // Insertar cuadrícula 5x5
-            const gridHtml = `
-                <table class="diary-grid">
-                    <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
-                    <tr><th>1</th><td></td><td></td><td></td><td></td></tr>
-                    <tr><th>2</th><td></td><td></td><td></td><td></td></tr>
-                    <tr><th>3</th><td></td><td></td><td></td><td></td></tr>
-                    <tr><th>4</th><td></td><td></td><td></td><td></td></tr>
-                    <tr><th>5</th><td></td><td></td><td></td><td></td></tr>
-                </table>
-            `;
-            // Insertar donde está el cursor o al final del editor
-            insertHtmlAtCursor(gridHtml);
-            // Hacer que las celdas sean editables
-            setTimeout(() => {
-                document.querySelectorAll('.diary-grid td').forEach(td => {
-                    td.setAttribute('contenteditable', 'true');
-                    td.style.cursor = 'text';
-                });
-            }, 100);
-        }
-
-        function insertGridLarge(btn) {
-            // Cuadrícula más grande 8x8
-            let html = `<table class="diary-grid">`;
-            // Encabezados
-            html += `<tr><th></th>`;
-            for (let i = 0; i < 8; i++) {
-                html += `<th>${String.fromCharCode(65 + i)}</th>`;
-            }
-            html += `</tr>`;
-            // Filas
-            for (let r = 1; r <= 8; r++) {
-                html += `<tr><th>${r}</th>`;
-                for (let c = 0; c < 8; c++) {
-                    html += `<td></td>`;
-                }
-                html += `</tr>`;
-            }
-            html += `</table>`;
-            insertHtmlAtCursor(html);
-            setTimeout(() => {
-                document.querySelectorAll('.diary-grid td').forEach(td => {
-                    td.setAttribute('contenteditable', 'true');
-                    td.style.cursor = 'text';
-                });
-            }, 100);
-        }
-
-        // --- NUEVAS FUNCIONES: LISTA DE TAREAS Y EFECTOS ---
-        function insertTaskList() {
+        // --- INSERCIÓN DE LISTA DE TAREAS (CHECKLIST) ---
+        function insertChecklist() {
             const id = Date.now();
             const html = `<div class="task-list-container" data-id="${id}">
                 <ul class="task-list">
@@ -1474,18 +1058,14 @@
                 </div>
             </div>`;
             insertHtmlAtCursor(html);
-            
             setTimeout(() => {
                 const container = document.querySelector(`[data-id="${id}"]`);
                 if (container) {
                     container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                         cb.addEventListener('change', function() {
                             const li = this.closest('li');
-                            if (this.checked) {
-                                li.classList.add('done');
-                            } else {
-                                li.classList.remove('done');
-                            }
+                            if (this.checked) li.classList.add('done');
+                            else li.classList.remove('done');
                         });
                     });
                 }
@@ -1506,11 +1086,8 @@
             ul.appendChild(li);
             li.querySelector('input[type="checkbox"]').addEventListener('change', function() {
                 const li = this.closest('li');
-                if (this.checked) {
-                    li.classList.add('done');
-                } else {
-                    li.classList.remove('done');
-                }
+                if (this.checked) li.classList.add('done');
+                else li.classList.remove('done');
             });
         }
 
@@ -1519,15 +1096,38 @@
             li.style.transition = 'all 0.2s';
             li.style.transform = 'scale(0.9)';
             li.style.opacity = '0';
-            setTimeout(() => {
-                li.remove();
-                triggerSave();
-            }, 200);
+            setTimeout(() => { li.remove(); triggerSave(); }, 200);
         }
 
+        // --- RECUADRO PARA PARÉNTESIS ---
+        function wrapParenthesis() {
+            restoreSelection();
+            const sel = window.getSelection();
+            if (!sel.rangeCount) return;
+            const range = sel.getRangeAt(0);
+            // Solo afectar si hay texto seleccionado
+            if (range.collapsed) return;
+
+            // Extraer el contenido seleccionado
+            const fragment = range.extractContents();
+            const span = document.createElement('span');
+            span.className = 'parenthesis-box';
+            span.appendChild(fragment);
+            range.insertNode(span);
+            // Colocar el cursor después del span
+            const newRange = document.createRange();
+            newRange.setStartAfter(span);
+            newRange.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(newRange);
+            triggerSave();
+            editorEl.focus();
+        }
+
+        // --- EFECTOS DE TEXTO ---
         function showEffectMenu() {
             floatMenu.style.display = 'none';
-            
+            // Crear menú flotante para efectos
             const menu = document.createElement('div');
             menu.style.position = 'fixed';
             menu.style.top = '50%';
@@ -1568,22 +1168,545 @@
         function applyEffect(className) {
             closeEffectMenu();
             restoreSelection();
-            // Tomar el texto seleccionado
-            const selection = window.getSelection();
-            let selectedText = selection.toString().trim();
-            
+            const sel = window.getSelection();
+            if (!sel.rangeCount) return;
+            const range = sel.getRangeAt(0);
+
             // Si no hay texto seleccionado, pedir
+            let selectedText = range.toString().trim();
             if (!selectedText) {
                 selectedText = prompt("No hay texto seleccionado. Escribe el texto que quieres animar:", "Tu texto aquí ✨");
                 if (selectedText === null || selectedText.trim() === '') return;
+                // Insertar el texto y animarlo
+                const html = `<span class="${className}">${selectedText}</span>`;
+                insertHtmlAtCursor(html);
+                return;
             }
-            
-            const html = `<span class="${className}">${selectedText}</span>`;
-            insertHtmlAtCursor(html);
+
+            // Texto seleccionado, preservar formato
+            const fragment = range.extractContents();
+            const span = document.createElement('span');
+            span.className = className;
+            span.appendChild(fragment);
+            range.insertNode(span);
+            // Colocar cursor después
+            const newRange = document.createRange();
+            newRange.setStartAfter(span);
+            newRange.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(newRange);
+            triggerSave();
+            editorEl.focus();
         }
 
-        // Sobrescribir la función original de applyEffect si existe
-        // (No hay conflicto porque la anterior usaba prompt y no estaba definida globalmente)
+        // --- MODO DIARIO (CUADERNO) ---
+        function toggleDiaryMode(diaryNote) {
+            // Esta función se llama al abrir una nota con diaryMode = true
+            const wrapper = document.getElementById('editorWrapper');
+            const title = document.getElementById('noteTitle');
+            const editor = document.getElementById('noteEditor');
+
+            if (diaryNote) {
+                wrapper.classList.add('diary-mode');
+                title.style.display = 'none';
+                editor.style.display = 'none';
+
+                // Crear la estructura del cuaderno si no existe
+                let notebook = wrapper.querySelector('.diary-notebook');
+                if (!notebook) {
+                    notebook = document.createElement('div');
+                    notebook.className = 'diary-notebook';
+                    notebook.innerHTML = `
+                        <div class="page-container" id="pageContainer">
+                            <div class="page" id="diaryPage0" contenteditable="true" spellcheck="false" style="font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 2.1rem; color: #3d3122; background: transparent; padding: 40px 50px;">
+                                📓 Mi Diario<br><br>
+                                <p>Hoy quiero recordar lo mucho que te amo, Gabi.</p>
+                                <div style="margin-top:20px;">
+                                    <button onclick="insertGrid()" style="background:transparent; border:1px solid #b0a090; padding:4px 12px; border-radius:15px; cursor:pointer; font-family: 'Caveat', cursive;">📊 Insertar Cuadrícula (5x5)</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="diary-nav">
+                            <button onclick="changePage(-1)">◀ Anterior</button>
+                            <button onclick="changePage(1)">Siguiente ▶</button>
+                        </div>
+                        <div class="diary-tools">
+                            <button onclick="insertGrid()">📊 Cuadrícula</button>
+                            <button onclick="addPage()">➕ Página</button>
+                        </div>
+                    `;
+                    wrapper.appendChild(notebook);
+                    // Agregar event listeners para input/save
+                    const pages = notebook.querySelectorAll('.page');
+                    pages.forEach(page => {
+                        page.addEventListener('input', triggerSave);
+                        page.addEventListener('blur', triggerSave);
+                    });
+                }
+
+                // Cargar contenido existente desde la nota
+                const content = notes.find(n => n.id === currentNoteId)?.content || '';
+                // Buscar la página 0
+                const page0 = document.getElementById('diaryPage0');
+                if (page0 && content) {
+                    // Intentar parsear el contenido como JSON para páginas
+                    try {
+                        const pagesData = JSON.parse(content);
+                        if (Array.isArray(pagesData)) {
+                            // Reconstruir las páginas
+                            const container = document.getElementById('pageContainer');
+                            container.innerHTML = '';
+                            pagesData.forEach((text, idx) => {
+                                const div = document.createElement('div');
+                                div.className = 'page';
+                                div.id = `diaryPage${idx}`;
+                                div.contentEditable = true;
+                                div.spellcheck = false;
+                                div.style.fontFamily = "'Caveat', cursive";
+                                div.style.fontSize = "1.2rem";
+                                div.style.lineHeight = "2.1rem";
+                                div.style.color = "#3d3122";
+                                div.style.background = "transparent";
+                                div.style.padding = "40px 50px";
+                                div.innerHTML = text;
+                                container.appendChild(div);
+                            });
+                            return;
+                        }
+                    } catch (e) {
+                        // Si no es JSON, asumir que es contenido de la página 0
+                        if (page0) page0.innerHTML = content;
+                    }
+                }
+            } else {
+                // Modo normal
+                wrapper.classList.remove('diary-mode');
+                title.style.display = '';
+                editor.style.display = '';
+                // Eliminar el notebook
+                const notebook = wrapper.querySelector('.diary-notebook');
+                if (notebook) notebook.remove();
+            }
+        }
+
+        // Variables globales para el diario
+        let currentPageIndex = 0;
+
+        function changePage(direction) {
+            const container = document.getElementById('pageContainer');
+            if (!container) return;
+            const totalPages = container.children.length;
+            const newIndex = currentPageIndex + direction;
+            if (newIndex < 0 || newIndex >= totalPages) return;
+            currentPageIndex = newIndex;
+            container.style.transform = `translateX(-${currentPageIndex * 100}%)`;
+        }
+
+        function addPage() {
+            const container = document.getElementById('pageContainer');
+            if (!container) return;
+            const newId = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'page';
+            div.id = `diaryPage${newId}`;
+            div.contentEditable = true;
+            div.spellcheck = false;
+            div.style.fontFamily = "'Caveat', cursive";
+            div.style.fontSize = "1.2rem";
+            div.style.lineHeight = "2.1rem";
+            div.style.color = "#3d3122";
+            div.style.background = "transparent";
+            div.style.padding = "40px 50px";
+            div.innerHTML = '<br>';
+            container.appendChild(div);
+            // Guardar inmediatamente
+            saveDiaryPages();
+        }
+
+        function saveDiaryPages() {
+            // Guardar todas las páginas como un array en la nota
+            const container = document.getElementById('pageContainer');
+            if (!container) return;
+            const pages = container.querySelectorAll('.page');
+            const data = Array.from(pages).map(page => page.innerHTML);
+            const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+            if (noteIndex !== -1) {
+                notes[noteIndex].content = JSON.stringify(data);
+                saveData();
+            }
+        }
+
+        function insertGrid() {
+            // Insertar cuadrícula en la página actual del diario
+            const container = document.getElementById('pageContainer');
+            if (!container) return;
+            const currentPage = container.children[currentPageIndex];
+            if (!currentPage) return;
+            
+            const gridHtml = `
+                <table class="diary-grid">
+                    <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+                    <tr><th>1</th><td></td><td></td><td></td><td></td></tr>
+                    <tr><th>2</th><td></td><td></td><td></td><td></td></tr>
+                    <tr><th>3</th><td></td><td></td><td></td><td></td></tr>
+                    <tr><th>4</th><td></td><td></td><td></td><td></td></tr>
+                    <tr><th>5</th><td></td><td></td><td></td><td></td></tr>
+                </table>
+            `;
+            // Insertar en la posición del cursor o al final
+            const sel = window.getSelection();
+            if (currentPage.contains(sel.anchorNode)) {
+                // Insertar en la posición del cursor
+                const range = sel.getRangeAt(0);
+                range.deleteContents();
+                const fragment = range.createContextualFragment(gridHtml);
+                range.insertNode(fragment);
+                // Colocar cursor después de la tabla
+                range.setStartAfter(fragment);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else {
+                // Insertar al final de la página
+                currentPage.insertAdjacentHTML('beforeend', gridHtml);
+                // Scrollear al final
+                currentPage.scrollTop = currentPage.scrollHeight;
+            }
+            // Hacer editables las celdas
+            setTimeout(() => {
+                currentPage.querySelectorAll('.diary-grid td').forEach(td => {
+                    td.setAttribute('contenteditable', 'true');
+                    td.style.cursor = 'text';
+                });
+            }, 50);
+            // Guardar
+            saveDiaryPages();
+        }
+
+        // --- PESTAÑAS DE LA BARRA LATERAL ---
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.sidebar-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.getElementById('notes-actions').style.display = tab === 'notes' ? 'block' : 'none';
+            document.getElementById('diaries-actions').style.display = tab === 'diaries' ? 'block' : 'none';
+            document.getElementById('noteList-notes').classList.toggle('active', tab === 'notes');
+            document.getElementById('noteList-diaries').classList.toggle('active', tab === 'diaries');
+        }
+
+        // --- RENDERIZADO DE LISTA ---
+        function renderList() {
+            listNotes.innerHTML = '';
+            listDiaries.innerHTML = '';
+            let sortedNotes = notes.sort((a, b) => {
+                if (a.pinned === b.pinned) return b.timestamp - a.timestamp;
+                return a.pinned ? -1 : 1;
+            });
+            sortedNotes.forEach(note => {
+                const div = document.createElement('div');
+                div.className = `note-item ${note.id === currentNoteId ? 'active' : ''}`;
+                div.id = `note-${note.id}`;
+                const startPress = (e) => {
+                    isLongPressing = false;
+                    pressTimer = setTimeout(() => { isLongPressing = true; if (navigator.vibrate) navigator.vibrate(50); openContextMenu(note.id); }, 500);
+                };
+                const cancelPress = () => { clearTimeout(pressTimer); };
+                div.addEventListener('touchstart', startPress, {passive: true});
+                div.addEventListener('touchend', cancelPress);
+                div.addEventListener('touchmove', cancelPress);
+                div.addEventListener('mousedown', startPress);
+                div.addEventListener('mouseup', cancelPress);
+                div.addEventListener('mouseleave', cancelPress);
+                div.addEventListener('click', (e) => {
+                    cancelPress();
+                    if (isLongPressing) { e.preventDefault(); isLongPressing = false; return; }
+                    openNote(note.id);
+                });
+                div.addEventListener('contextmenu', (e) => { e.preventDefault(); openContextMenu(note.id); });
+                const plainText = (note.content || '').replace(/<[^>]+>/g, '');
+                const preview = plainText.substring(0, 35) + (plainText.length > 35 ? '...' : '');
+                const pinHtml = note.pinned ? `<i class='bx bxs-pin pinned-icon'></i>` : ``;
+                div.innerHTML = `<div class="note-title-list"><span style="overflow: hidden; text-overflow: ellipsis;">${note.title || 'Nueva nota'}</span>${pinHtml}</div><div style="font-size: 0.8rem; color: var(--text-muted);">${preview}</div>`;
+                if (note.diaryMode) listDiaries.appendChild(div);
+                else listNotes.appendChild(div);
+            });
+        }
+
+        // --- MENÚ CONTEXTUAL (BOTTOM SHEET) ---
+        function openContextMenu(id) {
+            contextNoteId = id;
+            const note = notes.find(n => n.id === id);
+            document.getElementById('sheetTitle').innerText = `Opciones: ${note.title || 'Nota sin título'}`;
+            const pinIcon = document.getElementById('sheetPinIcon');
+            const pinText = document.getElementById('sheetPinText');
+            if (note.pinned) { pinIcon.className = 'bx bx-pin'; pinText.innerText = 'Desfijar nota'; }
+            else { pinIcon.className = 'bx bxs-pin'; pinText.innerText = 'Fijar arriba'; }
+            sheet.classList.add('show');
+            overlaySheet.classList.add('show');
+        }
+        function closeContextMenu() { sheet.classList.remove('show'); overlaySheet.classList.remove('show'); setTimeout(() => { contextNoteId = null; }, 300); }
+        function actionPinNote() { const idx = notes.findIndex(n => n.id === contextNoteId); if (idx !== -1) { notes[idx].pinned = !notes[idx].pinned; saveData(); renderList(); } closeContextMenu(); }
+        function actionDuplicateNote() {
+            const original = notes.find(n => n.id === contextNoteId);
+            if (original) {
+                const copy = JSON.parse(JSON.stringify(original));
+                copy.id = Date.now().toString();
+                copy.title = `${original.title} (Copia)`;
+                copy.timestamp = Date.now();
+                copy.pinned = false;
+                notes.push(copy);
+                saveData(); renderList(); openNote(copy.id);
+            }
+            closeContextMenu();
+        }
+        function actionDeleteNote() {
+            if (contextNoteId === 'nota_magica_diaria') { alert("¡Esta es mi carta diaria para ti! No puedes borrarla, amor. 🖤"); closeContextMenu(); return; }
+            if (confirm('¿Estás segura de eliminarla, amor?')) {
+                const idToDelete = contextNoteId;
+                closeContextMenu();
+                notes = notes.filter(n => n.id !== idToDelete);
+                saveData();
+                if (currentNoteId === idToDelete) {
+                    if (notes.length > 0) openNote(notes[0].id);
+                    else { currentNoteId = null; titleEl.value = ''; editorEl.innerHTML = ''; wrapperEl.className = 'editor-wrapper'; }
+                }
+                renderList();
+            } else { closeContextMenu(); }
+        }
+
+        // --- ABRIR NOTA ---
+        function openNote(id, autoCloseMenu = true) {
+            currentNoteId = id;
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                titleEl.value = note.title || '';
+                // Si es diario, cargar el contenido como páginas
+                if (note.diaryMode) {
+                    toggleDiaryMode(true);
+                    // Cargar páginas (el contenido se carga en toggleDiaryMode)
+                } else {
+                    toggleDiaryMode(false);
+                    editorEl.innerHTML = note.content || '';
+                }
+                wrapperEl.className = 'editor-wrapper';
+                if (note.theme && note.theme !== 'default') wrapperEl.classList.add(note.theme);
+            }
+            deselectMedia();
+            renderList();
+            if (autoCloseMenu && window.innerWidth <= 768 && sidebar.classList.contains('open')) toggleSidebar();
+        }
+
+        // --- CREAR NOTA / DIARIO ---
+        function createNewNote() {
+            const newNote = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, diaryMode: false, timestamp: Date.now() };
+            notes.push(newNote);
+            currentNoteId = newNote.id;
+            saveData();
+            openNote(newNote.id);
+            titleEl.focus();
+        }
+        function createNewDiaryNote() {
+            const newNote = { id: Date.now().toString(), title: '📓 Mi Diario', content: '[]', theme: 'default', pinned: false, diaryMode: true, timestamp: Date.now() };
+            notes.push(newNote);
+            currentNoteId = newNote.id;
+            saveData();
+            openNote(newNote.id);
+        }
+
+        // --- GUARDADO ---
+        function triggerSave() {
+            if (!currentNoteId || currentNoteId === 'nota_magica_diaria') return;
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                const noteIndex = notes.findIndex(n => n.id === currentNoteId);
+                if (noteIndex !== -1) {
+                    const note = notes[noteIndex];
+                    note.title = titleEl.value;
+                    // Si es diario, guardar páginas
+                    if (note.diaryMode) {
+                        saveDiaryPages();
+                    } else {
+                        note.content = editorEl.innerHTML;
+                    }
+                    note.timestamp = Date.now();
+                    saveData();
+                    renderList();
+                }
+            }, 500);
+        }
+        function saveData() { safeSetStorage('nova_romance', notes); }
+
+        // --- TEMAS Y PALETA ---
+        function toggleThemePalette() { document.getElementById('themePalette').classList.toggle('show'); }
+        function setNoteTheme(themeClass) {
+            wrapperEl.className = 'editor-wrapper';
+            if (themeClass !== 'default') wrapperEl.classList.add(themeClass);
+            const idx = notes.findIndex(n => n.id === currentNoteId);
+            if (idx !== -1) { notes[idx].theme = themeClass; saveData(); }
+            document.getElementById('themePalette').classList.remove('show');
+        }
+
+        // --- GLOBAL THEME ---
+        function toggleGlobalTheme(forceDark = false) {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            if (forceDark || body.getAttribute('data-theme') !== 'dark') {
+                body.setAttribute('data-theme', 'dark'); icon.className = 'bx bx-sun';
+                safeSetStorage('nova_global_theme', 'dark');
+            } else {
+                body.removeAttribute('data-theme'); icon.className = 'bx bx-moon';
+                safeSetStorage('nova_global_theme', 'light');
+            }
+        }
+
+        // --- SIDEBAR ---
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('show', sidebar.classList.contains('open'));
+            checkMobileMenu();
+        }
+        function checkMobileMenu() {
+            const closeBtn = document.getElementById('closeSidebarBtn');
+            if (window.innerWidth <= 768) {
+                closeBtn.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+                if (!sidebar.classList.contains('open')) sidebarOverlay.classList.remove('show');
+            } else { closeBtn.style.display = 'none'; sidebarOverlay.classList.remove('show'); }
+        }
+        window.addEventListener('resize', checkMobileMenu);
+
+        // --- INSERCIÓN MENÚ ---
+        function showInsertMenu(e) {
+            floatMenu.style.display = 'none';
+            const containerRect = editorContainer.getBoundingClientRect();
+            const x = e.clientX - containerRect.left + editorContainer.scrollLeft;
+            const y = e.clientY - containerRect.top + editorContainer.scrollTop;
+            insertMenu.style.display = 'flex';
+            insertMenu.style.visibility = 'hidden';
+            requestAnimationFrame(() => {
+                const menuWidth = insertMenu.offsetWidth;
+                let left = x - menuWidth / 2;
+                if (left < 0) left = 0;
+                if (left + menuWidth > containerRect.width) left = containerRect.width - menuWidth;
+                insertMenu.style.left = left + 'px';
+                let topPos = y - 60;
+                if (topPos < 10) topPos = 10;
+                insertMenu.style.top = topPos + 'px';
+                insertMenu.style.visibility = 'visible';
+                insertMenu.style.transform = 'none';
+            });
+            editorEl.focus();
+        }
+        function hideInsertMenu() { insertMenu.style.display = 'none'; }
+        document.addEventListener('click', function(e) {
+            if (!insertMenu.contains(e.target) && e.target !== editorEl) hideInsertMenu();
+            if (!imgToolbar.contains(e.target) && !editorEl.contains(e.target)) deselectMedia();
+        });
+        function insertMenuCommand(command, value) {
+            try {
+                if (command === 'fontName') { document.execCommand('styleWithCSS', true, null); document.execCommand('fontName', false, value); }
+                else { document.execCommand(command, false, value); }
+                editorEl.focus(); triggerSave();
+            } catch (e) {}
+        }
+
+        // --- URL MODAL ---
+        function confirmInsertUrl() {
+            const url = urlInput.value.trim();
+            if (!url) { alert('Por favor pega una URL válida.'); return; }
+            closeUrlModal();
+            insertMediaFromUrl(pendingMediaType, url);
+        }
+
+        // --- INICIALIZACIÓN ---
+        initApp();
+
+        // --- SOBRESCRITURA DE FUNCIONES PARA DIARIO ---
+        // Al abrir una nota, si es diario, invocar toggleDiaryMode correctamente
+        const originalOpenNote = openNote;
+        openNote = function(id, autoCloseMenu = true) {
+            currentNoteId = id;
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                titleEl.value = note.title || '';
+                if (note.diaryMode) {
+                    toggleDiaryMode(true);
+                    // Cargar contenido de páginas si existe
+                    try {
+                        const pagesData = JSON.parse(note.content || '[]');
+                        if (Array.isArray(pagesData) && pagesData.length > 0) {
+                            const container = document.getElementById('pageContainer');
+                            if (container) {
+                                container.innerHTML = '';
+                                pagesData.forEach((text, idx) => {
+                                    const div = document.createElement('div');
+                                    div.className = 'page';
+                                    div.id = `diaryPage${idx}`;
+                                    div.contentEditable = true;
+                                    div.spellcheck = false;
+                                    div.style.fontFamily = "'Caveat', cursive";
+                                    div.style.fontSize = "1.2rem";
+                                    div.style.lineHeight = "2.1rem";
+                                    div.style.color = "#3d3122";
+                                    div.style.background = "transparent";
+                                    div.style.padding = "40px 50px";
+                                    div.innerHTML = text;
+                                    container.appendChild(div);
+                                });
+                                currentPageIndex = 0;
+                                container.style.transform = 'translateX(0)';
+                            }
+                        } else {
+                            // Si no hay páginas, crear una
+                            const container = document.getElementById('pageContainer');
+                            if (container) {
+                                container.innerHTML = `
+                                    <div class="page" id="diaryPage0" contenteditable="true" spellcheck="false" style="font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 2.1rem; color: #3d3122; background: transparent; padding: 40px 50px;">
+                                        📓 Mi Diario<br><br>
+                                        <p>Hoy quiero recordar lo mucho que te amo, Gabi.</p>
+                                        <div style="margin-top:20px;">
+                                            <button onclick="insertGrid()" style="background:transparent; border:1px solid #b0a090; padding:4px 12px; border-radius:15px; cursor:pointer; font-family: 'Caveat', cursive;">📊 Insertar Cuadrícula</button>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        }
+                    } catch (e) {
+                        // Fallback
+                        const container = document.getElementById('pageContainer');
+                        if (container) {
+                            container.innerHTML = `
+                                <div class="page" id="diaryPage0" contenteditable="true" spellcheck="false" style="font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 2.1rem; color: #3d3122; background: transparent; padding: 40px 50px;">
+                                    📓 Mi Diario<br><br>
+                                    <p>Hoy quiero recordar lo mucho que te amo, Gabi.</p>
+                                    <div style="margin-top:20px;">
+                                        <button onclick="insertGrid()" style="background:transparent; border:1px solid #b0a090; padding:4px 12px; border-radius:15px; cursor:pointer; font-family: 'Caveat', cursive;">📊 Insertar Cuadrícula</button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                    // Asegurar eventos en las páginas
+                    const container = document.getElementById('pageContainer');
+                    if (container) {
+                        container.querySelectorAll('.page').forEach(page => {
+                            page.addEventListener('input', triggerSave);
+                            page.addEventListener('blur', triggerSave);
+                        });
+                    }
+                } else {
+                    toggleDiaryMode(false);
+                    editorEl.innerHTML = note.content || '';
+                }
+                wrapperEl.className = 'editor-wrapper';
+                if (note.theme && note.theme !== 'default') wrapperEl.classList.add(note.theme);
+            }
+            deselectMedia();
+            renderList();
+            if (autoCloseMenu && window.innerWidth <= 768 && sidebar.classList.contains('open')) toggleSidebar();
+        };
+
+        // --- GUARDADO AUTOMÁTICO EN DIARIO ---
+        // Ya se maneja en triggerSave y saveDiaryPages
     </script>
 </body>
 </html>
