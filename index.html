@@ -53,12 +53,20 @@
         .brand { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .theme-toggle, .menu-toggle { background: transparent; border: none; color: white; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s; }
         .theme-toggle:active { transform: rotate(45deg); }
+
+        .sidebar-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--bg-body); }
+        .sidebar-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: background 0.2s, color 0.2s; border-bottom: 2px solid transparent; color: var(--text-muted); }
+        .sidebar-tab.active { border-bottom-color: #111111; color: var(--text-main); background: var(--surface); }
+        [data-theme="dark"] .sidebar-tab.active { border-bottom-color: #ffffff; }
+
         .btn-new { background: #111111; color: white; border: none; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.2s; }
         .btn-new:active { transform: scale(0.95); }
         .btn-diary { background: #ffffff; color: #111111; border: 2px solid #111111; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 0 auto 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: transform 0.2s; }
         .btn-diary:active { transform: scale(0.95); }
         [data-theme="dark"] .btn-diary { background: #0e152e; color: #f0f2f8; border-color: #ffffff; }
-        .note-list { flex: 1; overflow-y: auto; padding: 0 15px 15px 15px; }
+
+        .note-list { flex: 1; overflow-y: auto; padding: 0 15px 15px 15px; display: none; }
+        .note-list.active { display: block; }
         
         .note-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; background: var(--bg-body); transition: var(--transition); border: 1px solid transparent; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .note-item.active { background: var(--surface); border-left: 4px solid #111111; border-color: var(--border); box-shadow: var(--shadow); }
@@ -105,7 +113,7 @@
         }
         
         .editor-area { 
-            min-height: 50vh; outline: none; font-size: 1.05rem; line-height: 1.6; 
+            min-height: 50vh; outline: none; font-size: 1rem; line-height: 1.6; 
             color: var(--text-main); transition: color 0.3s; padding-bottom: 150px;
             word-wrap: break-word;
             overflow-wrap: break-word;
@@ -158,6 +166,7 @@
             border: none; padding: 0; cursor: pointer;
         }
 
+        /* --- TEMAS EXISTENTES --- */
         .theme-sakura { background: linear-gradient(to bottom right, #ffe1e8, #ffb3c6) !important; color: #5c1a2d; }
         .theme-papel { background: #fdf5e6 !important; color: #3d3122; background-image: repeating-linear-gradient(transparent, transparent 31px, #d8d0c1 31px, #d8d0c1 32px); }
         .theme-amor { background: radial-gradient(circle, #fcfcfc 0%, #e6e6e6 100%) !important; color: #111111; }
@@ -200,6 +209,94 @@
         [data-theme="dark"] .theme-papel { background: #1a1714 !important; color: #d8d0c1; background-image: repeating-linear-gradient(transparent, transparent 31px, #362f27 31px, #362f27 32px); border: 1px solid #362f27; }
         [data-theme="dark"] .theme-amor { background: radial-gradient(circle, #1a1a1a 0%, #0d0d0d 100%) !important; color: #e6e6e6; border: 1px solid #333333; }
         [data-theme="dark"] .theme-noche { background: linear-gradient(135deg, #0b0b14, #080b12) !important; color: #e1e1e6; border: 1px solid #1c1c33; }
+
+        /* --- NUEVOS TEMAS CON ANIMACIONES MINIMALISTAS --- */
+        .theme-snow {
+            background: linear-gradient(135deg, #1a1a2e, #2a2a4e) !important;
+            position: relative;
+            color: #e0e0e0 !important;
+        }
+        .theme-snow::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(white 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.2;
+            pointer-events: none;
+            animation: snow 8s linear infinite;
+        }
+        @keyframes snow {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100px; }
+        }
+
+        .theme-bubbles {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364) !important;
+            color: #d0e0e0 !important;
+        }
+        .theme-bubbles::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 2px, transparent 2px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            animation: bubbles 6s ease-in-out infinite;
+        }
+        @keyframes bubbles {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+
+        .theme-waves {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #2c3e50) !important;
+            color: #d8d8e0 !important;
+        }
+        .theme-waves::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 80px);
+            pointer-events: none;
+            animation: waves 10s linear infinite;
+        }
+        @keyframes waves {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-80px); }
+        }
+
+        .theme-sparkle {
+            background: #1a1a2e !important;
+            color: #e0e0f0 !important;
+        }
+        .theme-sparkle::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.4) 0, transparent 20%),
+                        radial-gradient(circle at 70% 60%, rgba(255,255,255,0.2) 0, transparent 30%),
+                        radial-gradient(circle at 50% 90%, rgba(255,255,255,0.3) 0, transparent 25%);
+            pointer-events: none;
+            animation: sparkle 4s ease-in-out infinite;
+        }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .theme-aurora {
+            background: linear-gradient(135deg, #0d0d1a, #1a1a3e, #0d1a2e) !important;
+            background-size: 400% 400%;
+            animation: aurora 8s ease-in-out infinite;
+            color: #d0d0e8 !important;
+        }
+        @keyframes aurora {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
         .image-toolbar { 
             position: fixed; opacity: 0; pointer-events: none;
@@ -245,157 +342,7 @@
         .url-modal-actions button { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
         .btn-cancel { background: #ccc; } .btn-insert { background: #111; color: white; }
 
-        @media (max-width: 768px) {
-            .sidebar { position: fixed; left: -100%; height: 100%; width: 280px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
-            .sidebar.open { left: 0; }
-            .menu-toggle { display: block; color: var(--text-main); }
-            .editor-wrapper { padding: 20px 15px; border-radius: 12px; }
-            .title-input { font-size: 1.6rem; }
-        }
-
-        /* --- NUEVAS FUNCIONES: LISTA DE TAREAS, ANIMACIONES Y DIARIO --- */
-        .task-list-container {
-            margin: 15px 0;
-        }
-        .task-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .task-list li {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-        }
-        .task-list li input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid var(--border);
-            border-radius: 50%;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        .task-list li input[type="checkbox"]:checked {
-            background: #111;
-            border-color: #111;
-        }
-        .task-list li input[type="checkbox"]:checked::after {
-            content: '✓';
-            color: white;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-        .task-list li .task-text {
-            flex: 1;
-            padding: 2px 5px;
-            border-radius: 4px;
-            outline: none;
-            transition: background 0.2s;
-            cursor: text;
-            word-break: break-word;
-        }
-        .task-list li .task-text:focus {
-            background: rgba(0,0,0,0.05);
-        }
-        .task-list li.done .task-text {
-            text-decoration: line-through;
-            opacity: 0.5;
-        }
-        .task-list li .delete-task {
-            background: transparent;
-            border: none;
-            color: #ff4757;
-            cursor: pointer;
-            font-size: 0.9rem;
-            padding: 2px 4px;
-            border-radius: 4px;
-            transition: background 0.2s;
-            flex-shrink: 0;
-        }
-        .task-list li .delete-task:hover {
-            background: rgba(255, 71, 87, 0.1);
-        }
-        
-        .anim-float { display: inline-block; animation: floatText 3s ease-in-out infinite; }
-        @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        
-        .anim-heart { display: inline-block; animation: heartbeat 1.5s ease-in-out infinite; color: #ff4757; }
-        
-        .anim-rainbow {
-            background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1, #ff9ff3);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: rainbowMove 4s ease infinite;
-            font-weight: bold;
-        }
-        @keyframes rainbowMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .anim-typewriter {
-            overflow: hidden;
-            white-space: nowrap;
-            border-right: 2px solid var(--text-main);
-            animation: typewriter 2s steps(30) 1s both, blink 0.8s step-end infinite;
-            display: inline-block;
-        }
-        @keyframes typewriter {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        @keyframes blink {
-            0%, 100% { border-color: transparent; }
-            50% { border-color: var(--text-main); }
-        }
-
-        /* 5 Nuevas animaciones */
-        .anim-shake { display: inline-block; animation: shake 0.5s ease-in-out infinite; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .anim-spin { display: inline-block; animation: spin 2s linear infinite; }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .anim-fade-in { display: inline-block; animation: fadeIn 2s ease-in forwards; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .anim-bounce { display: inline-block; animation: bounce 1s ease infinite; }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .anim-pulse { display: inline-block; animation: pulse 1.5s ease-in-out infinite; }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
+        /* --- MODO DIARIO MEJORADO --- */
         .diary-mode {
             background-image: repeating-linear-gradient(transparent, transparent 31px, #d8d0c1 31px, #d8d0c1 32px) !important;
             background-color: #fdf5e6 !important;
@@ -410,8 +357,62 @@
         }
         .diary-mode .editor-area {
             font-family: 'Caveat', cursive !important;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             line-height: 2.1rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* Cuadrícula estilo Excel dentro del diario */
+        .diary-grid {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+            font-family: 'Caveat', cursive;
+            font-size: 1.1rem;
+        }
+        .diary-grid td, .diary-grid th {
+            border: 1px solid #b0a090;
+            padding: 8px;
+            min-width: 40px;
+            height: 32px;
+            text-align: center;
+            background: rgba(253, 245, 230, 0.5);
+        }
+        .diary-grid th {
+            background: rgba(200, 190, 180, 0.3);
+            font-weight: 700;
+        }
+
+        .diary-tools {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .diary-tools button {
+            background: transparent;
+            border: 1px solid #b0a090;
+            padding: 4px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            font-family: 'Caveat', cursive;
+        }
+        .diary-tools button:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -100%; height: 100%; width: 280px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
+            .sidebar.open { left: 0; }
+            .menu-toggle { display: block; color: var(--text-main); }
+            .editor-wrapper { padding: 20px 15px; border-radius: 12px; }
+            .title-input { font-size: 1.6rem; }
+            .diary-grid td, .diary-grid th { padding: 4px; min-width: 25px; height: 25px; }
         }
     </style>
 </head>
@@ -454,9 +455,25 @@
             <button class="theme-toggle" onclick="toggleGlobalTheme()"><i class='bx bx-moon' id="themeIcon"></i></button>
             <button class="menu-toggle" onclick="toggleSidebar()" style="display: none; color: white;" id="closeSidebarBtn"><i class='bx bx-x'></i></button>
         </div>
-        <button class="btn-new" onclick="createNewNote()"><i class='bx bx-plus'></i> Escribir algo nuevo</button>
-        <button class="btn-diary" onclick="createNewDiaryNote()"><i class='bx bx-book'></i> 📓 Nuevo Diario</button>
-        <div class="note-list" id="noteList"></div>
+        
+        <!-- Pestañas para separar Notas y Diarios -->
+        <div class="sidebar-tabs">
+            <div class="sidebar-tab active" onclick="switchTab('notes')" id="tab-notes">📝 Notas</div>
+            <div class="sidebar-tab" onclick="switchTab('diaries')" id="tab-diaries">📓 Diarios</div>
+        </div>
+
+        <!-- Botones según la pestaña -->
+        <div id="notes-actions">
+            <button class="btn-new" onclick="createNewNote()"><i class='bx bx-plus'></i> Nueva Nota</button>
+        </div>
+        <div id="diaries-actions" style="display:none;">
+            <button class="btn-diary" onclick="createNewDiaryNote()"><i class='bx bx-book'></i> 📓 Nuevo Diario</button>
+        </div>
+
+        <!-- Lista de Notas -->
+        <div class="note-list active" id="noteList-notes"></div>
+        <!-- Lista de Diarios -->
+        <div class="note-list" id="noteList-diaries"></div>
     </aside>
 
     <main class="main-content">
@@ -493,9 +510,6 @@
                 <div class="color-picker-wrapper" title="Color del texto">
                     <input type="color" onchange="formatDoc('foreColor', this.value)">
                 </div>
-                <div class="color-picker-wrapper" title="Color de fondo (resaltar)">
-                    <input type="color" onchange="formatDoc('hiliteColor', this.value)" value="#ffff00">
-                </div>
             </div>
 
             <div class="tool-group">
@@ -520,10 +534,17 @@
             <div class="color-dot" style="background: #d4d4d4;" onclick="setNoteTheme('theme-amor')"></div>
             <div class="color-dot" style="background: #1a1a2e;" onclick="setNoteTheme('theme-noche')"></div>
             
-            <!-- TEMAS DE IMÁGENES NUEVOS -->
+            <!-- TEMAS DE IMÁGENES -->
             <div class="color-dot" style="background-image: url('assets/themes/fuego.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-fuego')" title="Fuego 🔥"></div>
             <div class="color-dot" style="background-image: url('assets/themes/tortugas.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-tortugas')" title="Tortugas 🐢"></div>
             <div class="color-dot" style="background-image: url('assets/themes/perfil.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-neon')" title="Perfil Neón 🖤"></div>
+            
+            <!-- NUEVOS TEMAS CON ANIMACIONES -->
+            <div class="color-dot" style="background: linear-gradient(135deg, #1a1a2e, #2a2a4e); border: 1px solid var(--border);" onclick="setNoteTheme('theme-snow')" title="Nieve ❄️"></div>
+            <div class="color-dot" style="background: linear-gradient(135deg, #0f2027, #2c5364); border: 1px solid var(--border);" onclick="setNoteTheme('theme-bubbles')" title="Burbujas 🫧"></div>
+            <div class="color-dot" style="background: linear-gradient(135deg, #1a1a2e, #2c3e50); border: 1px solid var(--border);" onclick="setNoteTheme('theme-waves')" title="Olas 🌊"></div>
+            <div class="color-dot" style="background: #1a1a2e; border: 1px solid var(--border);" onclick="setNoteTheme('theme-sparkle')" title="Destellos ✨"></div>
+            <div class="color-dot" style="background: linear-gradient(135deg, #0d0d1a, #1a1a3e); border: 1px solid var(--border);" onclick="setNoteTheme('theme-aurora')" title="Aurora 🌌"></div>
         </div>
 
         <div class="editor-container" id="editorContainer">
@@ -553,17 +574,18 @@
                     </select>
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('bold'))" title="Negrita"><i class='bx bx-bold'></i></button>
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('italic'))" title="Cursiva"><i class='bx bx-italic'></i></button>
+                    <!-- Resaltado solo aquí -->
+                    <div class="ft-color-wrapper" title="Color de fondo (resaltar)">
+                        <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="safeExec(() => execFloating('hiliteColor', this.value))" value="#ffff00">
+                    </div>
                     <div class="ft-color-wrapper" title="Color de texto">
                         <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="safeExec(() => execFloating('foreColor', this.value))">
-                    </div>
-                    <div class="ft-color-wrapper" title="Resaltar texto">
-                        <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="safeExec(() => execFloating('hiliteColor', this.value))" value="#ffff00">
                     </div>
                     <!-- NUEVAS HERRAMIENTAS EN BARRA FLOTANTE -->
                     <div class="ft-divider"></div>
                     <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="insertTaskList()" title="Lista de tareas"><i class='bx bx-task'></i></button>
-                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="showEffectMenu()" title="Efectos de texto"><i class='bx bx-wand'></i></button>
-                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="toggleDiaryMode()" title="Modo Diario"><i class='bx bx-book'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="showEffectMenu()" title="Efectos de texto ✨"><i class='bx bx-wand'></i><span style="font-size:0.6rem; margin-left:2px;">✨</span></button>
+                    <!-- Modo Diario NO está aquí, solo en la barra lateral -->
                 </div>
 
                 <div class="floating-insert-menu" id="insertMenu">
@@ -615,7 +637,22 @@
             "Hola, Gabriela preciosa. Solo quería tomarme un momento para decirte lo increíblemente afortunado que me siento de tenerte en mi vida. A veces me quedo mirándote, incluso cuando no te das cuenta, y pienso en cómo llegaste a cambiar mi mundo por completo. Tienes esta forma mágica de hacer que hasta el día más gris se llene de colores. Admiro tu fuerza, tu inteligencia y esa sonrisa que me desarma cada vez que la veo. Eres mi mayor victoria. 🖤",
             "Mi amor, hoy me desperté pensando en ti, como todos los días. Pero hoy fue diferente: me di cuenta de que cada pequeño detalle tuyo se ha vuelto esencial para mí. La forma en que ríes, cómo me miras cuando crees que no te veo, esa manía adorable de morderte el labio cuando te concentras. Todo eso me hace sentir que el universo entero conspiró para que nos encontráramos. Eres la estrella que guía mis pasos y el refugio donde quiero descansar siempre. Te amo con cada fibra de mi ser. ✨",
             "Sé que a veces los días se vuelven grises y las preocupaciones pesan. Pero quiero que nunca olvides que aquí estoy yo, incondicional, para secar tus lágrimas y celebrar tus risas. No hay nada que no podamos superar juntos, porque nuestro amor es más fuerte que cualquier miedo. Eres mi equipo, mi compañera, mi mejor amiga y mi confidente. Cada obstáculo solo nos hace más fuertes y nos recuerda por qué elegimos caminar de la mano. Confía en nosotros, porque yo confío plenamente en ti. 🥰",
-            "¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso, tu capacidad de amar sin medida incluso cuando el mundo ha sido difícil contigo. Tienes una luz interior que no se apaga, una bondad que transforma todo lo que tocas. Verte sonreír es mi misión diaria, y verte triunfar es mi orgullo secreto. Prometo seguir construyendo un futuro donde nunca te falte amor, respeto ni chocolates a las 2 de la mañana. Porque te mereces todo lo bonito que la vida puede ofrecer. 💕"
+            "¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso, tu capacidad de amar sin medida incluso cuando el mundo ha sido difícil contigo. Tienes una luz interior que no se apaga, una bondad que transforma todo lo que tocas. Verte sonreír es mi misión diaria, y verte triunfar es mi orgullo secreto. Prometo seguir construyendo un futuro donde nunca te falte amor, respeto ni chocolates a las 2 de la mañana. Porque te mereces todo lo bonito que la vida puede ofrecer. 💕",
+            "Gabi, cada vez que te veo sonreír, el mundo se detiene y solo existes tú.",
+            "Si pudiera pedir un deseo cada noche, sería despertar a tu lado cada mañana, Gabi.",
+            "Gabi, eres la musa de mis sueños y la estrella que guía mi camino.",
+            "Tu risa, Gabi, es la melodía más dulce que mis oídos han escuchado.",
+            "Gabi, contigo aprendí que el amor no se busca, se encuentra. Y yo te encontré a ti.",
+            "Eres mi lugar seguro, Gabi. Donde todo está bien.",
+            "Gabi, tu amor es el faro que ilumina mi oscuridad.",
+            "Cada latido de mi corazón lleva tu nombre, Gabi.",
+            "Gabi, no hay verso que pueda describir lo que siento por ti.",
+            "Eres la parte más bonita de mi vida, Gabi.",
+            "Gabi, contigo el tiempo vuela y cada segundo es eterno.",
+            "Si el amor tuviera un nombre, Gabi, sería el tuyo.",
+            "Gabi, eres mi razón para sonreír cada día.",
+            "A tu lado, Gabi, todo es posible.",
+            "Gabi, eres el sueño que nunca quiero dejar de soñar."
         ];
 
         let notes = safeGetStorage('nova_romance', []);
@@ -628,10 +665,12 @@
         let isLongPressing = false;
         let contextNoteId = null;
         let pendingMediaType = null;
+        let currentTab = 'notes';
 
         const titleEl = document.getElementById('noteTitle');
         const editorEl = document.getElementById('noteEditor');
-        const listEl = document.getElementById('noteList');
+        const listNotes = document.getElementById('noteList-notes');
+        const listDiaries = document.getElementById('noteList-diaries');
         const wrapperEl = document.getElementById('editorWrapper');
         const imgToolbar = document.getElementById('imageToolbar');
         const sheet = document.getElementById('bottomSheet');
@@ -665,7 +704,7 @@
 
                 let magicNoteIndex = notes.findIndex(n => n.id === 'nota_magica_diaria');
                 if (magicNoteIndex === -1) {
-                    notes.unshift({ id: 'nota_magica_diaria', title: '💌 Para ti, hoy...', content: formattedLetter, theme: 'theme-amor', pinned: true, timestamp: Date.now() + 9999999 });
+                    notes.unshift({ id: 'nota_magica_diaria', title: '💌 Para ti, hoy...', content: formattedLetter, theme: 'theme-amor', pinned: true, diaryMode: false, timestamp: Date.now() + 9999999 });
                 } else {
                     notes[magicNoteIndex].content = formattedLetter;
                     notes[magicNoteIndex].timestamp = Date.now() + 9999999; 
@@ -993,10 +1032,16 @@
             menu.style.left = left + 'px';
             menu.style.transform = 'none';
         }
+
+        // Barra flotante también en el título
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection();
             if (selectedMedia) { floatMenu.style.display = 'none'; savedRange = null; return; }
-            if (selection.rangeCount > 0 && !selection.isCollapsed && editorEl.contains(selection.anchorNode)) {
+            
+            const isInTitle = titleEl.contains(selection.anchorNode);
+            const isInEditor = editorEl.contains(selection.anchorNode);
+            
+            if (selection.rangeCount > 0 && !selection.isCollapsed && (isInEditor || isInTitle)) {
                 savedRange = selection.getRangeAt(0).cloneRange();
                 const range = selection.getRangeAt(0);
                 const rect = range.getBoundingClientRect();
@@ -1162,12 +1207,16 @@
             if (noteIndex !== -1) { notes[noteIndex].theme = themeClass; saveData(); }
             document.getElementById('themePalette').classList.remove('show');
         }
+
         function renderList() {
-            listEl.innerHTML = '';
+            listNotes.innerHTML = '';
+            listDiaries.innerHTML = '';
+            
             let sortedNotes = notes.sort((a, b) => {
                 if (a.pinned === b.pinned) return b.timestamp - a.timestamp;
                 return a.pinned ? -1 : 1;
             });
+            
             sortedNotes.forEach(note => {
                 const div = document.createElement('div');
                 div.className = `note-item ${note.id === currentNoteId ? 'active' : ''}`;
@@ -1193,9 +1242,15 @@
                 const preview = plainText.substring(0, 35) + '...';
                 const pinHtml = note.pinned ? `<i class='bx bxs-pin pinned-icon'></i>` : ``;
                 div.innerHTML = `<div class="note-title-list"><span style="overflow: hidden; text-overflow: ellipsis;">${note.title || 'Nueva nota'}</span>${pinHtml}</div><div style="font-size: 0.8rem; color: var(--text-muted);">${preview}</div>`;
-                listEl.appendChild(div);
+                
+                if (note.diaryMode) {
+                    listDiaries.appendChild(div);
+                } else {
+                    listNotes.appendChild(div);
+                }
             });
         }
+
         function openContextMenu(id) {
             contextNoteId = id;
             const note = notes.find(n => n.id === id);
@@ -1267,7 +1322,24 @@
             setTimeout(() => { const newEl = document.getElementById(`note-${newNote.id}`); if(newEl) newEl.classList.add('creating'); }, 50);
         }
         function createNewDiaryNote() {
-            const newNote = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, diaryMode: true, timestamp: Date.now() };
+            // Contenido inicial con cuadrícula y texto de diario
+            const diaryContent = `
+                <div style="font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 2.1rem; text-align: center; padding-bottom: 20px;">
+                    📓 Mi Diario<br>
+                    <span style="font-size:0.9rem; opacity:0.6;">Fecha: ${new Date().toLocaleDateString()}</span>
+                </div>
+                <div style="font-family: 'Caveat', cursive; margin-bottom: 20px;">
+                    <p style="margin-bottom:15px;">Hoy quiero recordar lo mucho que te amo, Gabi. Cada momento a tu lado es un tesoro.</p>
+                    <div class="diary-tools">
+                        <button onclick="insertGrid(this)">📊 Insertar Cuadrícula (5x5)</button>
+                        <button onclick="insertGridLarge(this)">📊 Insertar Cuadrícula Grande</button>
+                    </div>
+                </div>
+                <div style="font-family: 'Caveat', cursive; margin-top:20px; border-top:1px dashed #b0a090; padding-top:20px;">
+                    <p style="opacity:0.7; font-size:1rem;">✨ Usa el botón "Insertar Cuadrícula" para agregar una tabla estilo Excel para tus cálculos.</p>
+                </div>
+            `;
+            const newNote = { id: Date.now().toString(), title: '📓 Mi Diario', content: diaryContent, theme: 'default', pinned: false, diaryMode: true, timestamp: Date.now() };
             notes.push(newNote);
             currentNoteId = newNote.id;
             saveData();
@@ -1317,7 +1389,71 @@
         window.addEventListener('resize', checkMobileMenu);
         initApp();
 
-        // --- NUEVAS FUNCIONES: LISTA DE TAREAS, EFECTOS Y DIARIO ---
+        // --- FUNCIONES PARA PESTAÑAS DE LA BARRA LATERAL ---
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.sidebar-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            
+            document.getElementById('notes-actions').style.display = tab === 'notes' ? 'block' : 'none';
+            document.getElementById('diaries-actions').style.display = tab === 'diaries' ? 'block' : 'none';
+            
+            document.getElementById('noteList-notes').classList.toggle('active', tab === 'notes');
+            document.getElementById('noteList-diaries').classList.toggle('active', tab === 'diaries');
+        }
+
+        // --- FUNCIONES DE DIARIO (INSERTAR CUADRÍCULA) ---
+        function insertGrid(btn) {
+            // Insertar cuadrícula 5x5
+            const gridHtml = `
+                <table class="diary-grid">
+                    <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+                    <tr><th>1</th><td></td><td></td><td></td><td></td></tr>
+                    <tr><th>2</th><td></td><td></td><td></td><td></td></tr>
+                    <tr><th>3</th><td></td><td></td><td></td><td></td></tr>
+                    <tr><th>4</th><td></td><td></td><td></td><td></td></tr>
+                    <tr><th>5</th><td></td><td></td><td></td><td></td></tr>
+                </table>
+            `;
+            // Insertar donde está el cursor o al final del editor
+            insertHtmlAtCursor(gridHtml);
+            // Hacer que las celdas sean editables
+            setTimeout(() => {
+                document.querySelectorAll('.diary-grid td').forEach(td => {
+                    td.setAttribute('contenteditable', 'true');
+                    td.style.cursor = 'text';
+                });
+            }, 100);
+        }
+
+        function insertGridLarge(btn) {
+            // Cuadrícula más grande 8x8
+            let html = `<table class="diary-grid">`;
+            // Encabezados
+            html += `<tr><th></th>`;
+            for (let i = 0; i < 8; i++) {
+                html += `<th>${String.fromCharCode(65 + i)}</th>`;
+            }
+            html += `</tr>`;
+            // Filas
+            for (let r = 1; r <= 8; r++) {
+                html += `<tr><th>${r}</th>`;
+                for (let c = 0; c < 8; c++) {
+                    html += `<td></td>`;
+                }
+                html += `</tr>`;
+            }
+            html += `</table>`;
+            insertHtmlAtCursor(html);
+            setTimeout(() => {
+                document.querySelectorAll('.diary-grid td').forEach(td => {
+                    td.setAttribute('contenteditable', 'true');
+                    td.style.cursor = 'text';
+                });
+            }, 100);
+        }
+
+        // --- NUEVAS FUNCIONES: LISTA DE TAREAS Y EFECTOS ---
         function insertTaskList() {
             const id = Date.now();
             const html = `<div class="task-list-container" data-id="${id}">
@@ -1339,7 +1475,6 @@
             </div>`;
             insertHtmlAtCursor(html);
             
-            // Agregar event listeners a los checkboxes
             setTimeout(() => {
                 const container = document.querySelector(`[data-id="${id}"]`);
                 if (container) {
@@ -1369,7 +1504,6 @@
                 <button class="delete-task" onclick="deleteTask(this)">🗑️</button>
             `;
             ul.appendChild(li);
-            // Event listener para el checkbox
             li.querySelector('input[type="checkbox"]').addEventListener('change', function() {
                 const li = this.closest('li');
                 if (this.checked) {
@@ -1392,10 +1526,8 @@
         }
 
         function showEffectMenu() {
-            // Cerrar el menú flotante de texto
             floatMenu.style.display = 'none';
             
-            // Crear un menú de efectos
             const menu = document.createElement('div');
             menu.style.position = 'fixed';
             menu.style.top = '50%';
@@ -1413,7 +1545,7 @@
             menu.style.minWidth = '280px';
             menu.style.maxWidth = '90vw';
             menu.innerHTML = `
-                <div style="font-weight:600; text-align:center; margin-bottom:10px;">✨ Selecciona un efecto</div>
+                <div style="font-weight:600; text-align:center; margin-bottom:10px;">✨ Efectos para el texto seleccionado</div>
                 <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-float')">🌊 Flotante</button>
                 <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-heart')">❤️ Latido</button>
                 <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-rainbow')">🌈 Arcoíris</button>
@@ -1436,26 +1568,22 @@
         function applyEffect(className) {
             closeEffectMenu();
             restoreSelection();
-            const text = prompt("¿Qué texto quieres que tenga el efecto?", "Tu texto aquí ✨");
-            if (text !== null && text.trim() !== '') {
-                const html = `<span class="${className}">${text}</span>`;
-                insertHtmlAtCursor(html);
+            // Tomar el texto seleccionado
+            const selection = window.getSelection();
+            let selectedText = selection.toString().trim();
+            
+            // Si no hay texto seleccionado, pedir
+            if (!selectedText) {
+                selectedText = prompt("No hay texto seleccionado. Escribe el texto que quieres animar:", "Tu texto aquí ✨");
+                if (selectedText === null || selectedText.trim() === '') return;
             }
+            
+            const html = `<span class="${className}">${selectedText}</span>`;
+            insertHtmlAtCursor(html);
         }
 
-        function toggleDiaryMode() {
-            wrapperEl.classList.toggle('diary-mode');
-            // Guardar el estado en la nota actual
-            const noteIndex = notes.findIndex(n => n.id === currentNoteId);
-            if (noteIndex !== -1) {
-                notes[noteIndex].diaryMode = wrapperEl.classList.contains('diary-mode');
-                saveData();
-            }
-            // Cerrar el menú flotante si está abierto
-            floatMenu.style.display = 'none';
-        }
-
-        // Asegurar que al abrir una nota, si tiene diaryMode activo, se aplique la clase (ya se hace en openNote)
+        // Sobrescribir la función original de applyEffect si existe
+        // (No hay conflicto porque la anterior usaba prompt y no estaba definida globalmente)
     </script>
 </body>
 </html>
