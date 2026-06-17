@@ -82,21 +82,21 @@
         .color-picker-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; overflow: hidden; border-radius: 5px; cursor: pointer; border: 1px solid var(--border); }
         .color-picker-wrapper input[type="color"] { position: absolute; top: -10px; left: -10px; width: 50px; height: 50px; cursor: pointer; padding: 0; border: none; }
 
-        /* --- EDITOR Y DIARIO --- */
+        /* --- EDITOR Y DIARIO (NUEVO DISEÑO) --- */
         .editor-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; justify-content: center; transition: background 0.5s; position: relative; }
         .editor-wrapper { width: 100%; max-width: 800px; padding: 30px; border-radius: 20px; box-shadow: var(--shadow); min-height: calc(100vh - 40px); background: var(--surface); transition: var(--transition); position: relative; }
-        .title-input { width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; background: transparent; line-height: 1.2; transition: color 0.3s; padding: 5px 10px; border-radius: 8px; }
+        .title-input { width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; background: transparent; line-height: 1.2; transition: color 0.3s, background-color 0.3s; padding: 5px 10px; border-radius: 8px; }
         .editor-area { min-height: 50vh; outline: none; font-size: 1rem; line-height: 1.6; color: var(--text-main); transition: color 0.3s; padding-bottom: 150px; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; hyphens: auto; }
         .editor-area img, .editor-area video { border-radius: 12px; cursor: pointer; max-width: 100%; height: auto; transition: all 0.2s; }
         .editor-area img.selected-img, .editor-area video.selected-img { box-shadow: 0 0 0 4px #111; }
 
-        /* --- MODO DIARIO (CUADERNO) --- */
+        /* --- MODO DIARIO (NUEVO DISEÑO EJECUTIVO) --- */
         .diary-mode .editor-wrapper {
-            all: initial; /* Reinicia estilos del wrapper */
+            all: initial;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: transparent !important;
+            background: #fdf5e6 !important;
             box-shadow: none !important;
             padding: 0 !important;
             width: 100% !important;
@@ -106,34 +106,36 @@
         .diary-mode .title-input { display: none !important; }
         .diary-mode .editor-area { display: none !important; }
 
-        .diary-notebook {
+        .diary-container {
             position: relative;
             width: 100%;
             max-width: 800px;
-            aspect-ratio: 3/4;
-            background-color: #fdf5e6;
-            background-image: repeating-linear-gradient(transparent, transparent 31px, #d8d0c1 31px, #d8d0c1 32px);
+            height: 100%;
+            background: #fdf5e6;
             border: 1px solid #d8d0c1;
-            overflow: hidden;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             border-radius: 4px;
-            font-family: 'Caveat', cursive;
-            font-size: 1.2rem;
-            line-height: 2.1rem;
-            color: #3d3122;
-            transition: var(--transition);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+            font-family: 'Caveat', cursive;
+            color: #3d3122;
         }
-        .diary-notebook .page-container {
+        .diary-container .page-wrapper {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+        .diary-container .page-slider {
             display: flex;
             flex-wrap: nowrap;
-            flex: 1;
+            height: 100%;
             width: 100%;
             transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
             will-change: transform;
         }
-        .diary-notebook .page {
+        .diary-container .page {
             flex: 0 0 100%;
             height: 100%;
             padding: 40px 50px;
@@ -148,9 +150,11 @@
             line-height: 2.1rem;
             color: #3d3122;
             background: transparent;
+            background-image: repeating-linear-gradient(transparent, transparent 31px, #d8d0c1 31px, #d8d0c1 32px);
+            background-position: 0 40px;
         }
-        .diary-notebook .page:focus { outline: none; }
-        .diary-nav {
+        .diary-container .page:focus { outline: none; }
+        .diary-container .diary-nav {
             position: absolute;
             bottom: 20px;
             right: 20px;
@@ -158,7 +162,7 @@
             gap: 10px;
             z-index: 10;
         }
-        .diary-nav button {
+        .diary-container .diary-nav button {
             background: rgba(255,255,255,0.9);
             border: 1px solid #d8d0c1;
             padding: 6px 12px;
@@ -170,8 +174,8 @@
             font-weight: 600;
             color: #3d3122;
         }
-        .diary-nav button:hover { background: #fff; transform: translateY(-2px); }
-        .diary-tools {
+        .diary-container .diary-nav button:hover { background: #fff; transform: translateY(-2px); }
+        .diary-container .diary-tools {
             position: absolute;
             top: 20px;
             right: 20px;
@@ -180,7 +184,7 @@
             z-index: 10;
             flex-wrap: wrap;
         }
-        .diary-tools button {
+        .diary-container .diary-tools button {
             background: rgba(255,255,255,0.9);
             border: 1px solid #d8d0c1;
             padding: 4px 10px;
@@ -190,7 +194,7 @@
             font-size: 0.75rem;
             color: #3d3122;
         }
-        .diary-tools button:hover { background: #fff; }
+        .diary-container .diary-tools button:hover { background: #fff; }
 
         .diary-grid {
             border-collapse: collapse;
@@ -236,6 +240,24 @@
         .ft-color-wrapper { position: relative; width: 18px; height: 18px; overflow: hidden; border-radius: 50%; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); flex-shrink: 0; }
         .ft-color-wrapper input[type="color"] { position: absolute; top: -6px; left: -6px; width: 30px; height: 30px; border: none; padding: 0; cursor: pointer; }
 
+        /* --- BARRA DE ESPACIO VACÍO (NUEVA) --- */
+        .empty-space-menu {
+            position: absolute; display: none; background: #111; color: white; border-radius: 30px;
+            padding: 4px 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); z-index: 1000;
+            align-items: center; gap: 3px; transition: opacity 0.2s ease;
+            backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1);
+            white-space: nowrap; overflow-x: auto; max-width: 90vw;
+            scrollbar-width: none;
+        }
+        .empty-space-menu::-webkit-scrollbar { display: none; }
+        .empty-space-menu::after {
+            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+            border-width: 6px 6px 0; border-style: solid; border-color: #111 transparent transparent transparent;
+        }
+        .es-btn { background: transparent; border: none; color: white; width: 28px; height: 28px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; flex-shrink: 0; }
+        .es-btn:active { transform: scale(0.85); background: rgba(255,255,255,0.2); }
+        .es-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.2); margin: 0 2px; flex-shrink: 0; }
+
         /* --- IMÁGENES Y MEDIA --- */
         .image-toolbar {
             position: fixed; opacity: 0; pointer-events: none;
@@ -259,27 +281,13 @@
         .theme-fuego { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/themes/fuego.jpg'); background-size: cover; background-position: center; color: #fff !important; }
         .theme-tortugas { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/themes/tortugas.jpg'); background-size: cover; background-position: center; color: #fff !important; }
         .theme-neon { background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/themes/perfil.jpg'); background-size: cover; background-position: center; color: #fff !important; }
-        .theme-snow { background: linear-gradient(135deg, #1a1a2e, #2a2a4e) !important; position: relative; color: #e0e0e0 !important; }
-        .theme-snow::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(white 1px, transparent 1px); background-size: 30px 30px; opacity: 0.2; pointer-events: none; animation: snow 8s linear infinite; }
-        @keyframes snow { 0% { background-position: 0 0; } 100% { background-position: 0 100px; } }
-        .theme-bubbles { background: linear-gradient(135deg, #0f2027, #2c5364) !important; color: #d0e0e0 !important; }
-        .theme-bubbles::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 2px, transparent 2px); background-size: 40px 40px; pointer-events: none; animation: bubbles 6s ease-in-out infinite; }
-        @keyframes bubbles { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        .theme-waves { background: linear-gradient(135deg, #1a1a2e, #2c3e50) !important; color: #d8d8e0 !important; }
-        .theme-waves::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 80px); pointer-events: none; animation: waves 10s linear infinite; }
-        @keyframes waves { 0% { transform: translateX(0); } 100% { transform: translateX(-80px); } }
-        .theme-sparkle { background: #1a1a2e !important; color: #e0e0f0 !important; }
-        .theme-sparkle::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.4) 0, transparent 20%), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.2) 0, transparent 30%), radial-gradient(circle at 50% 90%, rgba(255,255,255,0.3) 0, transparent 25%); pointer-events: none; animation: sparkle 4s ease-in-out infinite; }
-        @keyframes sparkle { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-        .theme-aurora { background: linear-gradient(135deg, #0d0d1a, #1a1a3e, #0d1a2e) !important; background-size: 400% 400%; animation: aurora 8s ease-in-out infinite; color: #d0d0e8 !important; }
-        @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         .theme-palette { display: none; position: absolute; top: 60px; right: 20px; background: var(--surface); padding: 10px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); z-index: 50; gap: 6px; flex-wrap: wrap; }
         .theme-palette.show { display: flex; animation: insertAnim 0.3s forwards; }
         .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
         .color-dot:hover { transform: scale(1.1); }
 
-        /* --- ANIMACIONES DE TEXTO (PRESERVANDO FUENTES) --- */
+        /* --- ANIMACIONES DE TEXTO (PRESERVANDO FUENTES Y DESACTIVABLES) --- */
         .anim-float { display: inline-block; animation: floatText 3s ease-in-out infinite; }
         @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         .anim-heart { display: inline-block; animation: heartbeat 1.5s ease-in-out infinite; color: #ff4757; }
@@ -303,13 +311,53 @@
         .anim-wiggle { display: inline-block; animation: wiggle 1s ease-in-out infinite; }
         @keyframes wiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
 
-        /* --- RECUADRO PARA PARÉNTESIS --- */
-        .parenthesis-box {
+        /* --- RECUADROS (ACTIVABLES/DESACTIVABLES) --- */
+        .recuadro-parentesis {
             display: inline-block;
             border: 1px solid #aaa;
             border-radius: 12px;
             padding: 2px 8px;
             background: rgba(0,0,0,0.03);
+            transition: var(--transition);
+            font-family: inherit;
+            font-size: inherit;
+        }
+        .recuadro-corchetes {
+            display: inline-block;
+            border: 1px solid #888;
+            border-radius: 4px;
+            padding: 2px 8px;
+            background: rgba(0,0,0,0.02);
+            transition: var(--transition);
+            font-family: inherit;
+            font-size: inherit;
+        }
+        .recuadro-llaves {
+            display: inline-block;
+            border: 1px solid #666;
+            border-radius: 0;
+            padding: 2px 8px;
+            background: rgba(0,0,0,0.01);
+            transition: var(--transition);
+            font-family: inherit;
+            font-size: inherit;
+        }
+        .recuadro-comillas {
+            display: inline-block;
+            border: none;
+            padding: 2px 4px;
+            color: #666;
+            font-style: italic;
+            transition: var(--transition);
+            font-family: inherit;
+            font-size: inherit;
+        }
+        .recuadro-cuadrado {
+            display: inline-block;
+            border: 2px solid #999;
+            border-radius: 0;
+            padding: 4px 8px;
+            background: rgba(0,0,0,0.02);
             transition: var(--transition);
             font-family: inherit;
             font-size: inherit;
@@ -390,8 +438,8 @@
             .menu-toggle { display: block; color: var(--text-main); }
             .editor-wrapper { padding: 20px 15px; border-radius: 12px; }
             .title-input { font-size: 1.6rem; }
-            .diary-notebook { aspect-ratio: auto; max-width: 100%; height: 100%; }
-            .diary-notebook .page { padding: 20px 25px; }
+            .diary-container { height: 100%; max-width: 100%; }
+            .diary-container .page { padding: 20px 25px; }
         }
     </style>
 </head>
@@ -500,11 +548,6 @@
             <div class="color-dot" style="background-image: url('assets/themes/fuego.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-fuego')" title="Fuego 🔥"></div>
             <div class="color-dot" style="background-image: url('assets/themes/tortugas.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-tortugas')" title="Tortugas 🐢"></div>
             <div class="color-dot" style="background-image: url('assets/themes/perfil.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-neon')" title="Perfil Neón 🖤"></div>
-            <div class="color-dot" style="background: linear-gradient(135deg, #1a1a2e, #2a2a4e); border: 1px solid var(--border);" onclick="setNoteTheme('theme-snow')" title="Nieve ❄️"></div>
-            <div class="color-dot" style="background: linear-gradient(135deg, #0f2027, #2c5364); border: 1px solid var(--border);" onclick="setNoteTheme('theme-bubbles')" title="Burbujas 🫧"></div>
-            <div class="color-dot" style="background: linear-gradient(135deg, #1a1a2e, #2c3e50); border: 1px solid var(--border);" onclick="setNoteTheme('theme-waves')" title="Olas 🌊"></div>
-            <div class="color-dot" style="background: #1a1a2e; border: 1px solid var(--border);" onclick="setNoteTheme('theme-sparkle')" title="Destellos ✨"></div>
-            <div class="color-dot" style="background: linear-gradient(135deg, #0d0d1a, #1a1a3e); border: 1px solid var(--border);" onclick="setNoteTheme('theme-aurora')" title="Aurora 🌌"></div>
         </div>
 
         <div class="editor-container" id="editorContainer">
@@ -536,7 +579,7 @@
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('bold'))" title="Negrita"><i class='bx bx-bold'></i></button>
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('italic'))" title="Cursiva"><i class='bx bx-italic'></i></button>
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('underline'))" title="Subrayado"><i class='bx bx-underline'></i></button>
-                    <div class="ft-color-wrapper" title="Resaltar (haz clic para quitar)">
+                    <div class="ft-color-wrapper" title="Resaltar">
                         <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="safeExec(() => execFloating('hiliteColor', this.value))" value="#ffff00">
                     </div>
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="removeHighlight()" title="Quitar resaltado"><i class='bx bx-eraser'></i></button>
@@ -545,9 +588,32 @@
                     </div>
                     <div class="ft-divider"></div>
                     <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="insertChecklist()" title="Lista de tareas"><i class='bx bx-task'></i></button>
-                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="showEffectMenu()" title="Efectos de texto ✨"><i class='bx bx-wand'></i></button>
-                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="wrapParenthesis()" title="Recuadro para paréntesis"><i class='bx bx-border-all'></i></button>
-                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="insertGrid()" title="Insertar cuadrícula (Diario)"><i class='bx bx-grid-alt'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="showEffectMenu()" title="Efectos de texto ✨"><i class='bx bx-magic'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="toggleRecuadro('parentesis')" title="Paréntesis ( )"><i class='bx bx-border-all'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="toggleRecuadro('corchetes')" title="Corchetes [ ]"><i class='bx bx-border-none'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="toggleRecuadro('llaves')" title="Llaves { }"><i class='bx bx-code-curly'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="toggleRecuadro('comillas')" title="Comillas \" \""><i class='bx bx-quote-alt-right'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="toggleRecuadro('cuadrado')" title="Recuadro ◻"><i class='bx bx-square'></i></button>
+                </div>
+
+                <!-- BARRA DE ESPACIO VACÍO (NUEVA) -->
+                <div class="empty-space-menu" id="emptySpaceMenu">
+                    <button class="es-btn" onclick="insertEmptySymbol('→')">→</button>
+                    <button class="es-btn" onclick="insertEmptySymbol('←')">←</button>
+                    <button class="es-btn" onclick="insertEmptySymbol('↑')">↑</button>
+                    <button class="es-btn" onclick="insertEmptySymbol('↓')">↓</button>
+                    <div class="es-divider"></div>
+                    <button class="es-btn" onclick="insertEmptySymbol('↔')">↔</button>
+                    <button class="es-btn" onclick="insertEmptySymbol('↕')">↕</button>
+                    <div class="es-divider"></div>
+                    <button class="es-btn" onclick="insertEmptySymbol('•')">•</button>
+                    <button class="es-btn" onclick="insertEmptySymbol('★')">★</button>
+                    <button class="es-btn" onclick="insertEmptySymbol('✔')">✔</button>
+                    <button class="es-btn" onclick="insertEmptySymbol('✘')">✘</button>
+                    <div class="es-divider"></div>
+                    <button class="es-btn" onclick="insertEmptySymbol('∞')">∞</button>
+                    <button class="es-btn" onclick="insertEmptySymbol('∑')">∑</button>
+                    <button class="es-btn" onclick="insertEmptySymbol('π')">π</button>
                 </div>
 
                 <div class="floating-insert-menu" id="insertMenu">
@@ -620,6 +686,8 @@
         let contextNoteId = null;
         let pendingMediaType = null;
         let currentTab = 'notes';
+        let emptyPressTimer = null;
+        let isEmptyPress = false;
 
         // Referencias DOM
         const titleEl = document.getElementById('noteTitle');
@@ -633,6 +701,7 @@
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const floatMenu = document.getElementById('floatingTextMenu');
+        const emptyMenu = document.getElementById('emptySpaceMenu');
         const insertMenu = document.getElementById('insertMenu');
         const editorContainer = document.getElementById('editorContainer');
         const emojiPanel = document.getElementById('emojiPanel');
@@ -680,6 +749,14 @@
                 editorEl.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
                 editorContainer.addEventListener('scroll', () => { if (selectedMedia) updateMediaToolbarPosition(selectedMedia); });
                 window.addEventListener('resize', () => { if (selectedMedia) updateMediaToolbarPosition(selectedMedia); });
+
+                // Detectar presión en espacio vacío
+                editorEl.addEventListener('touchstart', handleEmptyPressStart, {passive: true});
+                editorEl.addEventListener('touchend', handleEmptyPressEnd);
+                editorEl.addEventListener('touchmove', handleEmptyPressEnd);
+                editorEl.addEventListener('mousedown', handleEmptyPressStart);
+                editorEl.addEventListener('mouseup', handleEmptyPressEnd);
+                editorEl.addEventListener('mouseleave', handleEmptyPressEnd);
             } catch (e) { console.error(e); document.getElementById('welcomeModal').classList.add('hidden'); }
         }
 
@@ -802,7 +879,7 @@
         function formatDoc(command, value = null) {
             try {
                 const active = document.activeElement;
-                // Título
+                // Título (input)
                 if (active === titleEl) {
                     if (command === 'foreColor') titleEl.style.color = value;
                     else if (command === 'hiliteColor') titleEl.style.backgroundColor = value;
@@ -814,18 +891,37 @@
                     return;
                 }
                 // Editor normal o diario
+                const isDiaryPage = editorEl.closest && editorEl.closest('.diary-container');
+                if (isDiaryPage) {
+                    // Para el diario, aplicar formato al contenido de la página actual
+                    const page = document.querySelector('.diary-container .page.active-page') || document.querySelector('.diary-container .page');
+                    if (page) {
+                        page.focus();
+                        document.execCommand('styleWithCSS', true, null);
+                        if (command === 'fontName') document.execCommand('fontName', false, value);
+                        else if (command === 'bold' || command === 'italic' || command === 'underline') {
+                            const currentFont = document.queryCommandValue('fontName');
+                            document.execCommand(command, false, null);
+                            if (currentFont && currentFont !== 'Poppins') {
+                                document.execCommand('fontName', false, currentFont);
+                            }
+                        } else {
+                            document.execCommand(command, false, value);
+                        }
+                        triggerSave();
+                    }
+                    return;
+                }
+                // Editor normal
                 editorEl.focus();
                 document.execCommand('styleWithCSS', true, null);
-                // Preservar la fuente actual aplicando el formato sin cambiar la fuente
-                const currentFont = document.queryCommandValue('fontName');
-                if (command === 'bold' || command === 'italic' || command === 'underline') {
+                if (command === 'fontName') document.execCommand('fontName', false, value);
+                else if (command === 'bold' || command === 'italic' || command === 'underline') {
+                    const currentFont = document.queryCommandValue('fontName');
                     document.execCommand(command, false, null);
-                    // Reaplicar la fuente si se perdió
                     if (currentFont && currentFont !== 'Poppins') {
                         document.execCommand('fontName', false, currentFont);
                     }
-                } else if (command === 'fontName') {
-                    document.execCommand('fontName', false, value);
                 } else {
                     document.execCommand(command, false, value);
                 }
@@ -913,6 +1009,7 @@
             updateMediaToolbarPosition(target);
             imgToolbar.classList.add('show');
             floatMenu.style.display = 'none';
+            emptyMenu.style.display = 'none';
         }
 
         function deselectMedia() {
@@ -1019,7 +1116,45 @@
         }
         function openUrlModalFromInsert(type) { hideInsertMenu(); openUrlModal(type); }
 
-        // --- SELECCIÓN DE TEXTO -> BARRA FLOTANTE (Título, Editor y Diario) ---
+        // --- BARRA DE ESPACIO VACÍO ---
+        function handleEmptyPressStart(e) {
+            // Solo si el cursor está en un espacio vacío (sin selección)
+            const sel = window.getSelection();
+            if (sel.isCollapsed && editorEl.contains(sel.anchorNode)) {
+                const range = sel.getRangeAt(0);
+                if (range.startOffset === 0 || (range.startContainer.textContent && range.startOffset === range.startContainer.textContent.length)) {
+                    isEmptyPress = false;
+                    emptyPressTimer = setTimeout(() => {
+                        isEmptyPress = true;
+                        showEmptyMenu(e);
+                        if (navigator.vibrate) navigator.vibrate(30);
+                    }, 500);
+                }
+            }
+        }
+        function handleEmptyPressEnd(e) {
+            clearTimeout(emptyPressTimer);
+            // Si fue un toque corto, no hacer nada
+        }
+        function showEmptyMenu(e) {
+            const containerRect = editorContainer.getBoundingClientRect();
+            const x = e.clientX - containerRect.left + editorContainer.scrollLeft;
+            const y = e.clientY - containerRect.top + editorContainer.scrollTop - 50;
+            emptyMenu.style.display = 'flex';
+            emptyMenu.style.left = (x - emptyMenu.offsetWidth / 2) + 'px';
+            emptyMenu.style.top = y + 'px';
+            setTimeout(() => {
+                if (emptyMenu.style.display === 'flex') {
+                    emptyMenu.style.display = 'none';
+                }
+            }, 5000);
+        }
+        function insertEmptySymbol(symbol) {
+            insertHtmlAtCursor(symbol);
+            emptyMenu.style.display = 'none';
+        }
+
+        // --- SELECCIÓN DE TEXTO -> BARRA FLOTANTE ---
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection();
             if (selectedMedia) { floatMenu.style.display = 'none'; savedRange = null; return; }
@@ -1027,7 +1162,7 @@
             // Verificar si la selección está en el título, el editor o en una página del diario
             const isInTitle = titleEl.contains(selection.anchorNode);
             const isInEditor = editorEl.contains(selection.anchorNode);
-            const isInDiaryPage = selection.anchorNode ? selection.anchorNode.closest && selection.anchorNode.closest('.page') : false;
+            const isInDiaryPage = selection.anchorNode ? selection.anchorNode.closest && selection.anchorNode.closest('.diary-container') : false;
 
             if (selection.rangeCount > 0 && !selection.isCollapsed && (isInEditor || isInTitle || isInDiaryPage)) {
                 savedRange = selection.getRangeAt(0).cloneRange();
@@ -1036,6 +1171,7 @@
                 const containerRect = editorContainer.getBoundingClientRect();
 
                 floatMenu.style.display = 'flex';
+                emptyMenu.style.display = 'none';
                 insertMenu.style.display = 'none';
 
                 // Barra arriba del texto seleccionado
@@ -1056,7 +1192,7 @@
             }
         });
 
-        // --- INSERCIÓN DE LISTA DE TAREAS (CHECKLIST) ---
+        // --- LISTA DE TAREAS ---
         function insertChecklist() {
             const id = Date.now();
             const html = `<div class="task-list-container" data-id="${id}">
@@ -1118,17 +1254,58 @@
             setTimeout(() => { li.remove(); triggerSave(); }, 200);
         }
 
-        // --- RECUADRO PARA PARÉNTESIS ---
-        function wrapParenthesis() {
+        // --- RECUADROS (ACTIVABLES/DESACTIVABLES) ---
+        function toggleRecuadro(type) {
             restoreSelection();
             const sel = window.getSelection();
             if (!sel.rangeCount) return;
             const range = sel.getRangeAt(0);
             if (range.collapsed) return;
+
+            // Verificar si el texto seleccionado ya tiene el recuadro
+            let node = range.commonAncestorContainer;
+            let found = false;
+            let targetClass = '';
+            let openChar = '', closeChar = '';
+
+            switch(type) {
+                case 'parentesis': targetClass = 'recuadro-parentesis'; openChar = '('; closeChar = ')'; break;
+                case 'corchetes': targetClass = 'recuadro-corchetes'; openChar = '['; closeChar = ']'; break;
+                case 'llaves': targetClass = 'recuadro-llaves'; openChar = '{'; closeChar = '}'; break;
+                case 'comillas': targetClass = 'recuadro-comillas'; openChar = '"'; closeChar = '"'; break;
+                case 'cuadrado': targetClass = 'recuadro-cuadrado'; openChar = '◻'; closeChar = '◻'; break;
+                default: return;
+            }
+
+            // Buscar si el texto seleccionado ya está envuelto en el recuadro
+            if (node.nodeType === 3) node = node.parentNode;
+            if (node.classList && node.classList.contains(targetClass)) {
+                // Desactivar: eliminar el recuadro y dejar el texto
+                const parent = node.parentNode;
+                const content = node.innerHTML;
+                const textNode = document.createTextNode(content);
+                parent.replaceChild(textNode, node);
+                // Seleccionar el texto
+                const newRange = document.createRange();
+                newRange.selectNodeContents(textNode);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+                triggerSave();
+                return;
+            }
+
+            // Activar: envolver el texto seleccionado en el recuadro
             const fragment = range.extractContents();
             const span = document.createElement('span');
-            span.className = 'parenthesis-box';
-            span.appendChild(fragment);
+            span.className = targetClass;
+            // Si es comillas o cuadrado, agregar los caracteres
+            if (type === 'comillas') {
+                span.innerHTML = '"' + fragment.textContent + '"';
+            } else if (type === 'cuadrado') {
+                span.innerHTML = '◻' + fragment.textContent + '◻';
+            } else {
+                span.appendChild(fragment);
+            }
             range.insertNode(span);
             const newRange = document.createRange();
             newRange.setStartAfter(span);
@@ -1139,7 +1316,7 @@
             editorEl.focus();
         }
 
-        // --- EFECTOS DE TEXTO ---
+        // --- EFECTOS DE TEXTO (ACTIVABLES/DESACTIVABLES) ---
         function showEffectMenu() {
             floatMenu.style.display = 'none';
             const menu = document.createElement('div');
@@ -1160,17 +1337,17 @@
             menu.style.maxWidth = '90vw';
             menu.innerHTML = `
                 <div style="font-weight:600; text-align:center; margin-bottom:10px;">✨ Efectos para el texto seleccionado</div>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-float')">🌊 Flotante</button>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-heart')">❤️ Latido</button>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-rainbow')">🌈 Arcoíris</button>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-typewriter')">⌨️ Máquina</button>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-shake')">🌪️ Temblor</button>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-spin')">🌀 Giro</button>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-fade-in')">✨ Aparición</button>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-bounce')">🤸 Rebote</button>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-pulse')">💓 Pulso</button>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-glow')">🌟 Brillo</button>
-                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-wiggle')">🤪 Onda</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-float')">🌊 Flotante</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-heart')">❤️ Latido</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-rainbow')">🌈 Arcoíris</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-typewriter')">⌨️ Máquina</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-shake')">🌪️ Temblor</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-spin')">🌀 Giro</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-fade-in')">✨ Aparición</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-bounce')">🤸 Rebote</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-pulse')">💓 Pulso</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-glow')">🌟 Brillo</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="toggleEffect('anim-wiggle')">🤪 Onda</button>
                 <button style="width:100%; padding:10px; background:#555; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:5px;" onclick="closeEffectMenu()">Cancelar</button>
             `;
             document.body.appendChild(menu);
@@ -1181,12 +1358,36 @@
             menus.forEach(m => m.remove());
         }
 
-        function applyEffect(className) {
+        function toggleEffect(className) {
             closeEffectMenu();
             restoreSelection();
             const sel = window.getSelection();
             if (!sel.rangeCount) return;
             const range = sel.getRangeAt(0);
+
+            // Verificar si el texto seleccionado ya tiene el efecto
+            let node = range.commonAncestorContainer;
+            if (node.nodeType === 3) node = node.parentNode;
+            if (node.classList && node.classList.contains(className)) {
+                // Desactivar: quitar la clase
+                node.classList.remove(className);
+                // Si no tiene otras clases, quitar el span
+                if (node.classList.length === 0 && node.tagName === 'SPAN') {
+                    const parent = node.parentNode;
+                    const content = node.innerHTML;
+                    const textNode = document.createTextNode(content);
+                    parent.replaceChild(textNode, node);
+                }
+                const newRange = document.createRange();
+                newRange.selectNodeContents(node);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+                triggerSave();
+                editorEl.focus();
+                return;
+            }
+
+            // Activar
             let selectedText = range.toString().trim();
             if (!selectedText) {
                 selectedText = prompt("No hay texto seleccionado. Escribe el texto que quieres animar:", "Tu texto aquí ✨");
@@ -1209,7 +1410,7 @@
             editorEl.focus();
         }
 
-        // --- MODO DIARIO (CUADERNO) ---
+        // --- MODO DIARIO (NUEVO DISEÑO) ---
         function toggleDiaryMode(diaryNote) {
             const wrapper = document.getElementById('editorWrapper');
             const title = document.getElementById('noteTitle');
@@ -1220,39 +1421,39 @@
                 title.style.display = 'none';
                 editor.style.display = 'none';
 
-                let notebook = wrapper.querySelector('.diary-notebook');
-                if (!notebook) {
-                    notebook = document.createElement('div');
-                    notebook.className = 'diary-notebook';
-                    notebook.innerHTML = `
-                        <div class="page-container" id="pageContainer">
-                            <div class="page" id="diaryPage0" contenteditable="true" spellcheck="false" style="font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 2.1rem; color: #3d3122; background: transparent; padding: 40px 50px;">
-                                📓 Mi Diario<br><br>
-                                <p>Hoy quiero recordar lo mucho que te amo, Gabi.</p>
-                                <div style="margin-top:20px;">
-                                    <button onclick="insertGrid()" style="background:transparent; border:1px solid #b0a090; padding:4px 12px; border-radius:15px; cursor:pointer; font-family: 'Caveat', cursive;">📊 Insertar Cuadrícula (5x5)</button>
+                let container = wrapper.querySelector('.diary-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.className = 'diary-container';
+                    container.innerHTML = `
+                        <div class="page-wrapper">
+                            <div class="page-slider" id="pageSlider">
+                                <div class="page" id="diaryPage0" contenteditable="true" spellcheck="false">
+                                    📓 Mi Diario<br><br>
+                                    <p>Hoy quiero recordar lo mucho que te amo, Gabi.</p>
+                                    <div style="margin-top:20px;">
+                                        <button onclick="insertGrid()" style="background:transparent; border:1px solid #b0a090; padding:4px 12px; border-radius:15px; cursor:pointer; font-family: 'Caveat', cursive;">📊 Insertar Cuadrícula</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="diary-nav">
-                            <button onclick="changePage(-1)">◀ Anterior</button>
-                            <button onclick="changePage(1)">Siguiente ▶</button>
-                        </div>
-                        <div class="diary-tools">
-                            <button onclick="insertGrid()">📊 Cuadrícula</button>
-                            <button onclick="addPage()">➕ Página</button>
+                            <div class="diary-nav">
+                                <button onclick="changePage(-1)">◀ Anterior</button>
+                                <button onclick="changePage(1)">Siguiente ▶</button>
+                            </div>
+                            <div class="diary-tools">
+                                <button onclick="insertGrid()">📊 Cuadrícula</button>
+                                <button onclick="addPage()">➕ Página</button>
+                            </div>
                         </div>
                     `;
-                    wrapper.appendChild(notebook);
+                    wrapper.appendChild(container);
                     // Event listeners para las páginas
-                    const pages = notebook.querySelectorAll('.page');
+                    const pages = container.querySelectorAll('.page');
                     pages.forEach(page => {
                         page.addEventListener('input', triggerSave);
                         page.addEventListener('blur', triggerSave);
-                        // Manejar Enter para mantener formato
                         page.addEventListener('keydown', function(e) {
                             if (e.key === 'Enter') {
-                                // Insertar un salto de línea que mantiene el estilo
                                 document.execCommand('insertLineBreak');
                                 e.preventDefault();
                             }
@@ -1266,24 +1467,17 @@
                     try {
                         const pagesData = JSON.parse(note.content || '[]');
                         if (Array.isArray(pagesData) && pagesData.length > 0) {
-                            const container = document.getElementById('pageContainer');
-                            if (container) {
-                                container.innerHTML = '';
+                            const slider = document.getElementById('pageSlider');
+                            if (slider) {
+                                slider.innerHTML = '';
                                 pagesData.forEach((text, idx) => {
                                     const div = document.createElement('div');
                                     div.className = 'page';
                                     div.id = `diaryPage${idx}`;
                                     div.contentEditable = true;
                                     div.spellcheck = false;
-                                    div.style.fontFamily = "'Caveat', cursive";
-                                    div.style.fontSize = "1.2rem";
-                                    div.style.lineHeight = "2.1rem";
-                                    div.style.color = "#3d3122";
-                                    div.style.background = "transparent";
-                                    div.style.padding = "40px 50px";
                                     div.innerHTML = text;
-                                    container.appendChild(div);
-                                    // Event listener para Enter
+                                    slider.appendChild(div);
                                     div.addEventListener('keydown', function(e) {
                                         if (e.key === 'Enter') {
                                             document.execCommand('insertLineBreak');
@@ -1292,11 +1486,10 @@
                                     });
                                 });
                                 currentPageIndex = 0;
-                                container.style.transform = 'translateX(0)';
+                                slider.style.transform = 'translateX(0)';
                             }
                         }
                     } catch (e) {
-                        // Si no es JSON válido, usar contenido como página 0
                         const page0 = document.getElementById('diaryPage0');
                         if (page0 && note.content && note.content !== '[]') {
                             page0.innerHTML = note.content;
@@ -1308,41 +1501,34 @@
                 wrapper.classList.remove('diary-mode');
                 title.style.display = '';
                 editor.style.display = '';
-                const notebook = wrapper.querySelector('.diary-notebook');
-                if (notebook) notebook.remove();
+                const container = wrapper.querySelector('.diary-container');
+                if (container) container.remove();
             }
         }
 
         let currentPageIndex = 0;
 
         function changePage(direction) {
-            const container = document.getElementById('pageContainer');
-            if (!container) return;
-            const totalPages = container.children.length;
+            const slider = document.getElementById('pageSlider');
+            if (!slider) return;
+            const totalPages = slider.children.length;
             const newIndex = currentPageIndex + direction;
             if (newIndex < 0 || newIndex >= totalPages) return;
             currentPageIndex = newIndex;
-            container.style.transform = `translateX(-${currentPageIndex * 100}%)`;
+            slider.style.transform = `translateX(-${currentPageIndex * 100}%)`;
         }
 
         function addPage() {
-            const container = document.getElementById('pageContainer');
-            if (!container) return;
-            const newId = container.children.length;
+            const slider = document.getElementById('pageSlider');
+            if (!slider) return;
+            const newId = slider.children.length;
             const div = document.createElement('div');
             div.className = 'page';
             div.id = `diaryPage${newId}`;
             div.contentEditable = true;
             div.spellcheck = false;
-            div.style.fontFamily = "'Caveat', cursive";
-            div.style.fontSize = "1.2rem";
-            div.style.lineHeight = "2.1rem";
-            div.style.color = "#3d3122";
-            div.style.background = "transparent";
-            div.style.padding = "40px 50px";
             div.innerHTML = '<br>';
-            container.appendChild(div);
-            // Event listener para Enter
+            slider.appendChild(div);
             div.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     document.execCommand('insertLineBreak');
@@ -1353,9 +1539,9 @@
         }
 
         function saveDiaryPages() {
-            const container = document.getElementById('pageContainer');
-            if (!container) return;
-            const pages = container.querySelectorAll('.page');
+            const slider = document.getElementById('pageSlider');
+            if (!slider) return;
+            const pages = slider.querySelectorAll('.page');
             const data = Array.from(pages).map(page => page.innerHTML);
             const noteIndex = notes.findIndex(n => n.id === currentNoteId);
             if (noteIndex !== -1) {
@@ -1365,9 +1551,9 @@
         }
 
         function insertGrid() {
-            const container = document.getElementById('pageContainer');
-            if (!container) return;
-            const currentPage = container.children[currentPageIndex];
+            const slider = document.getElementById('pageSlider');
+            if (!slider) return;
+            const currentPage = slider.children[currentPageIndex];
             if (!currentPage) return;
             
             const gridHtml = `
@@ -1379,7 +1565,6 @@
                     <tr><td></td><td></td><td></td><td></td><td></td></tr>
                 </table>
             `;
-            // Insertar en la posición del cursor o al final
             const sel = window.getSelection();
             if (currentPage.contains(sel.anchorNode)) {
                 const range = sel.getRangeAt(0);
