@@ -93,7 +93,13 @@
             box-shadow: var(--shadow); min-height: calc(100vh - 40px); height: fit-content;
             transition: all 0.5s; background: var(--surface); position: relative;
         }
-        .title-input { width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; background: transparent; line-height: 1.2; transition: color 0.3s; }
+        .title-input { 
+            width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; 
+            color: var(--text-main); margin-bottom: 20px; background: transparent; 
+            line-height: 1.2; transition: color 0.3s, background-color 0.3s;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
         
         .editor-area { 
             min-height: 50vh; outline: none; font-size: 1.05rem; line-height: 1.6; 
@@ -152,38 +158,43 @@
         .theme-amor { background: radial-gradient(circle, #fcfcfc 0%, #e6e6e6 100%) !important; color: #111111; }
         .theme-noche { background: linear-gradient(135deg, #1a1a2e, #16213e) !important; color: #e1e1e6; }
 
-        /* --- NUEVOS TEMAS CON IMÁGENES --- */
+        /* --- NUEVOS TEMAS CON IMÁGENES Y FONDO SEMITRANSPARENTE --- */
         .theme-fuego { 
-            background-image: url('assets/themes/fuego.jpg'); 
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/themes/fuego.jpg'); 
             background-size: cover; 
             background-position: center; 
             background-repeat: no-repeat; 
-            background-color: #0a0000; 
+            color: #ffffff !important;
         }
         .theme-tortugas { 
-            background-image: url('assets/themes/tortugas.jpg'); 
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/themes/tortugas.jpg'); 
             background-size: cover; 
             background-position: center; 
             background-repeat: no-repeat; 
-            background-color: #000b14; 
+            color: #ffffff !important;
         }
         .theme-neon { 
-            background-image: url('assets/themes/perfil.jpg'); 
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/themes/perfil.jpg'); 
             background-size: cover; 
             background-position: center; 
             background-repeat: no-repeat; 
-            background-color: #0a0000; 
+            color: #ffffff !important;
+        }
+
+        /* Forzar color blanco para el título y editor en los nuevos temas */
+        .theme-fuego .title-input,
+        .theme-fuego .editor-area,
+        .theme-tortugas .title-input,
+        .theme-tortugas .editor-area,
+        .theme-neon .title-input,
+        .theme-neon .editor-area {
+            color: #ffffff !important;
         }
 
         [data-theme="dark"] .theme-sakura { background: linear-gradient(to bottom right, #2c131a, #4a1c2a) !important; color: #ffccd5; border: 1px solid #5c2033; }
         [data-theme="dark"] .theme-papel { background: #1a1714 !important; color: #d8d0c1; background-image: repeating-linear-gradient(transparent, transparent 31px, #362f27 31px, #362f27 32px); border: 1px solid #362f27; }
         [data-theme="dark"] .theme-amor { background: radial-gradient(circle, #1a1a1a 0%, #0d0d0d 100%) !important; color: #e6e6e6; border: 1px solid #333333; }
         [data-theme="dark"] .theme-noche { background: linear-gradient(135deg, #0b0b14, #080b12) !important; color: #e1e1e6; border: 1px solid #1c1c33; }
-        
-        /* Estilos oscuros para los nuevos temas */
-        [data-theme="dark"] .theme-fuego { border: 1px solid #3a0a0a; }
-        [data-theme="dark"] .theme-tortugas { border: 1px solid #0a1a3a; }
-        [data-theme="dark"] .theme-neon { border: 1px solid #3a0a0a; }
 
         .image-toolbar { 
             position: fixed; opacity: 0; pointer-events: none;
@@ -718,15 +729,39 @@
         
         function formatDoc(command, value = null) {
             try {
+                const active = document.activeElement;
+                
+                // Si el foco está en el TÍTULO (input)
+                if (active === titleEl) {
+                    if (command === 'foreColor') {
+                        titleEl.style.color = value;
+                    } else if (command === 'hiliteColor') {
+                        titleEl.style.backgroundColor = value;
+                    } else if (command === 'fontName') {
+                        titleEl.style.fontFamily = value;
+                    } else if (command === 'fontSize') {
+                        let size = parseInt(value);
+                        // Tamaños en rem para el título
+                        const sizes = {1: '1.2rem', 2: '1.5rem', 3: '2rem', 4: '2.4rem', 5: '3rem', 6: '3.8rem'};
+                        titleEl.style.fontSize = sizes[size] || '2rem';
+                    }
+                    // Otros comandos (negrita, cursiva, etc.) no aplican al título
+                    return;
+                }
+                
+                // Si no es el título, aplicar al EDITOR (contenteditable)
+                editorEl.focus(); // Asegurar el foco para que funcione
+                document.execCommand('styleWithCSS', true, null); // Usa CSS nativo
+                
                 if (command === 'fontName') {
-                    document.execCommand('styleWithCSS', true, null);
                     document.execCommand('fontName', false, value);
                 } else {
                     document.execCommand(command, false, value);
                 }
-                editorEl.focus();
                 triggerSave();
-            } catch (e) {}
+            } catch (e) {
+                console.warn('Error formatDoc:', e);
+            }
         }
         
         function handlePaste(e) {
