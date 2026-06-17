@@ -87,7 +87,7 @@
         .editor-wrapper { width: 100%; max-width: 800px; padding: 30px; border-radius: 20px; box-shadow: var(--shadow); min-height: calc(100vh - 40px); background: var(--surface); transition: var(--transition); position: relative; }
         .title-input { width: 100%; border: none; outline: none; font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; background: transparent; line-height: 1.2; transition: color 0.3s; padding: 5px 10px; border-radius: 8px; }
         .editor-area { min-height: 50vh; outline: none; font-size: 1rem; line-height: 1.6; color: var(--text-main); transition: color 0.3s; padding-bottom: 150px; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; hyphens: auto; }
-        .editor-area img, .editor-area video { border-radius: 12px; cursor: pointer; max-width: 100%; height: auto; }
+        .editor-area img, .editor-area video { border-radius: 12px; cursor: pointer; max-width: 100%; height: auto; transition: all 0.2s; }
         .editor-area img.selected-img, .editor-area video.selected-img { box-shadow: 0 0 0 4px #111; }
 
         /* --- MODO DIARIO (CUADERNO) --- */
@@ -122,11 +122,13 @@
             line-height: 2.1rem;
             color: #3d3122;
             transition: var(--transition);
+            display: flex;
+            flex-direction: column;
         }
         .diary-notebook .page-container {
             display: flex;
             flex-wrap: nowrap;
-            height: 100%;
+            flex: 1;
             width: 100%;
             transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
             will-change: transform;
@@ -279,7 +281,7 @@
 
         /* --- ANIMACIONES DE TEXTO (PRESERVANDO FUENTES) --- */
         .anim-float { display: inline-block; animation: floatText 3s ease-in-out infinite; }
-        @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         .anim-heart { display: inline-block; animation: heartbeat 1.5s ease-in-out infinite; color: #ff4757; }
         .anim-rainbow { background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1, #ff9ff3); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: rainbowMove 4s ease infinite; font-weight: bold; }
         @keyframes rainbowMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
@@ -287,15 +289,19 @@
         @keyframes typewriter { from { width: 0; } to { width: 100%; } }
         @keyframes blink { 0%, 100% { border-color: transparent; } 50% { border-color: var(--text-main); } }
         .anim-shake { display: inline-block; animation: shake 0.5s ease-in-out infinite; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
         .anim-spin { display: inline-block; animation: spin 2s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .anim-fade-in { display: inline-block; animation: fadeIn 2s ease-in forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         .anim-bounce { display: inline-block; animation: bounce 1s ease infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
         .anim-pulse { display: inline-block; animation: pulse 1.5s ease-in-out infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .anim-glow { display: inline-block; animation: glow 2s ease-in-out infinite; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        @keyframes glow { 0%, 100% { text-shadow: 0 0 5px rgba(255,255,255,0.5); } 50% { text-shadow: 0 0 20px rgba(255,255,255,0.8); } }
+        .anim-wiggle { display: inline-block; animation: wiggle 1s ease-in-out infinite; }
+        @keyframes wiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
 
         /* --- RECUADRO PARA PARÉNTESIS --- */
         .parenthesis-box {
@@ -529,10 +535,10 @@
                     </select>
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('bold'))" title="Negrita"><i class='bx bx-bold'></i></button>
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('italic'))" title="Cursiva"><i class='bx bx-italic'></i></button>
+                    <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('underline'))" title="Subrayado"><i class='bx bx-underline'></i></button>
                     <div class="ft-color-wrapper" title="Resaltar (haz clic para quitar)">
                         <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="safeExec(() => execFloating('hiliteColor', this.value))" value="#ffff00">
                     </div>
-                    <!-- Botón para quitar resaltado -->
                     <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="removeHighlight()" title="Quitar resaltado"><i class='bx bx-eraser'></i></button>
                     <div class="ft-color-wrapper" title="Color de texto">
                         <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="safeExec(() => execFloating('foreColor', this.value))">
@@ -541,7 +547,6 @@
                     <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="insertChecklist()" title="Lista de tareas"><i class='bx bx-task'></i></button>
                     <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="showEffectMenu()" title="Efectos de texto ✨"><i class='bx bx-wand'></i></button>
                     <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="wrapParenthesis()" title="Recuadro para paréntesis"><i class='bx bx-border-all'></i></button>
-                    <!-- Botón para insertar cuadrícula (solo diario) -->
                     <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="insertGrid()" title="Insertar cuadrícula (Diario)"><i class='bx bx-grid-alt'></i></button>
                 </div>
 
@@ -681,7 +686,15 @@
         function closeWelcome() { document.getElementById('welcomeModal').classList.add('hidden'); }
 
         // --- FUNCIONES DE SELECCIÓN Y RANGO ---
-        function restoreSelection() { if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); } }
+        function restoreSelection() {
+            if (savedRange) {
+                try {
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(savedRange);
+                } catch (e) {}
+            }
+        }
 
         function handlePointerDown(e) {
             const target = e.target.closest('img, video');
@@ -789,6 +802,7 @@
         function formatDoc(command, value = null) {
             try {
                 const active = document.activeElement;
+                // Título
                 if (active === titleEl) {
                     if (command === 'foreColor') titleEl.style.color = value;
                     else if (command === 'hiliteColor') titleEl.style.backgroundColor = value;
@@ -799,10 +813,22 @@
                     }
                     return;
                 }
+                // Editor normal o diario
                 editorEl.focus();
                 document.execCommand('styleWithCSS', true, null);
-                if (command === 'fontName') document.execCommand('fontName', false, value);
-                else document.execCommand(command, false, value);
+                // Preservar la fuente actual aplicando el formato sin cambiar la fuente
+                const currentFont = document.queryCommandValue('fontName');
+                if (command === 'bold' || command === 'italic' || command === 'underline') {
+                    document.execCommand(command, false, null);
+                    // Reaplicar la fuente si se perdió
+                    if (currentFont && currentFont !== 'Poppins') {
+                        document.execCommand('fontName', false, currentFont);
+                    }
+                } else if (command === 'fontName') {
+                    document.execCommand('fontName', false, value);
+                } else {
+                    document.execCommand(command, false, value);
+                }
                 triggerSave();
             } catch (e) { console.warn(e); }
         }
@@ -810,12 +836,14 @@
         function execFloating(command, value = null) {
             restoreSelection();
             try {
-                if (command === 'copy' || command === 'cut') {
-                    document.execCommand(command);
-                    floatMenu.style.opacity = '0.5';
-                    setTimeout(() => floatMenu.style.opacity = '1', 200);
+                // Aplicar formato preservando fuente
+                const currentFont = document.queryCommandValue('fontName');
+                if (command === 'bold' || command === 'italic' || command === 'underline') {
+                    document.execCommand(command, false, null);
+                    if (currentFont && currentFont !== 'Poppins') {
+                        document.execCommand('fontName', false, currentFont);
+                    }
                 } else if (command === 'fontName') {
-                    document.execCommand('styleWithCSS', true, null);
                     document.execCommand('fontName', false, value);
                 } else {
                     document.execCommand(command, false, value);
@@ -829,17 +857,7 @@
         function removeHighlight() {
             restoreSelection();
             try {
-                // Ejecutar hiliteColor con un color nulo (transparente)
                 document.execCommand('hiliteColor', false, 'transparent');
-                // Alternativa: eliminar estilo de fondo directamente
-                const sel = window.getSelection();
-                if (sel.rangeCount) {
-                    const range = sel.getRangeAt(0);
-                    const span = range.commonAncestorContainer.closest ? range.commonAncestorContainer.closest('span') : null;
-                    if (span && span.style.backgroundColor) {
-                        span.style.backgroundColor = 'transparent';
-                    }
-                }
                 triggerSave();
                 editorEl.focus();
             } catch (e) {}
@@ -1001,16 +1019,17 @@
         }
         function openUrlModalFromInsert(type) { hideInsertMenu(); openUrlModal(type); }
 
-        // --- SELECCIÓN DE TEXTO -> BARRA FLOTANTE ---
+        // --- SELECCIÓN DE TEXTO -> BARRA FLOTANTE (Título, Editor y Diario) ---
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection();
             if (selectedMedia) { floatMenu.style.display = 'none'; savedRange = null; return; }
 
-            // Detectar si la selección está en el título o en el editor
+            // Verificar si la selección está en el título, el editor o en una página del diario
             const isInTitle = titleEl.contains(selection.anchorNode);
             const isInEditor = editorEl.contains(selection.anchorNode);
+            const isInDiaryPage = selection.anchorNode ? selection.anchorNode.closest && selection.anchorNode.closest('.page') : false;
 
-            if (selection.rangeCount > 0 && !selection.isCollapsed && (isInEditor || isInTitle)) {
+            if (selection.rangeCount > 0 && !selection.isCollapsed && (isInEditor || isInTitle || isInDiaryPage)) {
                 savedRange = selection.getRangeAt(0).cloneRange();
                 const range = selection.getRangeAt(0);
                 const rect = range.getBoundingClientRect();
@@ -1105,16 +1124,12 @@
             const sel = window.getSelection();
             if (!sel.rangeCount) return;
             const range = sel.getRangeAt(0);
-            // Solo afectar si hay texto seleccionado
             if (range.collapsed) return;
-
-            // Extraer el contenido seleccionado
             const fragment = range.extractContents();
             const span = document.createElement('span');
             span.className = 'parenthesis-box';
             span.appendChild(fragment);
             range.insertNode(span);
-            // Colocar el cursor después del span
             const newRange = document.createRange();
             newRange.setStartAfter(span);
             newRange.collapse(true);
@@ -1127,7 +1142,6 @@
         // --- EFECTOS DE TEXTO ---
         function showEffectMenu() {
             floatMenu.style.display = 'none';
-            // Crear menú flotante para efectos
             const menu = document.createElement('div');
             menu.style.position = 'fixed';
             menu.style.top = '50%';
@@ -1155,6 +1169,8 @@
                 <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-fade-in')">✨ Aparición</button>
                 <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-bounce')">🤸 Rebote</button>
                 <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-pulse')">💓 Pulso</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-glow')">🌟 Brillo</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-wiggle')">🤪 Onda</button>
                 <button style="width:100%; padding:10px; background:#555; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:5px;" onclick="closeEffectMenu()">Cancelar</button>
             `;
             document.body.appendChild(menu);
@@ -1171,25 +1187,19 @@
             const sel = window.getSelection();
             if (!sel.rangeCount) return;
             const range = sel.getRangeAt(0);
-
-            // Si no hay texto seleccionado, pedir
             let selectedText = range.toString().trim();
             if (!selectedText) {
                 selectedText = prompt("No hay texto seleccionado. Escribe el texto que quieres animar:", "Tu texto aquí ✨");
                 if (selectedText === null || selectedText.trim() === '') return;
-                // Insertar el texto y animarlo
                 const html = `<span class="${className}">${selectedText}</span>`;
                 insertHtmlAtCursor(html);
                 return;
             }
-
-            // Texto seleccionado, preservar formato
             const fragment = range.extractContents();
             const span = document.createElement('span');
             span.className = className;
             span.appendChild(fragment);
             range.insertNode(span);
-            // Colocar cursor después
             const newRange = document.createRange();
             newRange.setStartAfter(span);
             newRange.collapse(true);
@@ -1201,7 +1211,6 @@
 
         // --- MODO DIARIO (CUADERNO) ---
         function toggleDiaryMode(diaryNote) {
-            // Esta función se llama al abrir una nota con diaryMode = true
             const wrapper = document.getElementById('editorWrapper');
             const title = document.getElementById('noteTitle');
             const editor = document.getElementById('noteEditor');
@@ -1211,7 +1220,6 @@
                 title.style.display = 'none';
                 editor.style.display = 'none';
 
-                // Crear la estructura del cuaderno si no existe
                 let notebook = wrapper.querySelector('.diary-notebook');
                 if (!notebook) {
                     notebook = document.createElement('div');
@@ -1236,60 +1244,75 @@
                         </div>
                     `;
                     wrapper.appendChild(notebook);
-                    // Agregar event listeners para input/save
+                    // Event listeners para las páginas
                     const pages = notebook.querySelectorAll('.page');
                     pages.forEach(page => {
                         page.addEventListener('input', triggerSave);
                         page.addEventListener('blur', triggerSave);
+                        // Manejar Enter para mantener formato
+                        page.addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter') {
+                                // Insertar un salto de línea que mantiene el estilo
+                                document.execCommand('insertLineBreak');
+                                e.preventDefault();
+                            }
+                        });
                     });
                 }
 
-                // Cargar contenido existente desde la nota
-                const content = notes.find(n => n.id === currentNoteId)?.content || '';
-                // Buscar la página 0
-                const page0 = document.getElementById('diaryPage0');
-                if (page0 && content) {
-                    // Intentar parsear el contenido como JSON para páginas
+                // Cargar contenido desde la nota
+                const note = notes.find(n => n.id === currentNoteId);
+                if (note) {
                     try {
-                        const pagesData = JSON.parse(content);
-                        if (Array.isArray(pagesData)) {
-                            // Reconstruir las páginas
+                        const pagesData = JSON.parse(note.content || '[]');
+                        if (Array.isArray(pagesData) && pagesData.length > 0) {
                             const container = document.getElementById('pageContainer');
-                            container.innerHTML = '';
-                            pagesData.forEach((text, idx) => {
-                                const div = document.createElement('div');
-                                div.className = 'page';
-                                div.id = `diaryPage${idx}`;
-                                div.contentEditable = true;
-                                div.spellcheck = false;
-                                div.style.fontFamily = "'Caveat', cursive";
-                                div.style.fontSize = "1.2rem";
-                                div.style.lineHeight = "2.1rem";
-                                div.style.color = "#3d3122";
-                                div.style.background = "transparent";
-                                div.style.padding = "40px 50px";
-                                div.innerHTML = text;
-                                container.appendChild(div);
-                            });
-                            return;
+                            if (container) {
+                                container.innerHTML = '';
+                                pagesData.forEach((text, idx) => {
+                                    const div = document.createElement('div');
+                                    div.className = 'page';
+                                    div.id = `diaryPage${idx}`;
+                                    div.contentEditable = true;
+                                    div.spellcheck = false;
+                                    div.style.fontFamily = "'Caveat', cursive";
+                                    div.style.fontSize = "1.2rem";
+                                    div.style.lineHeight = "2.1rem";
+                                    div.style.color = "#3d3122";
+                                    div.style.background = "transparent";
+                                    div.style.padding = "40px 50px";
+                                    div.innerHTML = text;
+                                    container.appendChild(div);
+                                    // Event listener para Enter
+                                    div.addEventListener('keydown', function(e) {
+                                        if (e.key === 'Enter') {
+                                            document.execCommand('insertLineBreak');
+                                            e.preventDefault();
+                                        }
+                                    });
+                                });
+                                currentPageIndex = 0;
+                                container.style.transform = 'translateX(0)';
+                            }
                         }
                     } catch (e) {
-                        // Si no es JSON, asumir que es contenido de la página 0
-                        if (page0) page0.innerHTML = content;
+                        // Si no es JSON válido, usar contenido como página 0
+                        const page0 = document.getElementById('diaryPage0');
+                        if (page0 && note.content && note.content !== '[]') {
+                            page0.innerHTML = note.content;
+                        }
                     }
                 }
+                currentPageIndex = 0;
             } else {
-                // Modo normal
                 wrapper.classList.remove('diary-mode');
                 title.style.display = '';
                 editor.style.display = '';
-                // Eliminar el notebook
                 const notebook = wrapper.querySelector('.diary-notebook');
                 if (notebook) notebook.remove();
             }
         }
 
-        // Variables globales para el diario
         let currentPageIndex = 0;
 
         function changePage(direction) {
@@ -1319,12 +1342,17 @@
             div.style.padding = "40px 50px";
             div.innerHTML = '<br>';
             container.appendChild(div);
-            // Guardar inmediatamente
+            // Event listener para Enter
+            div.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    document.execCommand('insertLineBreak');
+                    e.preventDefault();
+                }
+            });
             saveDiaryPages();
         }
 
         function saveDiaryPages() {
-            // Guardar todas las páginas como un array en la nota
             const container = document.getElementById('pageContainer');
             if (!container) return;
             const pages = container.querySelectorAll('.page');
@@ -1337,7 +1365,6 @@
         }
 
         function insertGrid() {
-            // Insertar cuadrícula en la página actual del diario
             const container = document.getElementById('pageContainer');
             if (!container) return;
             const currentPage = container.children[currentPageIndex];
@@ -1345,41 +1372,34 @@
             
             const gridHtml = `
                 <table class="diary-grid">
-                    <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
-                    <tr><th>1</th><td></td><td></td><td></td><td></td></tr>
-                    <tr><th>2</th><td></td><td></td><td></td><td></td></tr>
-                    <tr><th>3</th><td></td><td></td><td></td><td></td></tr>
-                    <tr><th>4</th><td></td><td></td><td></td><td></td></tr>
-                    <tr><th>5</th><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
                 </table>
             `;
             // Insertar en la posición del cursor o al final
             const sel = window.getSelection();
             if (currentPage.contains(sel.anchorNode)) {
-                // Insertar en la posición del cursor
                 const range = sel.getRangeAt(0);
                 range.deleteContents();
                 const fragment = range.createContextualFragment(gridHtml);
                 range.insertNode(fragment);
-                // Colocar cursor después de la tabla
                 range.setStartAfter(fragment);
                 range.collapse(true);
                 sel.removeAllRanges();
                 sel.addRange(range);
             } else {
-                // Insertar al final de la página
                 currentPage.insertAdjacentHTML('beforeend', gridHtml);
-                // Scrollear al final
                 currentPage.scrollTop = currentPage.scrollHeight;
             }
-            // Hacer editables las celdas
             setTimeout(() => {
                 currentPage.querySelectorAll('.diary-grid td').forEach(td => {
                     td.setAttribute('contenteditable', 'true');
                     td.style.cursor = 'text';
                 });
             }, 50);
-            // Guardar
             saveDiaryPages();
         }
 
@@ -1480,10 +1500,8 @@
             const note = notes.find(n => n.id === id);
             if (note) {
                 titleEl.value = note.title || '';
-                // Si es diario, cargar el contenido como páginas
                 if (note.diaryMode) {
                     toggleDiaryMode(true);
-                    // Cargar páginas (el contenido se carga en toggleDiaryMode)
                 } else {
                     toggleDiaryMode(false);
                     editorEl.innerHTML = note.content || '';
@@ -1522,7 +1540,6 @@
                 if (noteIndex !== -1) {
                     const note = notes[noteIndex];
                     note.title = titleEl.value;
-                    // Si es diario, guardar páginas
                     if (note.diaryMode) {
                         saveDiaryPages();
                     } else {
@@ -1621,7 +1638,6 @@
         initApp();
 
         // --- SOBRESCRITURA DE FUNCIONES PARA DIARIO ---
-        // Al abrir una nota, si es diario, invocar toggleDiaryMode correctamente
         const originalOpenNote = openNote;
         openNote = function(id, autoCloseMenu = true) {
             currentNoteId = id;
@@ -1630,69 +1646,6 @@
                 titleEl.value = note.title || '';
                 if (note.diaryMode) {
                     toggleDiaryMode(true);
-                    // Cargar contenido de páginas si existe
-                    try {
-                        const pagesData = JSON.parse(note.content || '[]');
-                        if (Array.isArray(pagesData) && pagesData.length > 0) {
-                            const container = document.getElementById('pageContainer');
-                            if (container) {
-                                container.innerHTML = '';
-                                pagesData.forEach((text, idx) => {
-                                    const div = document.createElement('div');
-                                    div.className = 'page';
-                                    div.id = `diaryPage${idx}`;
-                                    div.contentEditable = true;
-                                    div.spellcheck = false;
-                                    div.style.fontFamily = "'Caveat', cursive";
-                                    div.style.fontSize = "1.2rem";
-                                    div.style.lineHeight = "2.1rem";
-                                    div.style.color = "#3d3122";
-                                    div.style.background = "transparent";
-                                    div.style.padding = "40px 50px";
-                                    div.innerHTML = text;
-                                    container.appendChild(div);
-                                });
-                                currentPageIndex = 0;
-                                container.style.transform = 'translateX(0)';
-                            }
-                        } else {
-                            // Si no hay páginas, crear una
-                            const container = document.getElementById('pageContainer');
-                            if (container) {
-                                container.innerHTML = `
-                                    <div class="page" id="diaryPage0" contenteditable="true" spellcheck="false" style="font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 2.1rem; color: #3d3122; background: transparent; padding: 40px 50px;">
-                                        📓 Mi Diario<br><br>
-                                        <p>Hoy quiero recordar lo mucho que te amo, Gabi.</p>
-                                        <div style="margin-top:20px;">
-                                            <button onclick="insertGrid()" style="background:transparent; border:1px solid #b0a090; padding:4px 12px; border-radius:15px; cursor:pointer; font-family: 'Caveat', cursive;">📊 Insertar Cuadrícula</button>
-                                        </div>
-                                    </div>
-                                `;
-                            }
-                        }
-                    } catch (e) {
-                        // Fallback
-                        const container = document.getElementById('pageContainer');
-                        if (container) {
-                            container.innerHTML = `
-                                <div class="page" id="diaryPage0" contenteditable="true" spellcheck="false" style="font-family: 'Caveat', cursive; font-size: 1.2rem; line-height: 2.1rem; color: #3d3122; background: transparent; padding: 40px 50px;">
-                                    📓 Mi Diario<br><br>
-                                    <p>Hoy quiero recordar lo mucho que te amo, Gabi.</p>
-                                    <div style="margin-top:20px;">
-                                        <button onclick="insertGrid()" style="background:transparent; border:1px solid #b0a090; padding:4px 12px; border-radius:15px; cursor:pointer; font-family: 'Caveat', cursive;">📊 Insertar Cuadrícula</button>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    }
-                    // Asegurar eventos en las páginas
-                    const container = document.getElementById('pageContainer');
-                    if (container) {
-                        container.querySelectorAll('.page').forEach(page => {
-                            page.addEventListener('input', triggerSave);
-                            page.addEventListener('blur', triggerSave);
-                        });
-                    }
                 } else {
                     toggleDiaryMode(false);
                     editorEl.innerHTML = note.content || '';
@@ -1704,9 +1657,6 @@
             renderList();
             if (autoCloseMenu && window.innerWidth <= 768 && sidebar.classList.contains('open')) toggleSidebar();
         };
-
-        // --- GUARDADO AUTOMÁTICO EN DIARIO ---
-        // Ya se maneja en triggerSave y saveDiaryPages
     </script>
 </body>
 </html>
