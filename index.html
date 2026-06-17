@@ -152,10 +152,38 @@
         .theme-amor { background: radial-gradient(circle, #fcfcfc 0%, #e6e6e6 100%) !important; color: #111111; }
         .theme-noche { background: linear-gradient(135deg, #1a1a2e, #16213e) !important; color: #e1e1e6; }
 
+        /* --- NUEVOS TEMAS CON IMÁGENES --- */
+        .theme-fuego { 
+            background-image: url('assets/themes/fuego.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            background-color: #0a0000; 
+        }
+        .theme-tortugas { 
+            background-image: url('assets/themes/tortugas.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            background-color: #000b14; 
+        }
+        .theme-neon { 
+            background-image: url('assets/themes/perfil.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            background-color: #0a0000; 
+        }
+
         [data-theme="dark"] .theme-sakura { background: linear-gradient(to bottom right, #2c131a, #4a1c2a) !important; color: #ffccd5; border: 1px solid #5c2033; }
         [data-theme="dark"] .theme-papel { background: #1a1714 !important; color: #d8d0c1; background-image: repeating-linear-gradient(transparent, transparent 31px, #362f27 31px, #362f27 32px); border: 1px solid #362f27; }
         [data-theme="dark"] .theme-amor { background: radial-gradient(circle, #1a1a1a 0%, #0d0d0d 100%) !important; color: #e6e6e6; border: 1px solid #333333; }
         [data-theme="dark"] .theme-noche { background: linear-gradient(135deg, #0b0b14, #080b12) !important; color: #e1e1e6; border: 1px solid #1c1c33; }
+        
+        /* Estilos oscuros para los nuevos temas */
+        [data-theme="dark"] .theme-fuego { border: 1px solid #3a0a0a; }
+        [data-theme="dark"] .theme-tortugas { border: 1px solid #0a1a3a; }
+        [data-theme="dark"] .theme-neon { border: 1px solid #3a0a0a; }
 
         .image-toolbar { 
             position: fixed; opacity: 0; pointer-events: none;
@@ -313,6 +341,11 @@
             <div class="color-dot" style="background: #e6dac3;" onclick="setNoteTheme('theme-papel')"></div>
             <div class="color-dot" style="background: #d4d4d4;" onclick="setNoteTheme('theme-amor')"></div>
             <div class="color-dot" style="background: #1a1a2e;" onclick="setNoteTheme('theme-noche')"></div>
+            
+            <!-- TEMAS DE IMÁGENES NUEVOS -->
+            <div class="color-dot" style="background-image: url('assets/themes/fuego.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-fuego')" title="Fuego 🔥"></div>
+            <div class="color-dot" style="background-image: url('assets/themes/tortugas.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-tortugas')" title="Tortugas 🐢"></div>
+            <div class="color-dot" style="background-image: url('assets/themes/perfil.jpg'); background-size: cover; border: 1px solid var(--border);" onclick="setNoteTheme('theme-neon')" title="Perfil Neón 🖤"></div>
         </div>
 
         <div class="editor-container" id="editorContainer">
