@@ -55,6 +55,9 @@
         .theme-toggle:active { transform: rotate(45deg); }
         .btn-new { background: #111111; color: white; border: none; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: transform 0.2s; }
         .btn-new:active { transform: scale(0.95); }
+        .btn-diary { background: #ffffff; color: #111111; border: 2px solid #111111; padding: 12px; border-radius: 12px; width: calc(100% - 30px); margin: 0 auto 15px auto; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: transform 0.2s; }
+        .btn-diary:active { transform: scale(0.95); }
+        [data-theme="dark"] .btn-diary { background: #0e152e; color: #f0f2f8; border-color: #ffffff; }
         .note-list { flex: 1; overflow-y: auto; padding: 0 15px 15px 15px; }
         
         .note-item { padding: 15px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; background: var(--bg-body); transition: var(--transition); border: 1px solid transparent; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
@@ -128,6 +131,7 @@
             content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); 
             border-width: 0 5px 5px; border-style: solid; border-color: transparent transparent #111111 transparent; 
         }
+        
         .floating-insert-menu { 
             position: absolute; display: none; background: #111111; color: white; border-radius: 15px; 
             padding: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 1000; 
@@ -140,6 +144,7 @@
 
         .ft-btn { background: transparent; border: none; color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; flex-shrink: 0; }
         .ft-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.85); }
+        .ft-btn-wide { width: 32px; height: 32px; font-size: 1rem; }
         .ft-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.2); margin: 0 2px; flex-shrink: 0; }
         .ft-select { background: none; color: white; border: none; font-size: 0.75rem; cursor: pointer; margin: 0 1px; flex-shrink: 0; }
         .ft-select option { background: #111; }
@@ -249,16 +254,19 @@
         }
 
         /* --- NUEVAS FUNCIONES: LISTA DE TAREAS, ANIMACIONES Y DIARIO --- */
+        .task-list-container {
+            margin: 15px 0;
+        }
         .task-list {
             list-style: none;
             padding: 0;
-            margin: 20px 0;
+            margin: 0;
         }
         .task-list li {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 0;
+            gap: 8px;
+            padding: 8px 0;
             border-bottom: 1px solid rgba(0,0,0,0.05);
             transition: all 0.3s ease;
             font-size: 1.1rem;
@@ -266,8 +274,8 @@
         .task-list li input[type="checkbox"] {
             appearance: none;
             -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 2px solid var(--border);
             border-radius: 50%;
             cursor: pointer;
@@ -286,34 +294,44 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: bold;
         }
-        .task-list li label {
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .task-list li .task-text {
+            flex: 1;
+            padding: 2px 5px;
+            border-radius: 4px;
+            outline: none;
+            transition: background 0.2s;
+            cursor: text;
+            word-break: break-word;
         }
-        .task-list li.done label {
+        .task-list li .task-text:focus {
+            background: rgba(0,0,0,0.05);
+        }
+        .task-list li.done .task-text {
             text-decoration: line-through;
             opacity: 0.5;
-            transform: scale(0.98);
-            color: var(--text-muted);
         }
-        
-        .anim-float {
-            display: inline-block;
-            animation: floatText 3s ease-in-out infinite;
-        }
-        @keyframes floatText {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-        
-        .anim-heart {
-            display: inline-block;
-            animation: heartbeat 1.5s ease-in-out infinite;
+        .task-list li .delete-task {
+            background: transparent;
+            border: none;
             color: #ff4757;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            flex-shrink: 0;
         }
+        .task-list li .delete-task:hover {
+            background: rgba(255, 71, 87, 0.1);
+        }
+        
+        .anim-float { display: inline-block; animation: floatText 3s ease-in-out infinite; }
+        @keyframes floatText { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        
+        .anim-heart { display: inline-block; animation: heartbeat 1.5s ease-in-out infinite; color: #ff4757; }
         
         .anim-rainbow {
             background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1, #ff9ff3);
@@ -346,6 +364,38 @@
             50% { border-color: var(--text-main); }
         }
 
+        /* 5 Nuevas animaciones */
+        .anim-shake { display: inline-block; animation: shake 0.5s ease-in-out infinite; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .anim-spin { display: inline-block; animation: spin 2s linear infinite; }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .anim-fade-in { display: inline-block; animation: fadeIn 2s ease-in forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .anim-bounce { display: inline-block; animation: bounce 1s ease infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .anim-pulse { display: inline-block; animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
         .diary-mode {
             background-image: repeating-linear-gradient(transparent, transparent 31px, #d8d0c1 31px, #d8d0c1 32px) !important;
             background-color: #fdf5e6 !important;
@@ -362,42 +412,6 @@
             font-family: 'Caveat', cursive !important;
             font-size: 1.3rem;
             line-height: 2.1rem;
-        }
-        
-        .new-feature-btn {
-            background: transparent;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text-main);
-            font-size: 1.1rem;
-            transition: background 0.2s, transform 0.1s;
-            position: relative;
-        }
-        .new-feature-btn:active {
-            transform: scale(0.85);
-            background: var(--border);
-        }
-        .new-feature-btn .tooltip {
-            display: none;
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #111;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            white-space: nowrap;
-        }
-        .new-feature-btn:hover .tooltip {
-            display: block;
         }
     </style>
 </head>
@@ -441,6 +455,7 @@
             <button class="menu-toggle" onclick="toggleSidebar()" style="display: none; color: white;" id="closeSidebarBtn"><i class='bx bx-x'></i></button>
         </div>
         <button class="btn-new" onclick="createNewNote()"><i class='bx bx-plus'></i> Escribir algo nuevo</button>
+        <button class="btn-diary" onclick="createNewDiaryNote()"><i class='bx bx-book'></i> 📓 Nuevo Diario</button>
         <div class="note-list" id="noteList"></div>
     </aside>
 
@@ -489,20 +504,7 @@
                 <button class="tool-btn" onclick="formatDoc('justifyRight')" title="Alinear Derecha"><i class='bx bx-align-right'></i></button>
             </div>
 
-            <!-- NUEVAS FUNCIONES: LISTA, EFECTOS Y DIARIO -->
             <div class="tool-group" style="margin-left: auto;">
-                <button class="new-feature-btn" onclick="insertTaskList()" title="Lista de tareas">
-                    <i class='bx bx-task'></i>
-                    <span class="tooltip">Lista</span>
-                </button>
-                <button class="new-feature-btn" onclick="insertEffectMenu()" title="Efectos de texto">
-                    <i class='bx bx-magic'></i>
-                    <span class="tooltip">Efectos</span>
-                </button>
-                <button class="new-feature-btn" onclick="toggleDiaryMode()" title="Modo Diario">
-                    <i class='bx bx-book'></i>
-                    <span class="tooltip">Diario</span>
-                </button>
                 <input type="file" id="mediaInput" accept="image/*,video/*,image/gif" style="display: none;" onchange="insertMedia(event)">
                 <button class="tool-btn" onclick="document.getElementById('mediaInput').click()" title="Insertar imagen/video"><i class='bx bx-image-add'></i></button>
                 <button class="tool-btn" onclick="openUrlModal('image')" title="Insertar GIF/Sticker desde URL"><i class='bx bx-happy-heart-eyes'></i></button>
@@ -557,6 +559,11 @@
                     <div class="ft-color-wrapper" title="Resaltar texto">
                         <input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="safeExec(() => execFloating('hiliteColor', this.value))" value="#ffff00">
                     </div>
+                    <!-- NUEVAS HERRAMIENTAS EN BARRA FLOTANTE -->
+                    <div class="ft-divider"></div>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="insertTaskList()" title="Lista de tareas"><i class='bx bx-task'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="showEffectMenu()" title="Efectos de texto"><i class='bx bx-wand'></i></button>
+                    <button class="ft-btn ft-btn-wide" onmousedown="event.preventDefault(); restoreSelection();" onclick="toggleDiaryMode()" title="Modo Diario"><i class='bx bx-book'></i></button>
                 </div>
 
                 <div class="floating-insert-menu" id="insertMenu">
@@ -1244,13 +1251,23 @@
                 editorEl.innerHTML = note.content;
                 wrapperEl.className = 'editor-wrapper';
                 if(note.theme && note.theme !== 'default') wrapperEl.classList.add(note.theme);
+                if(note.diaryMode) wrapperEl.classList.add('diary-mode');
             }
             deselectMedia();
             renderList();
             if (autoCloseMenu && window.innerWidth <= 768 && sidebar.classList.contains('open')) { toggleSidebar(); }
         }
         function createNewNote() {
-            const newNote = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, timestamp: Date.now() };
+            const newNote = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, diaryMode: false, timestamp: Date.now() };
+            notes.push(newNote);
+            currentNoteId = newNote.id;
+            saveData();
+            openNote(newNote.id);
+            titleEl.focus();
+            setTimeout(() => { const newEl = document.getElementById(`note-${newNote.id}`); if(newEl) newEl.classList.add('creating'); }, 50);
+        }
+        function createNewDiaryNote() {
+            const newNote = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, diaryMode: true, timestamp: Date.now() };
             notes.push(newNote);
             currentNoteId = newNote.id;
             saveData();
@@ -1302,29 +1319,83 @@
 
         // --- NUEVAS FUNCIONES: LISTA DE TAREAS, EFECTOS Y DIARIO ---
         function insertTaskList() {
-            const html = `<ul class="task-list">
-                <li><input type="checkbox" id="task1"><label for="task1"> Hacer algo importante</label></li>
-                <li><input type="checkbox" id="task2"><label for="task2"> Escribir un poema</label></li>
-                <li><input type="checkbox" id="task3"><label for="task3"> Recordar lo mucho que te amo</label></li>
-            </ul>`;
+            const id = Date.now();
+            const html = `<div class="task-list-container" data-id="${id}">
+                <ul class="task-list">
+                    <li>
+                        <input type="checkbox" id="task-${id}-1">
+                        <span class="task-text" contenteditable="true">Nueva tarea</span>
+                        <button class="delete-task" onclick="deleteTask(this)">🗑️</button>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="task-${id}-2">
+                        <span class="task-text" contenteditable="true">Otra tarea</span>
+                        <button class="delete-task" onclick="deleteTask(this)">🗑️</button>
+                    </li>
+                </ul>
+                <div style="margin-top:5px;">
+                    <button onclick="addTask('${id}')" style="background:transparent; border:1px solid var(--border); padding:2px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">+ Añadir tarea</button>
+                </div>
+            </div>`;
             insertHtmlAtCursor(html);
-            // Agregar event listeners a los checkboxes recién creados
+            
+            // Agregar event listeners a los checkboxes
             setTimeout(() => {
-                document.querySelectorAll('.task-list input[type="checkbox"]').forEach(cb => {
-                    cb.addEventListener('change', function() {
-                        const li = this.closest('li');
-                        if (this.checked) {
-                            li.classList.add('done');
-                        } else {
-                            li.classList.remove('done');
-                        }
+                const container = document.querySelector(`[data-id="${id}"]`);
+                if (container) {
+                    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                        cb.addEventListener('change', function() {
+                            const li = this.closest('li');
+                            if (this.checked) {
+                                li.classList.add('done');
+                            } else {
+                                li.classList.remove('done');
+                            }
+                        });
                     });
-                });
+                }
             }, 100);
         }
 
-        function insertEffectMenu() {
-            // Crear un menú flotante simple para seleccionar el efecto
+        function addTask(containerId) {
+            const container = document.querySelector(`[data-id="${containerId}"]`);
+            if (!container) return;
+            const ul = container.querySelector('.task-list');
+            const newId = Date.now();
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <input type="checkbox" id="task-${containerId}-${newId}">
+                <span class="task-text" contenteditable="true">Nueva tarea</span>
+                <button class="delete-task" onclick="deleteTask(this)">🗑️</button>
+            `;
+            ul.appendChild(li);
+            // Event listener para el checkbox
+            li.querySelector('input[type="checkbox"]').addEventListener('change', function() {
+                const li = this.closest('li');
+                if (this.checked) {
+                    li.classList.add('done');
+                } else {
+                    li.classList.remove('done');
+                }
+            });
+        }
+
+        function deleteTask(btn) {
+            const li = btn.closest('li');
+            li.style.transition = 'all 0.2s';
+            li.style.transform = 'scale(0.9)';
+            li.style.opacity = '0';
+            setTimeout(() => {
+                li.remove();
+                triggerSave();
+            }, 200);
+        }
+
+        function showEffectMenu() {
+            // Cerrar el menú flotante de texto
+            floatMenu.style.display = 'none';
+            
+            // Crear un menú de efectos
             const menu = document.createElement('div');
             menu.style.position = 'fixed';
             menu.style.top = '50%';
@@ -1339,23 +1410,32 @@
             menu.style.display = 'flex';
             menu.style.flexDirection = 'column';
             menu.style.gap = '10px';
-            menu.style.minWidth = '250px';
+            menu.style.minWidth = '280px';
+            menu.style.maxWidth = '90vw';
             menu.innerHTML = `
-                <div style="font-weight:600; text-align:center; margin-bottom:10px;">✨ Efecto de texto</div>
-                <button class="ft-btn" style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="insertEffect('anim-float')">🌊 Flotante</button>
-                <button class="ft-btn" style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="insertEffect('anim-heart')">❤️ Latido</button>
-                <button class="ft-btn" style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="insertEffect('anim-rainbow')">🌈 Arcoíris</button>
-                <button class="ft-btn" style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="insertEffect('anim-typewriter')">⌨️ Máquina</button>
-                <button class="ft-btn" style="width:100%; padding:10px; background:#555; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:5px;" onclick="document.body.removeChild(this.parentNode)">Cancelar</button>
+                <div style="font-weight:600; text-align:center; margin-bottom:10px;">✨ Selecciona un efecto</div>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-float')">🌊 Flotante</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-heart')">❤️ Latido</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-rainbow')">🌈 Arcoíris</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-typewriter')">⌨️ Máquina</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-shake')">🌪️ Temblor</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-spin')">🌀 Giro</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-fade-in')">✨ Aparición</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-bounce')">🤸 Rebote</button>
+                <button style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;" onclick="applyEffect('anim-pulse')">💓 Pulso</button>
+                <button style="width:100%; padding:10px; background:#555; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:5px;" onclick="closeEffectMenu()">Cancelar</button>
             `;
             document.body.appendChild(menu);
         }
 
-        function insertEffect(className) {
-            // Cerrar el menú
+        function closeEffectMenu() {
             const menus = document.querySelectorAll('div[style*="z-index: 9999"]');
             menus.forEach(m => m.remove());
+        }
 
+        function applyEffect(className) {
+            closeEffectMenu();
+            restoreSelection();
             const text = prompt("¿Qué texto quieres que tenga el efecto?", "Tu texto aquí ✨");
             if (text !== null && text.trim() !== '') {
                 const html = `<span class="${className}">${text}</span>`;
@@ -1371,19 +1451,11 @@
                 notes[noteIndex].diaryMode = wrapperEl.classList.contains('diary-mode');
                 saveData();
             }
+            // Cerrar el menú flotante si está abierto
+            floatMenu.style.display = 'none';
         }
 
-        // Restaurar modo diario al abrir la nota
-        const originalOpenNote = openNote;
-        openNote = function(id, autoCloseMenu = true) {
-            originalOpenNote(id, autoCloseMenu);
-            const note = notes.find(n => n.id === id);
-            if (note && note.diaryMode) {
-                wrapperEl.classList.add('diary-mode');
-            } else {
-                wrapperEl.classList.remove('diary-mode');
-            }
-        };
+        // Asegurar que al abrir una nota, si tiene diaryMode activo, se aplique la clase (ya se hace en openNote)
     </script>
 </body>
 </html>
