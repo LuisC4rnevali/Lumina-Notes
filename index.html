@@ -37,11 +37,15 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--bg-body); color: var(--text-main);
-            display: flex; height: 100dvh; overflow: hidden;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            height: 100dvh;
+            overflow: hidden;
             font-family: 'Poppins', sans-serif;
             transition: background-color 0.3s, color 0.3s;
-            user-select: none; -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -478,15 +482,17 @@
 
 <script>
     (function() {
+        // ── Utilidades seguras ──
         const safeExec = fn => { try { fn(); } catch(e) {} };
         const safeGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } };
         const safeSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
 
+        // ── Datos ──
         const cartasAmor = [
-            "Hola, Gabriela preciosa. Solo quería tomarme un momento para decirte lo increíblemente afortunado que me siento...",
-            "Mi amor, hoy me desperté pensando en ti, como todos los días...",
-            "Sé que a veces los días se vuelven grises...",
-            "¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso..."
+            "Hola, Gabriela preciosa. Solo quería tomarme un momento para decirte lo increíblemente afortunado que me siento de tenerte en mi vida. A veces me quedo mirándote...",
+            "Mi amor, hoy me desperté pensando en ti, como todos los días. Pero hoy fue diferente: me di cuenta de que cada pequeño detalle tuyo...",
+            "Sé que a veces los días se vuelven grises y las preocupaciones pesan. Pero quiero que nunca olvides que aquí estoy yo, incondicional...",
+            "¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso, tu capacidad de amar sin medida incluso cuando el mundo ha sido difícil contigo..."
         ];
 
         let notes = safeGet('nova_romance', []);
@@ -499,6 +505,7 @@
         let extrasEnabled = safeGet('nova_extras_enabled', true);
         let lastFocusedEditable = null;
 
+        // ── DOM ──
         const titleEl = document.getElementById('noteTitle');
         const editorEl = document.getElementById('noteEditor');
         const listEl = document.getElementById('noteList');
@@ -521,10 +528,13 @@
         const imgMarginHSlider = document.getElementById('imgMarginHSlider');
         const imgMarginVSlider = document.getElementById('imgMarginVSlider');
 
+        // ── Seguimiento de foco ──
         titleEl.addEventListener('focus', () => lastFocusedEditable = 'title');
         editorEl.addEventListener('focus', () => lastFocusedEditable = 'editor');
 
-        function getTargetForFormatting() { return lastFocusedEditable === 'title' ? titleEl : editorEl; }
+        function getTargetForFormatting() {
+            return (lastFocusedEditable === 'title') ? titleEl : editorEl;
+        }
 
         function restoreSelection() {
             if (savedRange) {
@@ -534,6 +544,14 @@
             }
         }
 
+        function saveSelectionToRange() {
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0 && editorEl.contains(sel.anchorNode)) {
+                savedRange = sel.getRangeAt(0).cloneRange();
+            }
+        }
+
+        // ── Formateo principal (sin cambiar fuente en negrita/cursiva) ──
         function applyFormatting(command, value = null) {
             const target = getTargetForFormatting();
             if (target === titleEl) {
@@ -564,8 +582,9 @@
             if (!contents.textContent.trim()) { range.insertNode(contents); return; }
             const span = document.createElement('span');
             span.appendChild(contents);
-            if (type === 'fontName') span.style.fontFamily = value;
-            else if (type === 'fontSize') {
+            if (type === 'fontName') {
+                span.style.fontFamily = value;
+            } else if (type === 'fontSize') {
                 const sizes = {1:'0.7rem',2:'0.85rem',3:'1rem',4:'1.2rem',5:'1.5rem',6:'2rem'};
                 span.style.fontSize = sizes[value] || '1rem';
             }
@@ -591,6 +610,7 @@
             applyFontStyle('fontSize', value);
         }
 
+        // ── Formateo desde menú flotante ──
         function execFloating(command, value = null) {
             restoreSelection();
             const target = getTargetForFormatting();
@@ -639,6 +659,7 @@
             applyFontStyle('fontSize', value);
         }
 
+        // ── Animaciones de texto ──
         function applyTextAnimation(animClass) {
             restoreSelection();
             const sel = window.getSelection();
@@ -670,7 +691,7 @@
             animSubmenu.style.top = (rect.bottom - containerRect.top + editorContainer.scrollTop + 8) + 'px';
         }
 
-        // Long press en vacío
+        // ── Long press en área vacía (barra de inserción) ──
         let longPressTimer = null;
         editorEl.addEventListener('pointerdown', (e) => {
             if (!extrasEnabled) return;
@@ -710,7 +731,7 @@
         function insertSymbol(sym) { document.execCommand('insertText', false, sym); triggerSave(); hideInsertMenu(); }
         function insertMenuCommand(cmd, val) { document.execCommand(cmd, false, val); triggerSave(); editorEl.focus(); }
 
-        // Actualizar menú flotante al seleccionar
+        // ── Actualizar posición menú flotante según selección ──
         document.addEventListener('selectionchange', () => {
             const sel = window.getSelection();
             if (!sel.rangeCount || !sel.anchorNode) {
@@ -749,7 +770,7 @@
             savedRange = null;
         });
 
-        // Manejo de medios
+        // ── Manejo de medios (imagen/video) ──
         function selectMediaElement(el) {
             if (selectedMedia && selectedMedia !== el) selectedMedia.classList.remove('selected-img');
             selectedMedia = el;
@@ -789,7 +810,31 @@
         function duplicateMedia() { if(!selectedMedia) return; const clone=selectedMedia.cloneNode(true); clone.classList.remove('selected-img'); selectedMedia.parentNode.insertBefore(clone, selectedMedia.nextSibling); triggerSave(); deselectMedia(); editorEl.focus(); }
         function deleteMedia() { if(!selectedMedia) return; selectedMedia.remove(); triggerSave(); deselectMedia(); editorEl.focus(); }
 
-        // Insertar medios
+        // Eventos de puntero para seleccionar medios (long press o click)
+        editorEl.addEventListener('pointerdown', (e) => {
+            const t = e.target.closest('img, video');
+            if (!t || !editorEl.contains(t)) return;
+            e._mediaTarget = t;
+            e._mediaTime = Date.now();
+        });
+        editorEl.addEventListener('pointerup', (e) => {
+            if (!e._mediaTarget) return;
+            const duration = Date.now() - e._mediaTime;
+            if (duration > 400) {
+                e.preventDefault();
+                selectMediaElement(e._mediaTarget);
+                if (navigator.vibrate) navigator.vibrate(50);
+            } else {
+                selectMediaElement(e._mediaTarget);
+            }
+        });
+        editorEl.addEventListener('click', (e) => {
+            const t = e.target.closest('img, video');
+            if (!t) { deselectMedia(); editorEl.focus(); }
+        });
+        editorEl.addEventListener('contextmenu', e => e.preventDefault());
+
+        // ── Insertar medios ──
         function insertMedia(e) {
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
@@ -835,7 +880,7 @@
         function openUrlModalFromInsert(type) { hideInsertMenu(); openUrlModal(type); }
         function insertMediaFromMenu(e) { insertMedia(e); hideInsertMenu(); }
 
-        // Notas
+        // ── Notas ──
         function renderList() {
             listEl.innerHTML = '';
             const sorted = [...notes].sort((a,b) => (a.pinned===b.pinned ? b.timestamp-a.timestamp : a.pinned?-1:1));
@@ -859,44 +904,104 @@
                 listEl.appendChild(div);
             });
         }
-        function openContextMenu(id) { /* ... igual que antes ... */ }
-        function closeContextMenu() { /* ... */ }
-        function actionPinNote() { /* ... */ }
-        function actionDuplicateNote() { /* ... */ }
-        function actionDeleteNote() { /* ... */ }
-        function openNote(id, autoClose=true) {
+        function openContextMenu(id) {
+            contextNoteId = id;
+            const note = notes.find(n => n.id === id);
+            document.getElementById('sheetTitle').innerText = `Opciones: ${note.title||'Nota sin título'}`;
+            const icon = document.getElementById('sheetPinIcon');
+            const txt = document.getElementById('sheetPinText');
+            if (note.pinned) { icon.className = 'bx bx-pin'; txt.innerText = 'Desfijar nota'; }
+            else { icon.className = 'bx bxs-pin'; txt.innerText = 'Fijar arriba'; }
+            sheet.classList.add('show');
+            overlaySheet.classList.add('show');
+        }
+        function closeContextMenu() { sheet.classList.remove('show'); overlaySheet.classList.remove('show'); contextNoteId = null; }
+        function actionPinNote() {
+            const idx = notes.findIndex(n => n.id === contextNoteId);
+            if (idx !== -1) { notes[idx].pinned = !notes[idx].pinned; saveData(); renderList(); }
+            closeContextMenu();
+        }
+        function actionDuplicateNote() {
+            const orig = notes.find(n => n.id === contextNoteId);
+            if (orig) {
+                const copy = JSON.parse(JSON.stringify(orig));
+                copy.id = Date.now().toString();
+                copy.title = orig.title + ' (Copia)';
+                copy.timestamp = Date.now();
+                copy.pinned = false;
+                notes.push(copy);
+                saveData(); renderList(); openNote(copy.id);
+            }
+            closeContextMenu();
+        }
+        function actionDeleteNote() {
+            if (contextNoteId === 'nota_magica_diaria') { alert('¡Esta es mi carta diaria! No puedes borrarla. 🖤'); closeContextMenu(); return; }
+            if (confirm('¿Eliminar esta nota?')) {
+                const idDel = contextNoteId; closeContextMenu();
+                const el = document.getElementById(`note-${idDel}`);
+                if (el) {
+                    el.classList.add('deleting');
+                    setTimeout(() => {
+                        notes = notes.filter(n => n.id !== idDel);
+                        saveData();
+                        if (currentNoteId === idDel) openNote(notes[0]?.id || null);
+                        renderList();
+                    }, 400);
+                } else {
+                    notes = notes.filter(n => n.id !== idDel);
+                    saveData();
+                    if (currentNoteId === idDel) openNote(notes[0]?.id || null);
+                    renderList();
+                }
+            }
+        }
+
+        function openNote(id, autoClose = true) {
             currentNoteId = id;
-            const note = notes.find(n=>n.id===id);
-            if(note){
+            const note = notes.find(n => n.id === id);
+            if (note) {
                 titleEl.value = note.title;
                 editorEl.innerHTML = note.content;
                 wrapperEl.className = 'editor-wrapper';
-                if(note.theme && note.theme!=='default') wrapperEl.classList.add(note.theme);
+                if (note.theme && note.theme !== 'default') wrapperEl.classList.add(note.theme);
             }
-            deselectMedia(); renderList();
-            if(autoClose && window.innerWidth<=768 && sidebar.classList.contains('open')) toggleSidebar();
+            deselectMedia();
+            renderList();
+            if (autoClose && window.innerWidth <= 768 && sidebar.classList.contains('open')) toggleSidebar();
         }
         function createNewNote() {
             const nn = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, timestamp: Date.now() };
-            notes.push(nn); currentNoteId = nn.id; saveData(); openNote(nn.id); titleEl.focus();
-            setTimeout(()=>{ const el = document.getElementById(`note-${nn.id}`); if(el)el.classList.add('creating'); },50);
+            notes.push(nn);
+            currentNoteId = nn.id;
+            saveData();
+            openNote(nn.id);
+            titleEl.focus();
+            setTimeout(() => { const el = document.getElementById(`note-${nn.id}`); if(el) el.classList.add('creating'); }, 50);
         }
         function triggerSave() {
-            if(!currentNoteId || currentNoteId==='nota_magica_diaria') return;
+            if (!currentNoteId || currentNoteId === 'nota_magica_diaria') return;
             clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(()=>{
-                const idx = notes.findIndex(n=>n.id===currentNoteId);
-                if(idx!==-1){ notes[idx].title = titleEl.value; notes[idx].content = editorEl.innerHTML; notes[idx].timestamp = Date.now(); saveData(); renderList(); }
-            },500);
+            saveTimeout = setTimeout(() => {
+                const idx = notes.findIndex(n => n.id === currentNoteId);
+                if (idx !== -1) {
+                    notes[idx].title = titleEl.value;
+                    notes[idx].content = editorEl.innerHTML;
+                    notes[idx].timestamp = Date.now();
+                    saveData();
+                    renderList();
+                }
+            }, 500);
         }
         function saveData() { safeSet('nova_romance', notes); }
 
-        function toggleGlobalTheme(forceDark=false) {
+        function toggleGlobalTheme(forceDark = false) {
             const body = document.body, icon = document.getElementById('themeIcon');
-            if(forceDark || body.getAttribute('data-theme')!=='dark'){
-                body.setAttribute('data-theme','dark'); icon.className='bx bx-sun'; safeSet('nova_global_theme','dark');
+            if (forceDark || body.getAttribute('data-theme') !== 'dark') {
+                body.setAttribute('data-theme', 'dark'); icon.className = 'bx bx-sun';
+                safeSet('nova_global_theme', 'dark');
             } else {
-                body.removeAttribute('data-theme'); icon.className='bx bx-moon'; safeSet('nova_global_theme','light');
+                body.removeAttribute('data-theme'); icon.className = 'bx bx-moon';
+                safeSet('nova_global_theme', 'light');
             }
         }
         function toggleSidebar() {
@@ -906,58 +1011,84 @@
         }
         function checkMobileMenu() {
             const btn = document.getElementById('closeSidebarBtn');
-            if(window.innerWidth<=768){
-                btn.style.display = sidebar.classList.contains('open')?'block':'none';
-                if(!sidebar.classList.contains('open')) sidebarOverlay.classList.remove('show');
-            } else { btn.style.display='none'; sidebarOverlay.classList.remove('show'); }
+            if (window.innerWidth <= 768) {
+                btn.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+                if (!sidebar.classList.contains('open')) sidebarOverlay.classList.remove('show');
+            } else {
+                btn.style.display = 'none';
+                sidebarOverlay.classList.remove('show');
+            }
         }
-        function toggleExtras() { extrasEnabled = !extrasEnabled; safeSet('nova_extras_enabled', extrasEnabled); updateExtrasUI(); }
+        function toggleExtras() {
+            extrasEnabled = !extrasEnabled;
+            safeSet('nova_extras_enabled', extrasEnabled);
+            updateExtrasUI();
+        }
         function updateExtrasUI() {
             toggleExtrasBtn.style.color = extrasEnabled ? 'var(--primary)' : 'var(--text-muted)';
             animBtn.style.display = extrasEnabled ? 'flex' : 'none';
-            if(!extrasEnabled) animSubmenu.style.display = 'none';
+            if (!extrasEnabled) animSubmenu.style.display = 'none';
         }
         function toggleThemePalette() { document.getElementById('themePalette').classList.toggle('show'); }
         function setNoteTheme(cls) {
             wrapperEl.className = 'editor-wrapper';
-            if(cls!=='default') wrapperEl.classList.add(cls);
-            const idx = notes.findIndex(n=>n.id===currentNoteId);
-            if(idx!==-1){ notes[idx].theme = cls; saveData(); }
+            if (cls !== 'default') wrapperEl.classList.add(cls);
+            const idx = notes.findIndex(n => n.id === currentNoteId);
+            if (idx !== -1) { notes[idx].theme = cls; saveData(); }
             document.getElementById('themePalette').classList.remove('show');
         }
         function closeWelcome() { document.getElementById('welcomeModal').classList.add('hidden'); }
 
-        // Inicialización
+        // ── Inicialización ──
         function init() {
-            if(safeGet('nova_global_theme','light')==='dark') toggleGlobalTheme(true);
-            const letter = cartasAmor[Math.floor(Math.random()*cartasAmor.length)];
+            if (safeGet('nova_global_theme', 'light') === 'dark') toggleGlobalTheme(true);
+
+            const letter = cartasAmor[Math.floor(Math.random() * cartasAmor.length)];
             const formatted = `<div style="font-family:Caveat,cursive;font-size:1.65rem;line-height:1.7;text-align:center;padding:20px;">${letter}<br><br><span style="font-size:2.5rem;animation:heartbeat 1.5s infinite;display:inline-block;">🖤</span></div>`;
-            let magicIdx = notes.findIndex(n=>n.id==='nota_magica_diaria');
-            if(magicIdx===-1) notes.unshift({ id:'nota_magica_diaria', title:'💌 Para ti, hoy...', content:formatted, theme:'theme-amor', pinned:true, timestamp:Date.now()+9999999 });
-            else { notes[magicIdx].content = formatted; notes[magicIdx].timestamp = Date.now()+9999999; }
-            saveData(); renderList(); openNote('nota_magica_diaria', false); updateExtrasUI(); checkMobileMenu();
+
+            let magicIdx = notes.findIndex(n => n.id === 'nota_magica_diaria');
+            if (magicIdx === -1) {
+                notes.unshift({ id: 'nota_magica_diaria', title: '💌 Para ti, hoy...', content: formatted, theme: 'theme-amor', pinned: true, timestamp: Date.now() + 9999999 });
+            } else {
+                notes[magicIdx].content = formatted;
+                notes[magicIdx].timestamp = Date.now() + 9999999;
+            }
+            saveData();
+            renderList();
+            openNote('nota_magica_diaria', false);
+            updateExtrasUI();
+            checkMobileMenu();
 
             editorEl.addEventListener('paste', (e) => {
                 const items = (e.clipboardData || window.clipboardData).items;
-                for(let item of items){
-                    if(item.type.indexOf('image')!==-1){
+                for (let item of items) {
+                    if (item.type.indexOf('image') !== -1) {
                         e.preventDefault();
                         const blob = item.getAsFile();
                         const reader = new FileReader();
-                        reader.onload = (ev) => { const img = document.createElement('img'); img.src = ev.target.result; img.style.width='80%'; img.style.display='block'; img.style.margin='15px auto'; insertHtmlAtCursor(img.outerHTML); };
+                        reader.onload = (ev) => {
+                            const img = document.createElement('img');
+                            img.src = ev.target.result;
+                            img.style.width = '80%';
+                            img.style.display = 'block';
+                            img.style.margin = '15px auto';
+                            insertHtmlAtCursor(img.outerHTML);
+                        };
                         reader.readAsDataURL(blob);
                         break;
                     }
                 }
             });
+
             document.addEventListener('click', (e) => {
-                if(!insertMenu.contains(e.target) && e.target!==editorEl) hideInsertMenu();
-                if(!animSubmenu.contains(e.target) && e.target!==animBtn) animSubmenu.style.display='none';
-                if(!floatMenu.contains(e.target) && !titleEl.contains(e.target) && !editorEl.contains(e.target)) floatMenu.style.display='none';
-                if(!imgToolbar.contains(e.target) && !editorEl.contains(e.target)) deselectMedia();
+                if (!insertMenu.contains(e.target) && e.target !== editorEl) hideInsertMenu();
+                if (!animSubmenu.contains(e.target) && e.target !== animBtn) animSubmenu.style.display = 'none';
+                if (!floatMenu.contains(e.target) && !titleEl.contains(e.target) && !editorEl.contains(e.target)) floatMenu.style.display = 'none';
+                if (!imgToolbar.contains(e.target) && !editorEl.contains(e.target)) deselectMedia();
             });
             window.addEventListener('resize', checkMobileMenu);
         }
+
         init();
     })();
 </script>
