@@ -319,7 +319,7 @@
         <button class="menu-toggle" onclick="toggleSidebar()"><i class='bx bx-menu'></i></button>
 
         <div class="tool-group">
-            <select class="tool-select" onchange="handleFontChange('fontName', this.value)">
+            <select class="tool-select" onmousedown="saveSelection()" onchange="handleFontChange('fontName', this.value)">
                 <option value="Poppins">Normal</option>
                 <option value="Caveat, cursive">Marcador</option>
                 <option value="Georgia">Elegante</option>
@@ -331,7 +331,7 @@
                 <option value="Pacifico, cursive">Pacifico</option>
                 <option value="Indie Flower, cursive">Indie</option>
             </select>
-            <select class="tool-select" onchange="handleFontSizeChange(this.value)">
+            <select class="tool-select" onmousedown="saveSelection()" onchange="handleFontSizeChange(this.value)">
                 <option value="3">Tamaño</option>
                 <option value="1">Súper pequeño</option>
                 <option value="2">Pequeño</option>
@@ -342,17 +342,17 @@
         </div>
 
         <div class="tool-group">
-            <button class="tool-btn" onclick="applyFormatting('bold')" title="Negrita"><i class='bx bx-bold'></i></button>
-            <button class="tool-btn" onclick="applyFormatting('italic')" title="Cursiva"><i class='bx bx-italic'></i></button>
+            <button class="tool-btn" onmousedown="saveSelection()" onclick="applyFormatting('bold')" title="Negrita"><i class='bx bx-bold'></i></button>
+            <button class="tool-btn" onmousedown="saveSelection()" onclick="applyFormatting('italic')" title="Cursiva"><i class='bx bx-italic'></i></button>
             <div class="color-picker-wrapper" title="Color del texto">
-                <input type="color" onchange="applyFormatting('foreColor', this.value)">
+                <input type="color" onmousedown="saveSelection()" onchange="applyFormatting('foreColor', this.value)">
             </div>
         </div>
 
         <div class="tool-group">
-            <button class="tool-btn" onclick="applyFormatting('justifyLeft')" title="Alinear izquierda"><i class='bx bx-align-left'></i></button>
-            <button class="tool-btn" onclick="applyFormatting('justifyCenter')" title="Centrar"><i class='bx bx-align-middle'></i></button>
-            <button class="tool-btn" onclick="applyFormatting('justifyRight')" title="Alinear derecha"><i class='bx bx-align-right'></i></button>
+            <button class="tool-btn" onmousedown="saveSelection()" onclick="applyFormatting('justifyLeft')" title="Alinear izquierda"><i class='bx bx-align-left'></i></button>
+            <button class="tool-btn" onmousedown="saveSelection()" onclick="applyFormatting('justifyCenter')" title="Centrar"><i class='bx bx-align-middle'></i></button>
+            <button class="tool-btn" onmousedown="saveSelection()" onclick="applyFormatting('justifyRight')" title="Alinear derecha"><i class='bx bx-align-right'></i></button>
         </div>
 
         <div class="tool-group" style="margin-left:auto;">
@@ -411,7 +411,7 @@
                 <div class="ft-color-wrapper"><input type="color" onmousedown="event.preventDefault(); restoreSelection();" onchange="safeExec(() => execFloating('hiliteColor', this.value))" value="#ffff00"></div>
                 <button class="ft-btn" onmousedown="event.preventDefault(); restoreSelection();" onclick="safeExec(() => execFloating('hiliteColor', 'transparent'))" title="Quitar resaltado"><i class='bx bx-highlight'></i></button>
                 <div class="ft-divider"></div>
-                <button class="ft-btn" id="animBtn" onmousedown="event.preventDefault();" onclick="toggleAnimSubmenu(event)"><i class='bx bx-movie-play'></i></button>
+                <button class="ft-btn" id="animBtn" onmousedown="event.preventDefault(); restoreSelection();" onclick="toggleAnimSubmenu(event)"><i class='bx bx-movie-play'></i></button>
             </div>
 
             <!-- Submenú de animaciones -->
@@ -494,7 +494,7 @@
     let currentNoteId = null;
     let saveTimeout;
     let selectedMedia = null;
-    let savedRange = null;
+    let savedRange = null; // para el editor
     let contextNoteId = null;
     let pendingMediaType = null;
     let extrasEnabled = safeGet('nova_extras_enabled', true);
@@ -531,6 +531,16 @@
         return lastFocusedEditable === 'title' ? titleEl : editorEl;
     }
 
+    // Guardar la selección actual del editor (range)
+    function saveSelection() {
+        const sel = window.getSelection();
+        if (sel.rangeCount > 0 && editorEl.contains(sel.anchorNode)) {
+            savedRange = sel.getRangeAt(0).cloneRange();
+        } else {
+            savedRange = null;
+        }
+    }
+
     function restoreSelection() {
         if (savedRange) {
             const sel = window.getSelection();
@@ -541,6 +551,7 @@
 
     // ── Formateo principal (sin cambiar fuente en negrita/cursiva) ──
     function applyFormatting(command, value = null) {
+        // Para el título no necesita rango, aplica al input completo
         const target = getTargetForFormatting();
         if (target === titleEl) {
             if (command === 'foreColor') titleEl.style.color = value;
@@ -552,7 +563,9 @@
             triggerSave();
             return;
         }
-        editorEl.focus();
+
+        // Para el editor: restauramos la selección guardada
+        restoreSelection();
         if (command === 'fontName' || command === 'fontSize') {
             applyFontStyle(command, value);
         } else {
@@ -563,15 +576,20 @@
     }
 
     function applyFontStyle(type, value) {
+        restoreSelection();
         const sel = window.getSelection();
         if (!sel.rangeCount || sel.isCollapsed || !editorEl.contains(sel.anchorNode)) return;
         const range = sel.getRangeAt(0);
         const contents = range.extractContents();
-        if (!contents.textContent.trim()) { range.insertNode(contents); return; }
+        if (!contents.textContent.trim()) {
+            range.insertNode(contents);
+            return;
+        }
         const span = document.createElement('span');
         span.appendChild(contents);
-        if (type === 'fontName') span.style.fontFamily = value;
-        else if (type === 'fontSize') {
+        if (type === 'fontName') {
+            span.style.fontFamily = value;
+        } else if (type === 'fontSize') {
             const sizes = {1:'0.7rem',2:'0.85rem',3:'1rem',4:'1.2rem',5:'1.5rem',6:'2rem'};
             span.style.fontSize = sizes[value] || '1rem';
         }
@@ -585,14 +603,20 @@
     }
 
     function handleFontChange(type, value) {
-        if (getTargetForFormatting() === titleEl) { titleEl.style.fontFamily = value; triggerSave(); return; }
+        if (getTargetForFormatting() === titleEl) {
+            titleEl.style.fontFamily = value;
+            triggerSave();
+            return;
+        }
         applyFontStyle('fontName', value);
     }
+
     function handleFontSizeChange(value) {
         if (getTargetForFormatting() === titleEl) {
             const sizes = {1:'1.2rem',2:'1.5rem',3:'2rem',4:'2.4rem',5:'3rem',6:'3.8rem'};
             titleEl.style.fontSize = sizes[value] || '2rem';
-            triggerSave(); return;
+            triggerSave();
+            return;
         }
         applyFontStyle('fontSize', value);
     }
@@ -632,9 +656,9 @@
         if (getTargetForFormatting() === titleEl && titleEl.selectionStart !== titleEl.selectionEnd) {
             titleEl.style.fontFamily = value; triggerSave(); return;
         }
-        editorEl.focus();
         applyFontStyle('fontName', value);
     }
+
     function applyFontSizeFloating(value) {
         restoreSelection();
         if (getTargetForFormatting() === titleEl && titleEl.selectionStart !== titleEl.selectionEnd) {
@@ -642,7 +666,6 @@
             titleEl.style.fontSize = sizes[value] || '2rem';
             triggerSave(); return;
         }
-        editorEl.focus();
         applyFontStyle('fontSize', value);
     }
 
@@ -718,7 +741,7 @@
     function insertSymbol(sym) { document.execCommand('insertText', false, sym); triggerSave(); hideInsertMenu(); }
     function insertMenuCommand(cmd, val) { document.execCommand(cmd, false, val); triggerSave(); editorEl.focus(); }
 
-    // ── Actualizar menú flotante ──
+    // ── Actualizar menú flotante según selección ──
     document.addEventListener('selectionchange', () => {
         const sel = window.getSelection();
         if (!sel.rangeCount || !sel.anchorNode) {
