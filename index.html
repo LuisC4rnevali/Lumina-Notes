@@ -37,15 +37,11 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            display: flex;
-            height: 100dvh;
-            overflow: hidden;
+            background-color: var(--bg-body); color: var(--text-main);
+            display: flex; height: 100dvh; overflow: hidden;
             font-family: 'Poppins', sans-serif;
             transition: background-color 0.3s, color 0.3s;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            user-select: none; -webkit-tap-highlight-color: transparent;
         }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -481,616 +477,605 @@
 </main>
 
 <script>
-    (function() {
-        // ── Utilidades seguras ──
-        const safeExec = fn => { try { fn(); } catch(e) {} };
-        const safeGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } };
-        const safeSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
+    // ── Utilidades seguras ──
+    function safeExec(fn) { try { fn(); } catch(e) {} }
+    function safeGet(key, def) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch(e) { return def; } }
+    function safeSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
 
-        // ── Datos ──
-        const cartasAmor = [
-            "Hola, Gabriela preciosa. Solo quería tomarme un momento para decirte lo increíblemente afortunado que me siento de tenerte en mi vida. A veces me quedo mirándote...",
-            "Mi amor, hoy me desperté pensando en ti, como todos los días. Pero hoy fue diferente: me di cuenta de que cada pequeño detalle tuyo...",
-            "Sé que a veces los días se vuelven grises y las preocupaciones pesan. Pero quiero que nunca olvides que aquí estoy yo, incondicional...",
-            "¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso, tu capacidad de amar sin medida incluso cuando el mundo ha sido difícil contigo..."
-        ];
+    // ── Datos ──
+    const cartasAmor = [
+        "Hola, Gabriela preciosa. Solo quería tomarme un momento para decirte lo increíblemente afortunado que me siento de tenerte en mi vida...",
+        "Mi amor, hoy me desperté pensando en ti, como todos los días...",
+        "Sé que a veces los días se vuelven grises...",
+        "¿Sabes qué es lo que más admiro de ti? Tu corazón inmenso..."
+    ];
 
-        let notes = safeGet('nova_romance', []);
-        let currentNoteId = null;
-        let saveTimeout;
-        let selectedMedia = null;
-        let savedRange = null;
-        let contextNoteId = null;
-        let pendingMediaType = null;
-        let extrasEnabled = safeGet('nova_extras_enabled', true);
-        let lastFocusedEditable = null;
+    let notes = safeGet('nova_romance', []);
+    let currentNoteId = null;
+    let saveTimeout;
+    let selectedMedia = null;
+    let savedRange = null;
+    let contextNoteId = null;
+    let pendingMediaType = null;
+    let extrasEnabled = safeGet('nova_extras_enabled', true);
+    let lastFocusedEditable = null;
 
-        // ── DOM ──
-        const titleEl = document.getElementById('noteTitle');
-        const editorEl = document.getElementById('noteEditor');
-        const listEl = document.getElementById('noteList');
-        const wrapperEl = document.getElementById('editorWrapper');
-        const imgToolbar = document.getElementById('imageToolbar');
-        const sheet = document.getElementById('bottomSheet');
-        const overlaySheet = document.getElementById('sheetOverlay');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const floatMenu = document.getElementById('floatingTextMenu');
-        const insertMenu = document.getElementById('insertMenu');
-        const animSubmenu = document.getElementById('animSubmenu');
-        const animBtn = document.getElementById('animBtn');
-        const editorContainer = document.getElementById('editorContainer');
-        const urlModal = document.getElementById('urlModal');
-        const urlInput = document.getElementById('urlInput');
-        const urlModalTitle = document.getElementById('urlModalTitle');
-        const toggleExtrasBtn = document.getElementById('toggleExtrasBtn');
-        const imgSizeSlider = document.getElementById('imgSizeSlider');
-        const imgMarginHSlider = document.getElementById('imgMarginHSlider');
-        const imgMarginVSlider = document.getElementById('imgMarginVSlider');
+    // ── DOM ──
+    const titleEl = document.getElementById('noteTitle');
+    const editorEl = document.getElementById('noteEditor');
+    const listEl = document.getElementById('noteList');
+    const wrapperEl = document.getElementById('editorWrapper');
+    const imgToolbar = document.getElementById('imageToolbar');
+    const sheet = document.getElementById('bottomSheet');
+    const overlaySheet = document.getElementById('sheetOverlay');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const floatMenu = document.getElementById('floatingTextMenu');
+    const insertMenu = document.getElementById('insertMenu');
+    const animSubmenu = document.getElementById('animSubmenu');
+    const animBtn = document.getElementById('animBtn');
+    const editorContainer = document.getElementById('editorContainer');
+    const urlModal = document.getElementById('urlModal');
+    const urlInput = document.getElementById('urlInput');
+    const urlModalTitle = document.getElementById('urlModalTitle');
+    const toggleExtrasBtn = document.getElementById('toggleExtrasBtn');
+    const imgSizeSlider = document.getElementById('imgSizeSlider');
+    const imgMarginHSlider = document.getElementById('imgMarginHSlider');
+    const imgMarginVSlider = document.getElementById('imgMarginVSlider');
 
-        // ── Seguimiento de foco ──
-        titleEl.addEventListener('focus', () => lastFocusedEditable = 'title');
-        editorEl.addEventListener('focus', () => lastFocusedEditable = 'editor');
+    // ── Foco ──
+    titleEl.addEventListener('focus', () => lastFocusedEditable = 'title');
+    editorEl.addEventListener('focus', () => lastFocusedEditable = 'editor');
 
-        function getTargetForFormatting() {
-            return (lastFocusedEditable === 'title') ? titleEl : editorEl;
-        }
+    function getTargetForFormatting() {
+        return lastFocusedEditable === 'title' ? titleEl : editorEl;
+    }
 
-        function restoreSelection() {
-            if (savedRange) {
-                const sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(savedRange);
-            }
-        }
-
-        function saveSelectionToRange() {
+    function restoreSelection() {
+        if (savedRange) {
             const sel = window.getSelection();
-            if (sel.rangeCount > 0 && editorEl.contains(sel.anchorNode)) {
-                savedRange = sel.getRangeAt(0).cloneRange();
-            }
-        }
-
-        // ── Formateo principal (sin cambiar fuente en negrita/cursiva) ──
-        function applyFormatting(command, value = null) {
-            const target = getTargetForFormatting();
-            if (target === titleEl) {
-                if (command === 'foreColor') titleEl.style.color = value;
-                else if (command === 'bold') titleEl.style.fontWeight = titleEl.style.fontWeight === '700' ? '400' : '700';
-                else if (command === 'italic') titleEl.style.fontStyle = titleEl.style.fontStyle === 'italic' ? 'normal' : 'italic';
-                else if (command === 'justifyLeft') titleEl.style.textAlign = 'left';
-                else if (command === 'justifyCenter') titleEl.style.textAlign = 'center';
-                else if (command === 'justifyRight') titleEl.style.textAlign = 'right';
-                triggerSave();
-                return;
-            }
-            editorEl.focus();
-            if (command === 'fontName' || command === 'fontSize') {
-                applyFontStyle(command, value);
-            } else {
-                document.execCommand('styleWithCSS', false, true);
-                document.execCommand(command, false, value);
-                triggerSave();
-            }
-        }
-
-        function applyFontStyle(type, value) {
-            const sel = window.getSelection();
-            if (!sel.rangeCount || sel.isCollapsed || !editorEl.contains(sel.anchorNode)) return;
-            const range = sel.getRangeAt(0);
-            const contents = range.extractContents();
-            if (!contents.textContent.trim()) { range.insertNode(contents); return; }
-            const span = document.createElement('span');
-            span.appendChild(contents);
-            if (type === 'fontName') {
-                span.style.fontFamily = value;
-            } else if (type === 'fontSize') {
-                const sizes = {1:'0.7rem',2:'0.85rem',3:'1rem',4:'1.2rem',5:'1.5rem',6:'2rem'};
-                span.style.fontSize = sizes[value] || '1rem';
-            }
-            range.insertNode(span);
             sel.removeAllRanges();
-            const newRange = document.createRange();
-            newRange.selectNodeContents(span);
-            sel.addRange(newRange);
-            editorEl.focus();
+            sel.addRange(savedRange);
+        }
+    }
+
+    // ── Formateo principal (sin cambiar fuente en negrita/cursiva) ──
+    function applyFormatting(command, value = null) {
+        const target = getTargetForFormatting();
+        if (target === titleEl) {
+            if (command === 'foreColor') titleEl.style.color = value;
+            else if (command === 'bold') titleEl.style.fontWeight = titleEl.style.fontWeight === '700' ? '400' : '700';
+            else if (command === 'italic') titleEl.style.fontStyle = titleEl.style.fontStyle === 'italic' ? 'normal' : 'italic';
+            else if (command === 'justifyLeft') titleEl.style.textAlign = 'left';
+            else if (command === 'justifyCenter') titleEl.style.textAlign = 'center';
+            else if (command === 'justifyRight') titleEl.style.textAlign = 'right';
             triggerSave();
+            return;
         }
-
-        function handleFontChange(type, value) {
-            if (getTargetForFormatting() === titleEl) { titleEl.style.fontFamily = value; triggerSave(); return; }
-            applyFontStyle('fontName', value);
-        }
-        function handleFontSizeChange(value) {
-            if (getTargetForFormatting() === titleEl) {
-                const sizes = {1:'1.2rem',2:'1.5rem',3:'2rem',4:'2.4rem',5:'3rem',6:'3.8rem'};
-                titleEl.style.fontSize = sizes[value] || '2rem';
-                triggerSave(); return;
-            }
-            applyFontStyle('fontSize', value);
-        }
-
-        // ── Formateo desde menú flotante ──
-        function execFloating(command, value = null) {
-            restoreSelection();
-            const target = getTargetForFormatting();
-            if (target === titleEl && titleEl.selectionStart !== titleEl.selectionEnd) {
-                if (command === 'foreColor') titleEl.style.color = value;
-                else if (command === 'hiliteColor') titleEl.style.backgroundColor = value === 'transparent' ? 'transparent' : value;
-                else if (command === 'bold') titleEl.style.fontWeight = titleEl.style.fontWeight === '700' ? '400' : '700';
-                else if (command === 'italic') titleEl.style.fontStyle = titleEl.style.fontStyle === 'italic' ? 'normal' : 'italic';
-                else if (command === 'underline') titleEl.style.textDecoration = titleEl.style.textDecoration === 'underline' ? 'none' : 'underline';
-                else if (command === 'copy') document.execCommand('copy');
-                else if (command === 'cut') document.execCommand('cut');
-                else if (command === 'removeFormat') {
-                    titleEl.style.fontWeight = '400';
-                    titleEl.style.fontStyle = 'normal';
-                    titleEl.style.textDecoration = 'none';
-                    titleEl.style.color = '';
-                    titleEl.style.backgroundColor = '';
-                }
-                triggerSave();
-                return;
-            }
-            if (command === 'copy' || command === 'cut') { document.execCommand(command); return; }
-            if (command === 'removeFormat') { document.execCommand('removeFormat', false, null); triggerSave(); return; }
-            editorEl.focus();
+        editorEl.focus();
+        if (command === 'fontName' || command === 'fontSize') {
+            applyFontStyle(command, value);
+        } else {
             document.execCommand('styleWithCSS', false, true);
             document.execCommand(command, false, value);
             triggerSave();
         }
+    }
 
-        function applyFontNameFloating(value) {
-            restoreSelection();
-            if (getTargetForFormatting() === titleEl && titleEl.selectionStart !== titleEl.selectionEnd) {
-                titleEl.style.fontFamily = value; triggerSave(); return;
-            }
-            editorEl.focus();
-            applyFontStyle('fontName', value);
+    function applyFontStyle(type, value) {
+        const sel = window.getSelection();
+        if (!sel.rangeCount || sel.isCollapsed || !editorEl.contains(sel.anchorNode)) return;
+        const range = sel.getRangeAt(0);
+        const contents = range.extractContents();
+        if (!contents.textContent.trim()) { range.insertNode(contents); return; }
+        const span = document.createElement('span');
+        span.appendChild(contents);
+        if (type === 'fontName') span.style.fontFamily = value;
+        else if (type === 'fontSize') {
+            const sizes = {1:'0.7rem',2:'0.85rem',3:'1rem',4:'1.2rem',5:'1.5rem',6:'2rem'};
+            span.style.fontSize = sizes[value] || '1rem';
         }
-        function applyFontSizeFloating(value) {
-            restoreSelection();
-            if (getTargetForFormatting() === titleEl && titleEl.selectionStart !== titleEl.selectionEnd) {
-                const sizes = {1:'1.2rem',3:'2rem',5:'2.8rem',7:'3.5rem'};
-                titleEl.style.fontSize = sizes[value] || '2rem';
-                triggerSave(); return;
-            }
-            editorEl.focus();
-            applyFontStyle('fontSize', value);
-        }
+        range.insertNode(span);
+        sel.removeAllRanges();
+        const newRange = document.createRange();
+        newRange.selectNodeContents(span);
+        sel.addRange(newRange);
+        editorEl.focus();
+        triggerSave();
+    }
 
-        // ── Animaciones de texto ──
-        function applyTextAnimation(animClass) {
-            restoreSelection();
-            const sel = window.getSelection();
-            if (!sel.rangeCount || sel.isCollapsed || !editorEl.contains(sel.anchorNode)) return;
-            const range = sel.getRangeAt(0);
-            const contents = range.extractContents();
-            if (!contents.textContent.trim()) { range.insertNode(contents); return; }
-            const span = document.createElement('span');
-            span.appendChild(contents);
-            if (animClass) span.className = animClass;
-            range.insertNode(span);
-            sel.removeAllRanges();
-            const newRange = document.createRange();
-            newRange.selectNodeContents(span);
-            sel.addRange(newRange);
-            editorEl.focus();
+    function handleFontChange(type, value) {
+        if (getTargetForFormatting() === titleEl) { titleEl.style.fontFamily = value; triggerSave(); return; }
+        applyFontStyle('fontName', value);
+    }
+    function handleFontSizeChange(value) {
+        if (getTargetForFormatting() === titleEl) {
+            const sizes = {1:'1.2rem',2:'1.5rem',3:'2rem',4:'2.4rem',5:'3rem',6:'3.8rem'};
+            titleEl.style.fontSize = sizes[value] || '2rem';
+            triggerSave(); return;
+        }
+        applyFontStyle('fontSize', value);
+    }
+
+    // ── Formateo flotante ──
+    function execFloating(command, value = null) {
+        restoreSelection();
+        const target = getTargetForFormatting();
+        if (target === titleEl && titleEl.selectionStart !== titleEl.selectionEnd) {
+            if (command === 'foreColor') titleEl.style.color = value;
+            else if (command === 'hiliteColor') titleEl.style.backgroundColor = value === 'transparent' ? 'transparent' : value;
+            else if (command === 'bold') titleEl.style.fontWeight = titleEl.style.fontWeight === '700' ? '400' : '700';
+            else if (command === 'italic') titleEl.style.fontStyle = titleEl.style.fontStyle === 'italic' ? 'normal' : 'italic';
+            else if (command === 'underline') titleEl.style.textDecoration = titleEl.style.textDecoration === 'underline' ? 'none' : 'underline';
+            else if (command === 'copy') document.execCommand('copy');
+            else if (command === 'cut') document.execCommand('cut');
+            else if (command === 'removeFormat') {
+                titleEl.style.fontWeight = '400';
+                titleEl.style.fontStyle = 'normal';
+                titleEl.style.textDecoration = 'none';
+                titleEl.style.color = '';
+                titleEl.style.backgroundColor = '';
+            }
             triggerSave();
-            animSubmenu.style.display = 'none';
+            return;
         }
+        if (command === 'copy' || command === 'cut') { document.execCommand(command); return; }
+        if (command === 'removeFormat') { document.execCommand('removeFormat', false, null); triggerSave(); return; }
+        editorEl.focus();
+        document.execCommand('styleWithCSS', false, true);
+        document.execCommand(command, false, value);
+        triggerSave();
+    }
 
-        function toggleAnimSubmenu(e) {
-            e.stopPropagation();
-            if (!extrasEnabled) return;
-            const rect = animBtn.getBoundingClientRect();
-            const containerRect = editorContainer.getBoundingClientRect();
-            animSubmenu.style.display = animSubmenu.style.display === 'flex' ? 'none' : 'flex';
-            animSubmenu.style.position = 'absolute';
-            animSubmenu.style.left = (rect.left - containerRect.left + editorContainer.scrollLeft - 60) + 'px';
-            animSubmenu.style.top = (rect.bottom - containerRect.top + editorContainer.scrollTop + 8) + 'px';
+    function applyFontNameFloating(value) {
+        restoreSelection();
+        if (getTargetForFormatting() === titleEl && titleEl.selectionStart !== titleEl.selectionEnd) {
+            titleEl.style.fontFamily = value; triggerSave(); return;
         }
+        editorEl.focus();
+        applyFontStyle('fontName', value);
+    }
+    function applyFontSizeFloating(value) {
+        restoreSelection();
+        if (getTargetForFormatting() === titleEl && titleEl.selectionStart !== titleEl.selectionEnd) {
+            const sizes = {1:'1.2rem',3:'2rem',5:'2.8rem',7:'3.5rem'};
+            titleEl.style.fontSize = sizes[value] || '2rem';
+            triggerSave(); return;
+        }
+        editorEl.focus();
+        applyFontStyle('fontSize', value);
+    }
 
-        // ── Long press en área vacía (barra de inserción) ──
-        let longPressTimer = null;
-        editorEl.addEventListener('pointerdown', (e) => {
-            if (!extrasEnabled) return;
-            if (e.target.closest('img, video')) return;
-            const sel = window.getSelection();
-            if (sel.rangeCount && !sel.isCollapsed) return;
-            longPressTimer = setTimeout(() => {
-                showInsertMenuAt(e);
-                if (navigator.vibrate) navigator.vibrate(20);
-            }, 600);
+    // ── Animaciones de texto ──
+    function applyTextAnimation(animClass) {
+        restoreSelection();
+        const sel = window.getSelection();
+        if (!sel.rangeCount || sel.isCollapsed || !editorEl.contains(sel.anchorNode)) return;
+        const range = sel.getRangeAt(0);
+        const contents = range.extractContents();
+        if (!contents.textContent.trim()) { range.insertNode(contents); return; }
+        const span = document.createElement('span');
+        span.appendChild(contents);
+        if (animClass) span.className = animClass;
+        range.insertNode(span);
+        sel.removeAllRanges();
+        const newRange = document.createRange();
+        newRange.selectNodeContents(span);
+        sel.addRange(newRange);
+        editorEl.focus();
+        triggerSave();
+        animSubmenu.style.display = 'none';
+    }
+
+    function toggleAnimSubmenu(e) {
+        e.stopPropagation();
+        if (!extrasEnabled) return;
+        const rect = animBtn.getBoundingClientRect();
+        const containerRect = editorContainer.getBoundingClientRect();
+        animSubmenu.style.display = animSubmenu.style.display === 'flex' ? 'none' : 'flex';
+        animSubmenu.style.position = 'absolute';
+        animSubmenu.style.left = (rect.left - containerRect.left + editorContainer.scrollLeft - 60) + 'px';
+        animSubmenu.style.top = (rect.bottom - containerRect.top + editorContainer.scrollTop + 8) + 'px';
+    }
+
+    // ── Long press en vacío ──
+    let longPressTimer = null;
+    editorEl.addEventListener('pointerdown', (e) => {
+        if (!extrasEnabled) return;
+        if (e.target.closest('img, video')) return;
+        const sel = window.getSelection();
+        if (sel.rangeCount && !sel.isCollapsed) return;
+        longPressTimer = setTimeout(() => {
+            showInsertMenuAt(e);
+            if (navigator.vibrate) navigator.vibrate(20);
+        }, 600);
+    });
+    editorEl.addEventListener('pointermove', () => clearTimeout(longPressTimer));
+    editorEl.addEventListener('pointerup', () => clearTimeout(longPressTimer));
+    editorEl.addEventListener('pointercancel', () => clearTimeout(longPressTimer));
+
+    function showInsertMenuAt(e) {
+        floatMenu.style.display = 'none';
+        const containerRect = editorContainer.getBoundingClientRect();
+        const x = e.clientX - containerRect.left + editorContainer.scrollLeft;
+        const y = e.clientY - containerRect.top + editorContainer.scrollTop;
+        insertMenu.style.display = 'flex';
+        insertMenu.style.visibility = 'hidden';
+        requestAnimationFrame(() => {
+            const mw = insertMenu.offsetWidth;
+            let left = x - mw/2;
+            left = Math.max(0, Math.min(left, containerRect.width - mw));
+            insertMenu.style.left = left + 'px';
+            let top = y - 70;
+            if (top < 10) top = 10;
+            insertMenu.style.top = top + 'px';
+            insertMenu.style.visibility = 'visible';
         });
-        editorEl.addEventListener('pointermove', () => clearTimeout(longPressTimer));
-        editorEl.addEventListener('pointerup', () => clearTimeout(longPressTimer));
-        editorEl.addEventListener('pointercancel', () => clearTimeout(longPressTimer));
+        editorEl.focus();
+    }
 
-        function showInsertMenuAt(e) {
-            floatMenu.style.display = 'none';
-            const containerRect = editorContainer.getBoundingClientRect();
-            const x = e.clientX - containerRect.left + editorContainer.scrollLeft;
-            const y = e.clientY - containerRect.top + editorContainer.scrollTop;
-            insertMenu.style.display = 'flex';
-            insertMenu.style.visibility = 'hidden';
-            requestAnimationFrame(() => {
-                const mw = insertMenu.offsetWidth;
-                let left = x - mw/2;
-                left = Math.max(0, Math.min(left, containerRect.width - mw));
-                insertMenu.style.left = left + 'px';
-                let top = y - 70;
-                if (top < 10) top = 10;
-                insertMenu.style.top = top + 'px';
-                insertMenu.style.visibility = 'visible';
-            });
-            editorEl.focus();
-        }
+    function hideInsertMenu() { insertMenu.style.display = 'none'; }
+    function insertSymbol(sym) { document.execCommand('insertText', false, sym); triggerSave(); hideInsertMenu(); }
+    function insertMenuCommand(cmd, val) { document.execCommand(cmd, false, val); triggerSave(); editorEl.focus(); }
 
-        function hideInsertMenu() { insertMenu.style.display = 'none'; }
-        function insertSymbol(sym) { document.execCommand('insertText', false, sym); triggerSave(); hideInsertMenu(); }
-        function insertMenuCommand(cmd, val) { document.execCommand(cmd, false, val); triggerSave(); editorEl.focus(); }
-
-        // ── Actualizar posición menú flotante según selección ──
-        document.addEventListener('selectionchange', () => {
-            const sel = window.getSelection();
-            if (!sel.rangeCount || !sel.anchorNode) {
-                floatMenu.style.display = 'none';
-                savedRange = null;
-                return;
-            }
-            if (titleEl.contains(sel.anchorNode) && titleEl.selectionStart !== titleEl.selectionEnd) {
-                const rect = titleEl.getBoundingClientRect();
-                const containerRect = editorContainer.getBoundingClientRect();
-                floatMenu.style.display = 'flex';
-                floatMenu.style.top = (rect.bottom - containerRect.top + editorContainer.scrollTop + 8) + 'px';
-                let left = (rect.left - containerRect.left) + rect.width/2 - floatMenu.offsetWidth/2;
-                left = Math.max(0, Math.min(left, containerRect.width - floatMenu.offsetWidth));
-                floatMenu.style.left = left + 'px';
-                animSubmenu.style.display = 'none';
-                return;
-            }
-            if (editorEl.contains(sel.anchorNode) && !sel.isCollapsed && !selectedMedia) {
-                savedRange = sel.getRangeAt(0).cloneRange();
-                const range = sel.getRangeAt(0);
-                const rect = range.getBoundingClientRect();
-                const containerRect = editorContainer.getBoundingClientRect();
-                floatMenu.style.display = 'flex';
-                let topPos = (rect.bottom - containerRect.top) + editorContainer.scrollTop + 8;
-                if (topPos + floatMenu.offsetHeight > editorContainer.scrollHeight - 20)
-                    topPos = (rect.top - containerRect.top) + editorContainer.scrollTop - floatMenu.offsetHeight - 8;
-                floatMenu.style.top = topPos + 'px';
-                let left = (rect.left - containerRect.left) + rect.width/2 - floatMenu.offsetWidth/2;
-                left = Math.max(0, Math.min(left, containerRect.width - floatMenu.offsetWidth));
-                floatMenu.style.left = left + 'px';
-                animSubmenu.style.display = 'none';
-                return;
-            }
+    // ── Actualizar menú flotante ──
+    document.addEventListener('selectionchange', () => {
+        const sel = window.getSelection();
+        if (!sel.rangeCount || !sel.anchorNode) {
             floatMenu.style.display = 'none';
             savedRange = null;
-        });
+            return;
+        }
+        if (titleEl.contains(sel.anchorNode) && titleEl.selectionStart !== titleEl.selectionEnd) {
+            const rect = titleEl.getBoundingClientRect();
+            const containerRect = editorContainer.getBoundingClientRect();
+            floatMenu.style.display = 'flex';
+            floatMenu.style.top = (rect.bottom - containerRect.top + editorContainer.scrollTop + 8) + 'px';
+            let left = (rect.left - containerRect.left) + rect.width/2 - floatMenu.offsetWidth/2;
+            left = Math.max(0, Math.min(left, containerRect.width - floatMenu.offsetWidth));
+            floatMenu.style.left = left + 'px';
+            animSubmenu.style.display = 'none';
+            return;
+        }
+        if (editorEl.contains(sel.anchorNode) && !sel.isCollapsed && !selectedMedia) {
+            savedRange = sel.getRangeAt(0).cloneRange();
+            const range = sel.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            const containerRect = editorContainer.getBoundingClientRect();
+            floatMenu.style.display = 'flex';
+            let topPos = (rect.bottom - containerRect.top) + editorContainer.scrollTop + 8;
+            if (topPos + floatMenu.offsetHeight > editorContainer.scrollHeight - 20)
+                topPos = (rect.top - containerRect.top) + editorContainer.scrollTop - floatMenu.offsetHeight - 8;
+            floatMenu.style.top = topPos + 'px';
+            let left = (rect.left - containerRect.left) + rect.width/2 - floatMenu.offsetWidth/2;
+            left = Math.max(0, Math.min(left, containerRect.width - floatMenu.offsetWidth));
+            floatMenu.style.left = left + 'px';
+            animSubmenu.style.display = 'none';
+            return;
+        }
+        floatMenu.style.display = 'none';
+        savedRange = null;
+    });
 
-        // ── Manejo de medios (imagen/video) ──
-        function selectMediaElement(el) {
-            if (selectedMedia && selectedMedia !== el) selectedMedia.classList.remove('selected-img');
-            selectedMedia = el;
-            selectedMedia.classList.add('selected-img');
-            imgSizeSlider.value = parseInt(selectedMedia.style.width) || (el.tagName === 'VIDEO' ? 50 : 80);
-            imgMarginHSlider.value = parseInt(selectedMedia.style.marginLeft) || 15;
-            imgMarginVSlider.value = parseInt(selectedMedia.style.marginTop) || 10;
-            updateMediaToolbarPosition(el);
-            imgToolbar.classList.add('show');
-            floatMenu.style.display = 'none';
-            insertMenu.style.display = 'none';
-        }
-        function deselectMedia() {
-            if (selectedMedia) { selectedMedia.classList.remove('selected-img'); selectedMedia = null; }
-            imgToolbar.classList.remove('show');
-        }
-        function updateMediaToolbarPosition(el) {
-            const rect = el.getBoundingClientRect();
-            const tw = imgToolbar.offsetWidth, th = imgToolbar.offsetHeight;
-            let top = rect.bottom + 12, left = rect.left + rect.width/2 - tw/2;
-            if (top + th > window.innerHeight - 20) top = rect.top - th - 12;
-            left = Math.max(10, Math.min(left, window.innerWidth - tw - 10));
-            imgToolbar.style.top = top + 'px';
-            imgToolbar.style.left = left + 'px';
-        }
-        function resizeMedia(v) { if(selectedMedia){ selectedMedia.style.width = v+'%'; updateMediaToolbarPosition(selectedMedia); triggerSave(); } deselectMedia(); editorEl.focus(); }
-        function changeMargin(type, v) { if(!selectedMedia) return; if(type==='horizontal'){ selectedMedia.style.marginLeft = v+'px'; selectedMedia.style.marginRight = v+'px'; } else { selectedMedia.style.marginTop = v+'px'; selectedMedia.style.marginBottom = v+'px'; } updateMediaToolbarPosition(selectedMedia); triggerSave(); deselectMedia(); editorEl.focus(); }
-        function alignMedia(pos) {
-            if(!selectedMedia) return;
-            const vm = imgMarginVSlider.value, hm = imgMarginHSlider.value;
-            if(pos==='left'){ selectedMedia.style.display='inline'; selectedMedia.style.float='left'; selectedMedia.style.margin=vm+'px '+hm+'px'; }
-            else if(pos==='right'){ selectedMedia.style.display='inline'; selectedMedia.style.float='right'; selectedMedia.style.margin=vm+'px '+hm+'px'; }
-            else { selectedMedia.style.display='block'; selectedMedia.style.float='none'; selectedMedia.style.margin=vm+'px auto'; }
-            updateMediaToolbarPosition(selectedMedia); triggerSave(); deselectMedia(); editorEl.focus();
-        }
-        function copyMedia() { if(!selectedMedia) return; const clone=selectedMedia.cloneNode(true); const r=document.createRange(); r.selectNode(clone); window.getSelection().removeAllRanges(); window.getSelection().addRange(r); document.execCommand('copy'); window.getSelection().removeAllRanges(); deselectMedia(); editorEl.focus(); }
-        function duplicateMedia() { if(!selectedMedia) return; const clone=selectedMedia.cloneNode(true); clone.classList.remove('selected-img'); selectedMedia.parentNode.insertBefore(clone, selectedMedia.nextSibling); triggerSave(); deselectMedia(); editorEl.focus(); }
-        function deleteMedia() { if(!selectedMedia) return; selectedMedia.remove(); triggerSave(); deselectMedia(); editorEl.focus(); }
+    // ── Medios ──
+    function selectMediaElement(el) {
+        if (selectedMedia && selectedMedia !== el) selectedMedia.classList.remove('selected-img');
+        selectedMedia = el;
+        selectedMedia.classList.add('selected-img');
+        imgSizeSlider.value = parseInt(selectedMedia.style.width) || (el.tagName === 'VIDEO' ? 50 : 80);
+        imgMarginHSlider.value = parseInt(selectedMedia.style.marginLeft) || 15;
+        imgMarginVSlider.value = parseInt(selectedMedia.style.marginTop) || 10;
+        updateMediaToolbarPosition(el);
+        imgToolbar.classList.add('show');
+        floatMenu.style.display = 'none';
+        insertMenu.style.display = 'none';
+    }
+    function deselectMedia() {
+        if (selectedMedia) { selectedMedia.classList.remove('selected-img'); selectedMedia = null; }
+        imgToolbar.classList.remove('show');
+    }
+    function updateMediaToolbarPosition(el) {
+        const rect = el.getBoundingClientRect();
+        const tw = imgToolbar.offsetWidth, th = imgToolbar.offsetHeight;
+        let top = rect.bottom + 12, left = rect.left + rect.width/2 - tw/2;
+        if (top + th > window.innerHeight - 20) top = rect.top - th - 12;
+        left = Math.max(10, Math.min(left, window.innerWidth - tw - 10));
+        imgToolbar.style.top = top + 'px';
+        imgToolbar.style.left = left + 'px';
+    }
+    function resizeMedia(v) { if(selectedMedia){ selectedMedia.style.width = v+'%'; updateMediaToolbarPosition(selectedMedia); triggerSave(); } deselectMedia(); editorEl.focus(); }
+    function changeMargin(type, v) { if(!selectedMedia) return; if(type==='horizontal'){ selectedMedia.style.marginLeft = v+'px'; selectedMedia.style.marginRight = v+'px'; } else { selectedMedia.style.marginTop = v+'px'; selectedMedia.style.marginBottom = v+'px'; } updateMediaToolbarPosition(selectedMedia); triggerSave(); deselectMedia(); editorEl.focus(); }
+    function alignMedia(pos) {
+        if(!selectedMedia) return;
+        const vm = imgMarginVSlider.value, hm = imgMarginHSlider.value;
+        if(pos==='left'){ selectedMedia.style.display='inline'; selectedMedia.style.float='left'; selectedMedia.style.margin=vm+'px '+hm+'px'; }
+        else if(pos==='right'){ selectedMedia.style.display='inline'; selectedMedia.style.float='right'; selectedMedia.style.margin=vm+'px '+hm+'px'; }
+        else { selectedMedia.style.display='block'; selectedMedia.style.float='none'; selectedMedia.style.margin=vm+'px auto'; }
+        updateMediaToolbarPosition(selectedMedia); triggerSave(); deselectMedia(); editorEl.focus();
+    }
+    function copyMedia() { if(!selectedMedia) return; const clone=selectedMedia.cloneNode(true); const r=document.createRange(); r.selectNode(clone); window.getSelection().removeAllRanges(); window.getSelection().addRange(r); document.execCommand('copy'); window.getSelection().removeAllRanges(); deselectMedia(); editorEl.focus(); }
+    function duplicateMedia() { if(!selectedMedia) return; const clone=selectedMedia.cloneNode(true); clone.classList.remove('selected-img'); selectedMedia.parentNode.insertBefore(clone, selectedMedia.nextSibling); triggerSave(); deselectMedia(); editorEl.focus(); }
+    function deleteMedia() { if(!selectedMedia) return; selectedMedia.remove(); triggerSave(); deselectMedia(); editorEl.focus(); }
 
-        // Eventos de puntero para seleccionar medios (long press o click)
-        editorEl.addEventListener('pointerdown', (e) => {
-            const t = e.target.closest('img, video');
-            if (!t || !editorEl.contains(t)) return;
-            e._mediaTarget = t;
-            e._mediaTime = Date.now();
-        });
-        editorEl.addEventListener('pointerup', (e) => {
-            if (!e._mediaTarget) return;
-            const duration = Date.now() - e._mediaTime;
-            if (duration > 400) {
-                e.preventDefault();
-                selectMediaElement(e._mediaTarget);
-                if (navigator.vibrate) navigator.vibrate(50);
-            } else {
-                selectMediaElement(e._mediaTarget);
-            }
-        });
-        editorEl.addEventListener('click', (e) => {
-            const t = e.target.closest('img, video');
-            if (!t) { deselectMedia(); editorEl.focus(); }
-        });
-        editorEl.addEventListener('contextmenu', e => e.preventDefault());
+    editorEl.addEventListener('pointerdown', (e) => {
+        const t = e.target.closest('img, video');
+        if (!t || !editorEl.contains(t)) return;
+        e._mediaTarget = t;
+        e._mediaTime = Date.now();
+    });
+    editorEl.addEventListener('pointerup', (e) => {
+        if (!e._mediaTarget) return;
+        const duration = Date.now() - e._mediaTime;
+        if (duration > 400) {
+            e.preventDefault();
+            selectMediaElement(e._mediaTarget);
+            if (navigator.vibrate) navigator.vibrate(50);
+        } else {
+            selectMediaElement(e._mediaTarget);
+        }
+    });
+    editorEl.addEventListener('click', (e) => {
+        const t = e.target.closest('img, video');
+        if (!t) { deselectMedia(); editorEl.focus(); }
+    });
+    editorEl.addEventListener('contextmenu', e => e.preventDefault());
 
-        // ── Insertar medios ──
-        function insertMedia(e) {
-            const file = e.target.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const html = file.type.startsWith('video/')
-                    ? `<video src="${ev.target.result}" controls style="width:50%;display:block;margin:15px auto;"></video>`
-                    : `<img src="${ev.target.result}" style="width:80%;display:block;margin:15px auto;clear:both;">`;
-                insertHtmlAtCursor(html);
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-        function insertHtmlAtCursor(html) {
-            const sel = window.getSelection();
-            if (sel.rangeCount && editorEl.contains(sel.anchorNode)) {
-                const range = sel.getRangeAt(0);
-                range.deleteContents();
-                const frag = range.createContextualFragment(html);
-                range.insertNode(frag);
-                range.collapse(false);
-                sel.removeAllRanges();
-                sel.addRange(range);
-            } else {
-                editorEl.focus();
-                document.execCommand('insertHTML', false, html);
-            }
-            triggerSave(); editorEl.focus();
-        }
-        function openUrlModal(type) { pendingMediaType=type; urlInput.value=''; urlModalTitle.textContent=type==='image'?'Pega la URL del GIF/Sticker':'Pega la URL del video'; urlModal.classList.add('show'); setTimeout(()=>urlInput.focus(),100); }
-        function closeUrlModal() { urlModal.classList.remove('show'); pendingMediaType=null; }
-        function confirmInsertUrl() { const u=urlInput.value.trim(); if(!u)return; closeUrlModal(); insertMediaFromUrl(pendingMediaType,u); }
-        function insertMediaFromUrl(type,url) {
-            let html;
-            if(type==='image') html = `<img src="${url}" style="width:80%;display:block;margin:15px auto;" onerror="this.style.display='none'">`;
-            else {
-                const yt=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/);
-                html = yt
-                    ? `<div style="position:relative;padding-bottom:56.25%;height:0;"><iframe src="https://www.youtube.com/embed/${yt[1]}" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>`
-                    : `<video src="${url}" controls style="width:50%;display:block;margin:15px auto;"></video>`;
-            }
+    // ── Insertar medios ──
+    function insertMedia(e) {
+        const file = e.target.files[0]; if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const html = file.type.startsWith('video/')
+                ? `<video src="${ev.target.result}" controls style="width:50%;display:block;margin:15px auto;"></video>`
+                : `<img src="${ev.target.result}" style="width:80%;display:block;margin:15px auto;clear:both;">`;
             insertHtmlAtCursor(html);
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }
+    function insertHtmlAtCursor(html) {
+        const sel = window.getSelection();
+        if (sel.rangeCount && editorEl.contains(sel.anchorNode)) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            const frag = range.createContextualFragment(html);
+            range.insertNode(frag);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else {
+            editorEl.focus();
+            document.execCommand('insertHTML', false, html);
         }
-        function openUrlModalFromInsert(type) { hideInsertMenu(); openUrlModal(type); }
-        function insertMediaFromMenu(e) { insertMedia(e); hideInsertMenu(); }
+        triggerSave(); editorEl.focus();
+    }
+    function openUrlModal(type) { pendingMediaType=type; urlInput.value=''; urlModalTitle.textContent=type==='image'?'Pega la URL del GIF/Sticker':'Pega la URL del video'; urlModal.classList.add('show'); setTimeout(()=>urlInput.focus(),100); }
+    function closeUrlModal() { urlModal.classList.remove('show'); pendingMediaType=null; }
+    function confirmInsertUrl() { const u=urlInput.value.trim(); if(!u)return; closeUrlModal(); insertMediaFromUrl(pendingMediaType,u); }
+    function insertMediaFromUrl(type,url) {
+        let html;
+        if(type==='image') html = `<img src="${url}" style="width:80%;display:block;margin:15px auto;" onerror="this.style.display='none'">`;
+        else {
+            const yt=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([\w-]{11})/);
+            html = yt
+                ? `<div style="position:relative;padding-bottom:56.25%;height:0;"><iframe src="https://www.youtube.com/embed/${yt[1]}" frameborder="0" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe></div>`
+                : `<video src="${url}" controls style="width:50%;display:block;margin:15px auto;"></video>`;
+        }
+        insertHtmlAtCursor(html);
+    }
+    function openUrlModalFromInsert(type) { hideInsertMenu(); openUrlModal(type); }
+    function insertMediaFromMenu(e) { insertMedia(e); hideInsertMenu(); }
 
-        // ── Notas ──
-        function renderList() {
-            listEl.innerHTML = '';
-            const sorted = [...notes].sort((a,b) => (a.pinned===b.pinned ? b.timestamp-a.timestamp : a.pinned?-1:1));
-            sorted.forEach(note => {
-                const div = document.createElement('div');
-                div.className = `note-item ${note.id===currentNoteId?'active':''}`;
-                div.id = `note-${note.id}`;
-                let timer;
-                const start = () => { timer = setTimeout(()=>{ openContextMenu(note.id); if(navigator.vibrate)navigator.vibrate(30); }, 500); };
-                const cancel = () => clearTimeout(timer);
-                div.addEventListener('touchstart', start, {passive:true});
-                div.addEventListener('touchend', cancel);
-                div.addEventListener('touchmove', cancel);
-                div.addEventListener('mousedown', start);
-                div.addEventListener('mouseup', cancel);
-                div.addEventListener('mouseleave', cancel);
-                div.addEventListener('click', (e) => { cancel(); openNote(note.id); });
-                div.addEventListener('contextmenu', e => { e.preventDefault(); openContextMenu(note.id); });
-                const plain = note.content.replace(/<[^>]+>/g,'') || '';
-                div.innerHTML = `<div class="note-title-list"><span>${note.title||'Nueva nota'}</span>${note.pinned?'<i class="bx bxs-pin pinned-icon"></i>':''}</div><div style="font-size:0.8rem;color:var(--text-muted);">${plain.substring(0,35)}...</div>`;
-                listEl.appendChild(div);
-            });
+    // ── Notas ──
+    function renderList() {
+        listEl.innerHTML = '';
+        const sorted = [...notes].sort((a,b) => (a.pinned===b.pinned ? b.timestamp-a.timestamp : a.pinned?-1:1));
+        sorted.forEach(note => {
+            const div = document.createElement('div');
+            div.className = `note-item ${note.id===currentNoteId?'active':''}`;
+            div.id = `note-${note.id}`;
+            let timer;
+            const start = () => { timer = setTimeout(()=>{ openContextMenu(note.id); if(navigator.vibrate)navigator.vibrate(30); }, 500); };
+            const cancel = () => clearTimeout(timer);
+            div.addEventListener('touchstart', start, {passive:true});
+            div.addEventListener('touchend', cancel);
+            div.addEventListener('touchmove', cancel);
+            div.addEventListener('mousedown', start);
+            div.addEventListener('mouseup', cancel);
+            div.addEventListener('mouseleave', cancel);
+            div.addEventListener('click', (e) => { cancel(); openNote(note.id); });
+            div.addEventListener('contextmenu', e => { e.preventDefault(); openContextMenu(note.id); });
+            const plain = note.content.replace(/<[^>]+>/g,'') || '';
+            div.innerHTML = `<div class="note-title-list"><span>${note.title||'Nueva nota'}</span>${note.pinned?'<i class="bx bxs-pin pinned-icon"></i>':''}</div><div style="font-size:0.8rem;color:var(--text-muted);">${plain.substring(0,35)}...</div>`;
+            listEl.appendChild(div);
+        });
+    }
+    function openContextMenu(id) {
+        contextNoteId = id;
+        const note = notes.find(n => n.id === id);
+        document.getElementById('sheetTitle').innerText = `Opciones: ${note.title||'Nota sin título'}`;
+        const icon = document.getElementById('sheetPinIcon');
+        const txt = document.getElementById('sheetPinText');
+        if (note.pinned) { icon.className = 'bx bx-pin'; txt.innerText = 'Desfijar nota'; }
+        else { icon.className = 'bx bxs-pin'; txt.innerText = 'Fijar arriba'; }
+        sheet.classList.add('show');
+        overlaySheet.classList.add('show');
+    }
+    function closeContextMenu() { sheet.classList.remove('show'); overlaySheet.classList.remove('show'); contextNoteId = null; }
+    function actionPinNote() {
+        const idx = notes.findIndex(n => n.id === contextNoteId);
+        if (idx !== -1) { notes[idx].pinned = !notes[idx].pinned; saveData(); renderList(); }
+        closeContextMenu();
+    }
+    function actionDuplicateNote() {
+        const orig = notes.find(n => n.id === contextNoteId);
+        if (orig) {
+            const copy = JSON.parse(JSON.stringify(orig));
+            copy.id = Date.now().toString();
+            copy.title = orig.title + ' (Copia)';
+            copy.timestamp = Date.now();
+            copy.pinned = false;
+            notes.push(copy);
+            saveData(); renderList(); openNote(copy.id);
         }
-        function openContextMenu(id) {
-            contextNoteId = id;
-            const note = notes.find(n => n.id === id);
-            document.getElementById('sheetTitle').innerText = `Opciones: ${note.title||'Nota sin título'}`;
-            const icon = document.getElementById('sheetPinIcon');
-            const txt = document.getElementById('sheetPinText');
-            if (note.pinned) { icon.className = 'bx bx-pin'; txt.innerText = 'Desfijar nota'; }
-            else { icon.className = 'bx bxs-pin'; txt.innerText = 'Fijar arriba'; }
-            sheet.classList.add('show');
-            overlaySheet.classList.add('show');
-        }
-        function closeContextMenu() { sheet.classList.remove('show'); overlaySheet.classList.remove('show'); contextNoteId = null; }
-        function actionPinNote() {
-            const idx = notes.findIndex(n => n.id === contextNoteId);
-            if (idx !== -1) { notes[idx].pinned = !notes[idx].pinned; saveData(); renderList(); }
-            closeContextMenu();
-        }
-        function actionDuplicateNote() {
-            const orig = notes.find(n => n.id === contextNoteId);
-            if (orig) {
-                const copy = JSON.parse(JSON.stringify(orig));
-                copy.id = Date.now().toString();
-                copy.title = orig.title + ' (Copia)';
-                copy.timestamp = Date.now();
-                copy.pinned = false;
-                notes.push(copy);
-                saveData(); renderList(); openNote(copy.id);
-            }
-            closeContextMenu();
-        }
-        function actionDeleteNote() {
-            if (contextNoteId === 'nota_magica_diaria') { alert('¡Esta es mi carta diaria! No puedes borrarla. 🖤'); closeContextMenu(); return; }
-            if (confirm('¿Eliminar esta nota?')) {
-                const idDel = contextNoteId; closeContextMenu();
-                const el = document.getElementById(`note-${idDel}`);
-                if (el) {
-                    el.classList.add('deleting');
-                    setTimeout(() => {
-                        notes = notes.filter(n => n.id !== idDel);
-                        saveData();
-                        if (currentNoteId === idDel) openNote(notes[0]?.id || null);
-                        renderList();
-                    }, 400);
-                } else {
+        closeContextMenu();
+    }
+    function actionDeleteNote() {
+        if (contextNoteId === 'nota_magica_diaria') { alert('¡Esta es mi carta diaria! No puedes borrarla. 🖤'); closeContextMenu(); return; }
+        if (confirm('¿Eliminar esta nota?')) {
+            const idDel = contextNoteId; closeContextMenu();
+            const el = document.getElementById(`note-${idDel}`);
+            if (el) {
+                el.classList.add('deleting');
+                setTimeout(() => {
                     notes = notes.filter(n => n.id !== idDel);
                     saveData();
                     if (currentNoteId === idDel) openNote(notes[0]?.id || null);
                     renderList();
-                }
-            }
-        }
-
-        function openNote(id, autoClose = true) {
-            currentNoteId = id;
-            const note = notes.find(n => n.id === id);
-            if (note) {
-                titleEl.value = note.title;
-                editorEl.innerHTML = note.content;
-                wrapperEl.className = 'editor-wrapper';
-                if (note.theme && note.theme !== 'default') wrapperEl.classList.add(note.theme);
-            }
-            deselectMedia();
-            renderList();
-            if (autoClose && window.innerWidth <= 768 && sidebar.classList.contains('open')) toggleSidebar();
-        }
-        function createNewNote() {
-            const nn = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, timestamp: Date.now() };
-            notes.push(nn);
-            currentNoteId = nn.id;
-            saveData();
-            openNote(nn.id);
-            titleEl.focus();
-            setTimeout(() => { const el = document.getElementById(`note-${nn.id}`); if(el) el.classList.add('creating'); }, 50);
-        }
-        function triggerSave() {
-            if (!currentNoteId || currentNoteId === 'nota_magica_diaria') return;
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => {
-                const idx = notes.findIndex(n => n.id === currentNoteId);
-                if (idx !== -1) {
-                    notes[idx].title = titleEl.value;
-                    notes[idx].content = editorEl.innerHTML;
-                    notes[idx].timestamp = Date.now();
-                    saveData();
-                    renderList();
-                }
-            }, 500);
-        }
-        function saveData() { safeSet('nova_romance', notes); }
-
-        function toggleGlobalTheme(forceDark = false) {
-            const body = document.body, icon = document.getElementById('themeIcon');
-            if (forceDark || body.getAttribute('data-theme') !== 'dark') {
-                body.setAttribute('data-theme', 'dark'); icon.className = 'bx bx-sun';
-                safeSet('nova_global_theme', 'dark');
+                }, 400);
             } else {
-                body.removeAttribute('data-theme'); icon.className = 'bx bx-moon';
-                safeSet('nova_global_theme', 'light');
+                notes = notes.filter(n => n.id !== idDel);
+                saveData();
+                if (currentNoteId === idDel) openNote(notes[0]?.id || null);
+                renderList();
             }
         }
-        function toggleSidebar() {
-            sidebar.classList.toggle('open');
-            sidebarOverlay.classList.toggle('show', sidebar.classList.contains('open'));
-            checkMobileMenu();
-        }
-        function checkMobileMenu() {
-            const btn = document.getElementById('closeSidebarBtn');
-            if (window.innerWidth <= 768) {
-                btn.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
-                if (!sidebar.classList.contains('open')) sidebarOverlay.classList.remove('show');
-            } else {
-                btn.style.display = 'none';
-                sidebarOverlay.classList.remove('show');
-            }
-        }
-        function toggleExtras() {
-            extrasEnabled = !extrasEnabled;
-            safeSet('nova_extras_enabled', extrasEnabled);
-            updateExtrasUI();
-        }
-        function updateExtrasUI() {
-            toggleExtrasBtn.style.color = extrasEnabled ? 'var(--primary)' : 'var(--text-muted)';
-            animBtn.style.display = extrasEnabled ? 'flex' : 'none';
-            if (!extrasEnabled) animSubmenu.style.display = 'none';
-        }
-        function toggleThemePalette() { document.getElementById('themePalette').classList.toggle('show'); }
-        function setNoteTheme(cls) {
+    }
+
+    function openNote(id, autoClose = true) {
+        currentNoteId = id;
+        const note = notes.find(n => n.id === id);
+        if (note) {
+            titleEl.value = note.title;
+            editorEl.innerHTML = note.content;
             wrapperEl.className = 'editor-wrapper';
-            if (cls !== 'default') wrapperEl.classList.add(cls);
+            if (note.theme && note.theme !== 'default') wrapperEl.classList.add(note.theme);
+        }
+        deselectMedia();
+        renderList();
+        if (autoClose && window.innerWidth <= 768 && sidebar.classList.contains('open')) toggleSidebar();
+    }
+    function createNewNote() {
+        const nn = { id: Date.now().toString(), title: '', content: '', theme: 'default', pinned: false, timestamp: Date.now() };
+        notes.push(nn);
+        currentNoteId = nn.id;
+        saveData();
+        openNote(nn.id);
+        titleEl.focus();
+        setTimeout(() => { const el = document.getElementById(`note-${nn.id}`); if(el) el.classList.add('creating'); }, 50);
+    }
+    function triggerSave() {
+        if (!currentNoteId || currentNoteId === 'nota_magica_diaria') return;
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
             const idx = notes.findIndex(n => n.id === currentNoteId);
-            if (idx !== -1) { notes[idx].theme = cls; saveData(); }
-            document.getElementById('themePalette').classList.remove('show');
-        }
-        function closeWelcome() { document.getElementById('welcomeModal').classList.add('hidden'); }
-
-        // ── Inicialización ──
-        function init() {
-            if (safeGet('nova_global_theme', 'light') === 'dark') toggleGlobalTheme(true);
-
-            const letter = cartasAmor[Math.floor(Math.random() * cartasAmor.length)];
-            const formatted = `<div style="font-family:Caveat,cursive;font-size:1.65rem;line-height:1.7;text-align:center;padding:20px;">${letter}<br><br><span style="font-size:2.5rem;animation:heartbeat 1.5s infinite;display:inline-block;">🖤</span></div>`;
-
-            let magicIdx = notes.findIndex(n => n.id === 'nota_magica_diaria');
-            if (magicIdx === -1) {
-                notes.unshift({ id: 'nota_magica_diaria', title: '💌 Para ti, hoy...', content: formatted, theme: 'theme-amor', pinned: true, timestamp: Date.now() + 9999999 });
-            } else {
-                notes[magicIdx].content = formatted;
-                notes[magicIdx].timestamp = Date.now() + 9999999;
+            if (idx !== -1) {
+                notes[idx].title = titleEl.value;
+                notes[idx].content = editorEl.innerHTML;
+                notes[idx].timestamp = Date.now();
+                saveData();
+                renderList();
             }
-            saveData();
-            renderList();
-            openNote('nota_magica_diaria', false);
-            updateExtrasUI();
-            checkMobileMenu();
+        }, 500);
+    }
+    function saveData() { safeSet('nova_romance', notes); }
 
-            editorEl.addEventListener('paste', (e) => {
-                const items = (e.clipboardData || window.clipboardData).items;
-                for (let item of items) {
-                    if (item.type.indexOf('image') !== -1) {
-                        e.preventDefault();
-                        const blob = item.getAsFile();
-                        const reader = new FileReader();
-                        reader.onload = (ev) => {
-                            const img = document.createElement('img');
-                            img.src = ev.target.result;
-                            img.style.width = '80%';
-                            img.style.display = 'block';
-                            img.style.margin = '15px auto';
-                            insertHtmlAtCursor(img.outerHTML);
-                        };
-                        reader.readAsDataURL(blob);
-                        break;
-                    }
-                }
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!insertMenu.contains(e.target) && e.target !== editorEl) hideInsertMenu();
-                if (!animSubmenu.contains(e.target) && e.target !== animBtn) animSubmenu.style.display = 'none';
-                if (!floatMenu.contains(e.target) && !titleEl.contains(e.target) && !editorEl.contains(e.target)) floatMenu.style.display = 'none';
-                if (!imgToolbar.contains(e.target) && !editorEl.contains(e.target)) deselectMedia();
-            });
-            window.addEventListener('resize', checkMobileMenu);
+    function toggleGlobalTheme(forceDark = false) {
+        const body = document.body, icon = document.getElementById('themeIcon');
+        if (forceDark || body.getAttribute('data-theme') !== 'dark') {
+            body.setAttribute('data-theme', 'dark'); icon.className = 'bx bx-sun';
+            safeSet('nova_global_theme', 'dark');
+        } else {
+            body.removeAttribute('data-theme'); icon.className = 'bx bx-moon';
+            safeSet('nova_global_theme', 'light');
         }
+    }
+    function toggleSidebar() {
+        sidebar.classList.toggle('open');
+        sidebarOverlay.classList.toggle('show', sidebar.classList.contains('open'));
+        checkMobileMenu();
+    }
+    function checkMobileMenu() {
+        const btn = document.getElementById('closeSidebarBtn');
+        if (window.innerWidth <= 768) {
+            btn.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+            if (!sidebar.classList.contains('open')) sidebarOverlay.classList.remove('show');
+        } else {
+            btn.style.display = 'none';
+            sidebarOverlay.classList.remove('show');
+        }
+    }
+    function toggleExtras() {
+        extrasEnabled = !extrasEnabled;
+        safeSet('nova_extras_enabled', extrasEnabled);
+        updateExtrasUI();
+    }
+    function updateExtrasUI() {
+        toggleExtrasBtn.style.color = extrasEnabled ? 'var(--primary)' : 'var(--text-muted)';
+        animBtn.style.display = extrasEnabled ? 'flex' : 'none';
+        if (!extrasEnabled) animSubmenu.style.display = 'none';
+    }
+    function toggleThemePalette() { document.getElementById('themePalette').classList.toggle('show'); }
+    function setNoteTheme(cls) {
+        wrapperEl.className = 'editor-wrapper';
+        if (cls !== 'default') wrapperEl.classList.add(cls);
+        const idx = notes.findIndex(n => n.id === currentNoteId);
+        if (idx !== -1) { notes[idx].theme = cls; saveData(); }
+        document.getElementById('themePalette').classList.remove('show');
+    }
+    function closeWelcome() { document.getElementById('welcomeModal').classList.add('hidden'); }
 
-        init();
-    })();
+    // ── Inicio ──
+    function init() {
+        if (safeGet('nova_global_theme', 'light') === 'dark') toggleGlobalTheme(true);
+
+        const letter = cartasAmor[Math.floor(Math.random() * cartasAmor.length)];
+        const formatted = `<div style="font-family:Caveat,cursive;font-size:1.65rem;line-height:1.7;text-align:center;padding:20px;">${letter}<br><br><span style="font-size:2.5rem;animation:heartbeat 1.5s infinite;display:inline-block;">🖤</span></div>`;
+
+        let magicIdx = notes.findIndex(n => n.id === 'nota_magica_diaria');
+        if (magicIdx === -1) {
+            notes.unshift({ id: 'nota_magica_diaria', title: '💌 Para ti, hoy...', content: formatted, theme: 'theme-amor', pinned: true, timestamp: Date.now() + 9999999 });
+        } else {
+            notes[magicIdx].content = formatted;
+            notes[magicIdx].timestamp = Date.now() + 9999999;
+        }
+        saveData();
+        renderList();
+        openNote('nota_magica_diaria', false);
+        updateExtrasUI();
+        checkMobileMenu();
+
+        editorEl.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || window.clipboardData).items;
+            for (let item of items) {
+                if (item.type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    const blob = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.style.width = '80%';
+                        img.style.display = 'block';
+                        img.style.margin = '15px auto';
+                        insertHtmlAtCursor(img.outerHTML);
+                    };
+                    reader.readAsDataURL(blob);
+                    break;
+                }
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!insertMenu.contains(e.target) && e.target !== editorEl) hideInsertMenu();
+            if (!animSubmenu.contains(e.target) && e.target !== animBtn) animSubmenu.style.display = 'none';
+            if (!floatMenu.contains(e.target) && !titleEl.contains(e.target) && !editorEl.contains(e.target)) floatMenu.style.display = 'none';
+            if (!imgToolbar.contains(e.target) && !editorEl.contains(e.target)) deselectMedia();
+        });
+        window.addEventListener('resize', checkMobileMenu);
+    }
+
+    init();
 </script>
 </body>
 </html>
